@@ -29,6 +29,37 @@ def to_numpy_patch(bm, _force_blocking=False):
             os.remove(path)
         except FileNotFoundError:
             pass
+def import_and_index(numbers):
+	""" imports bgen files into hail
+	numbers [] is the chromosome numbers to be imported and indexed """
+	path2 = "bgen/ukb_imp_chr"
+	path3 = "_v3.bgen"
+	path4 = "_v3.sample"
+	ef = ['GT','dosage']
+	# create a matrix to store the matrixtables
+	chrs = []
+	for i in numbers:
+		# using the same sample file for all bgens to avoid confusion
+		bgen_path = path2 + str(i) + path3
+		print(bgen_path)
+		sample_path = path2 + "1" + path4
+		print(sample_path)
+		print("\n\nimporting matrixtable for chromosome " + str(i) + "...")
+		chr_i = hl.import_bgen(bgen_path, entry_fields=ef,sample_file=sample_path)
+		chrs.append(chr_i)
+
+	return chrs
+
+def combine(chrs):
+	""" join all matrixtables into single matrixtable using union_rows """
+	print("\n\ncombining all chromosomes --including 12-- into single matrixtable...")
+	# start with union of chrs1 and 2, then iterate to 22
+	fullchr = chrs[0].union_rows(chrs[1])
+	for i in range(2,len(chrs)):
+		print("adding chromosome " + str(i+1))
+		fullchr = fullchr.union_rows(chrs[i])
+
+	return fullchr
 
 def main(n_snps):
 
