@@ -79,11 +79,13 @@ def main(n_snps):
     samples = train + test
     # filter mt for samples
     sample_set = hl.literal(samples)
-    full_mt = full_mt.filter_cols(sample_set.contains(full_mt))
+    full_mt = full_mt.filter_cols(sample_set.contains(full_mt.s))
     # read in SNPs, truncate for N
     top_snps = np.load(open('new50k.npy','rb'))
     top_snps = top_snps[:n_snps]
-
+    # filter mt for SNPs
+    snp_set = hl.literal([hl.parse_locus(item) for item in top_snps])
+    full_mt = full_mt.filter_rows(snp_set.contains(full_mt.locus))
 
 if __name__ == "__main__":
     main(n_snps=sys.argv[1])
