@@ -83,7 +83,7 @@ def make_block_matrix(mt, n_snps, write=True):
 def generate_data(iterable_dataset, n_snps):
     i = 1
     for X,Y in iterable_dataset:
-        name = "../new_data_" +str(n_snps) + "_" + str(i)
+        name = "../new_data_" + n_snps + "_" + str(i)
         print("saving %s..." % name)
         np.savez_compressed(name, x=X, y=Y)
         i += 1
@@ -104,7 +104,7 @@ def main(n_snps):
     phenos = [[phenos_dict[s]] for s in samples]
     # read in SNPs, truncate for N
     top_snps = np.load(open('../new50k.npy','rb'))
-    top_snps = top_snps[:n_snps]
+    top_snps = top_snps[:int(n_snps)]
     print("top SNPs: %i"%len(top_snps))
     # filter mt for SNPs
     snp_set = hl.literal([hl.parse_locus(item) for item in top_snps])
