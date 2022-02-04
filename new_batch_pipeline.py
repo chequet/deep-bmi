@@ -2,6 +2,7 @@
 # takes number of SNPs as input
 
 import os
+import sys
 import numpy as np
 from hail.linalg import BlockMatrix
 from hail.utils import new_local_temp_file, local_path_uri
