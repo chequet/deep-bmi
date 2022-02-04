@@ -39,7 +39,7 @@ def to_numpy_patch(bm, _force_blocking=False):
 def import_and_index(numbers):
     """ imports bgen files into hail
 	numbers [] is the chromosome numbers to be imported and indexed """
-    path2 = "bgen/ukb_imp_chr"
+    path2 = "../bgen/ukb_imp_chr"
     path3 = "_v3.bgen"
     path4 = "_v3.sample"
     ef = ['GT', 'dosage']
