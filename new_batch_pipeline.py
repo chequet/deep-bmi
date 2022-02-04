@@ -12,6 +12,8 @@ import pickle
 import pandas as pd
 import numpy as np
 import pickle
+from MyIterableDataset import *
+
 
 hl.init(default_reference='GRCh37', spark_conf={'spark.driver.memory': '400G'})
 
@@ -67,6 +69,23 @@ def combine(chrs):
 
     return fullchr
 
+def make_block_matrix(mt, n_snps, write=True):
+    AS_BLOCK_MATRIX_FILE = "blockmatrix_"+ str(n_snps) + ".mt"
+    if write:
+        hl.linalg.BlockMatrix.write_from_entry_expr(mt.GT.n_alt_alleles(),
+                                                AS_BLOCK_MATRIX_FILE, overwrite=True, mean_impute=True)
+    bm = hl.linalg.BlockMatrix.read(AS_BLOCK_MATRIX_FILE)
+    GROUP_SIZE = 2048
+    column_groups = hailtop.utils.grouped(GROUP_SIZE, list(range(mt.count_cols())))
+    return bm, column_groups
+
+def generate_data(iterable_dataset):
+    i = 1
+    for X,Y in iterable_dataset:
+        name = "./new_data/"+str(i)
+        print("saving %s..." % name)
+        np.savez_compressed(name, x=X, y=Y)
+        i += 1
 
 def main(n_snps):
     # read in bgens
@@ -74,18 +93,23 @@ def main(n_snps):
     chrs = import_and_index(numbers)
     full_mt = combine(chrs)
     # read in samples
-    train = pickle.load(open('pickles/trainset.pkl', 'rb'))
-    test = pickle.load(open('pickles/testset.pkl', 'rb'))
-    samples = train + test
+    samples = np.load('qc_samples.npy').tolist()
     # filter mt for samples
     sample_set = hl.literal(samples)
     full_mt = full_mt.filter_cols(sample_set.contains(full_mt.s))
+    # make phenotype blocks with phenotype dictionary
+    phenos_dict = pd.read_pickle('pickles/phenos_scaled_dict.pkl')
+    phenos = [[phenos_dict[s]] for s in samples]
     # read in SNPs, truncate for N
     top_snps = np.load(open('new50k.npy','rb'))
     top_snps = top_snps[:n_snps]
     # filter mt for SNPs
     snp_set = hl.literal([hl.parse_locus(item) for item in top_snps])
     full_mt = full_mt.filter_rows(snp_set.contains(full_mt.locus))
+    bm, column_groups = make_block_matrix(full_mt,n_snps)
+    batch_list = list(column_groups)
+    data = MyIterableDataset(bm, phenos, batch_list, n_snps, False)
+    generate_data(data)
 
 if __name__ == "__main__":
     main(n_snps=sys.argv[1])
