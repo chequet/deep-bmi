@@ -79,37 +79,39 @@ def make_block_matrix(mt, n_snps, write=True):
     column_groups = hailtop.utils.grouped(GROUP_SIZE, list(range(mt.count_cols())))
     return bm, column_groups
 
-def generate_data(iterable_dataset):
+def generate_data(iterable_dataset, n_snps):
     i = 1
     for X,Y in iterable_dataset:
-        name = "./new_data/"+str(i)
+        name = "../new_data_" +str(n_snps) + "_" + str(i)
         print("saving %s..." % name)
         np.savez_compressed(name, x=X, y=Y)
         i += 1
 
 def main(n_snps):
+    print("generating data with %i SNPs"%n_snps)
     # read in bgens
     numbers = range(1, 23)
     chrs = import_and_index(numbers)
     full_mt = combine(chrs)
     # read in samples
-    samples = np.load('qc_samples.npy').tolist()
+    samples = np.load('../qc_samples.npy').tolist()
     # filter mt for samples
     sample_set = hl.literal(samples)
     full_mt = full_mt.filter_cols(sample_set.contains(full_mt.s))
     # make phenotype blocks with phenotype dictionary
-    phenos_dict = pd.read_pickle('pickles/phenos_scaled_dict.pkl')
+    phenos_dict = pd.read_pickle('../pickles/phenos_scaled_dict.pkl')
     phenos = [[phenos_dict[s]] for s in samples]
     # read in SNPs, truncate for N
     top_snps = np.load(open('new50k.npy','rb'))
     top_snps = top_snps[:n_snps]
+    print("top SNPs: %i"%len(top_snps))
     # filter mt for SNPs
     snp_set = hl.literal([hl.parse_locus(item) for item in top_snps])
     full_mt = full_mt.filter_rows(snp_set.contains(full_mt.locus))
     bm, column_groups = make_block_matrix(full_mt,n_snps)
     batch_list = list(column_groups)
     data = MyIterableDataset(bm, phenos, batch_list, n_snps, False)
-    generate_data(data)
+    generate_data(data,n_snps)
 
 if __name__ == "__main__":
     main(n_snps=sys.argv[1])
