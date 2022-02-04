@@ -83,7 +83,7 @@ def make_block_matrix(mt, n_snps, write=True):
 def generate_data(iterable_dataset, n_snps):
     i = 1
     for X,Y in iterable_dataset:
-        name = "../new_data_" + n_snps + "/" + str(i)
+        name = "../new_data_" + n_snps + "/batch" + str(i)
         print("saving %s..." % name)
         np.savez_compressed(name, x=X, y=Y)
         i += 1
