@@ -89,7 +89,7 @@ def generate_data(iterable_dataset, n_snps):
         i += 1
 
 def main(n_snps):
-    print("generating data with %i SNPs"%n_snps)
+    print("generating data with %s SNPs"%n_snps)
     # read in bgens
     numbers = range(1, 23)
     chrs = import_and_index(numbers)
