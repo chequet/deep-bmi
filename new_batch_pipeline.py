@@ -103,7 +103,7 @@ def main(n_snps):
     phenos_dict = pd.read_pickle('../pickles/phenos_scaled_dict.pkl')
     phenos = [[phenos_dict[s]] for s in samples]
     # read in SNPs, truncate for N
-    top_snps = np.load(open('new50k.npy','rb'))
+    top_snps = np.load(open('../new50k.npy','rb'))
     top_snps = top_snps[:n_snps]
     print("top SNPs: %i"%len(top_snps))
     # filter mt for SNPs
