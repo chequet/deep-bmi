@@ -95,12 +95,12 @@ def main(n_snps):
     chrs = import_and_index(numbers)
     full_mt = combine(chrs)
     # read in samples
-    samples = np.load('../qc_samples.npy').tolist()
+    samples = np.load('../qc_samples2.npy').tolist()
     # filter mt for samples
     sample_set = hl.literal(samples)
     full_mt = full_mt.filter_cols(sample_set.contains(full_mt.s))
     # make phenotype blocks with phenotype dictionary
-    phenos_dict = pd.read_pickle('../pickles/phenos_scaled_dict.pkl')
+    phenos_dict = pd.read_pickle('../pickles/new_pheno_dict.pkl')
     phenos = [[phenos_dict[s]] for s in samples]
     # read in SNPs, truncate for N
     top_snps = np.load(open('../new50k.npy','rb'))
