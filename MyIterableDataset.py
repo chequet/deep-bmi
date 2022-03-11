@@ -37,7 +37,7 @@ class MyIterableDataset(torch.utils.data.IterableDataset):
 
     def __get_data(self, batch):
         X = self.bm.filter_cols(batch).to_numpy()
-        #X = X.transpose().astype(int)
+        X = X.transpose().astype(int)
         start = batch[0]
         end = batch[-1]+1
         Y = self.ph[start:end]
