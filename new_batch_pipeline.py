@@ -89,6 +89,7 @@ def generate_data(iterable_dataset, n_snps):
         i += 1
 
 def main(n_snps):
+    print("updated paths!")
     print("generating data with %s SNPs"%n_snps)
     # read in bgens
     numbers = range(1, 23)
