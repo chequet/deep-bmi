@@ -355,9 +355,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/val/', True), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
         elif modeltype == 3:
-            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1, clf=False), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1, clf=False), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1, clf=False), **tstparams))
+            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1), **tstparams))
         elif modeltype == 4:
             train_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/train/', True, 2, beta_mask), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/val/', True, 2, beta_mask), **valparams))
