@@ -323,7 +323,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-3
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
-    beta_mask = np.load('beta_mask.npy')
+    #beta_mask = np.load('beta_mask.npy')
     clf = False
 
     losses = []
