@@ -10,51 +10,107 @@ from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 from EffectEmbeddingDataset import *
+from Net4 import *
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 print(device)
 
+# print("\n\nSMALL BATCH DEMO\n\n")
 
-def model1():
-    n_features = 50000
+def sve_model(n_inputs, reduction_factor, dropout):
+    n_features = n_inputs
+    n_out1 = math.ceil(n_features/reduction_factor)
+    n_out2 = math.ceil(n_out1/reduction_factor)
+    n_out3 = math.ceil(n_out2/reduction_factor)
     model = torch.nn.Sequential(
-        torch.nn.Linear(n_features, 500),
-        torch.nn.ELU(),
-        torch.nn.Linear(500, 50),
-        torch.nn.ELU(),
-        torch.nn.Linear(50, 1)
+        torch.nn.Linear(n_features, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out3),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out3, 1)
     )
     return model
 
-
-def onehot_model():
-    n_features = 150000
+def onehot_model(n_inputs, reduction_factor, dropout):
+    n_features = n_inputs*3
+    n_out1 = math.ceil(n_features/reduction_factor)
+    n_out2 = math.ceil(n_out1/reduction_factor)
+    n_out3 = math.ceil(n_out2/reduction_factor)
     model = torch.nn.Sequential(
-        torch.nn.Linear(n_features, 1500),
-        torch.nn.ELU(),
-        torch.nn.Linear(1500, 150),
-        torch.nn.ELU(),
-        torch.nn.Linear(150, 15),
-        torch.nn.ELU(),
-        torch.nn.Linear(15, 1)
+        torch.nn.Linear(n_features, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out3),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out3, 1)
     )
     return model
 
+def embed_model(n_inputs, reduction_factor, dropout):
+    n_features = n_inputs*2
+    n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
+    n_out2 = math.ceil(n_out1/reduction_factor)
+    n_out3 = math.ceil(n_out2/reduction_factor)
 
-def embed_model():
+    model = torch.nn.Sequential(
+        torch.nn.Linear(n_features, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out3),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out3, 1)
+    )
+    return model
+
+def embed_model_clf(n_inputs, reduction_factor, dropout):
+    n_features = n_inputs*2
+    n_features = n_inputs*2
+    n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
+    n_out2 = math.ceil(n_out1/reduction_factor)
+    n_out3 = math.ceil(n_out2/reduction_factor)
+    model = torch.nn.Sequential(
+        torch.nn.Linear(n_features, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out3),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out3, 2)
+    )
+    return model
+
+def conv_model_clf():
     n_features = 100000
     model = torch.nn.Sequential(
-        torch.nn.Linear(n_features, 1000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(1000, 100),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(100, 10),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(10, 1)
+        torch.nn.Linear(n_features, 500),
+        torch.nn.Dropout(0.3),
+        torch.nn.LeakyReLU(),
+        torch.nn.Conv1d(in_channels=500, out_channels=200, kernel_size=(3,), stride=(3,), padding=(1,)),
+        torch.nn.BatchNorm1d(200, eps=1e-05, momentum=0.1, affine=True),
+        torch.nn.Dropout(0.3),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(200, 10),
+        torch.nn.Flatten(),
+        torch.nn.Dropout(0.3),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(10, 2)
     )
     return model
 
@@ -86,6 +142,27 @@ def embed_model2():
     )
     return model 
 
+def embed_model2_clf():
+    n_features = 100000
+    model = torch.nn.Sequential(
+        torch.nn.Linear(n_features, 5000),
+        torch.nn.Dropout(0.4),
+        torch.nn.ReLU(),
+        torch.nn.Linear(5000, 1000),
+        torch.nn.Dropout(0.4),
+        torch.nn.ReLU(),
+        torch.nn.Linear(1000, 500),
+        torch.nn.Dropout(0.4),
+        torch.nn.ReLU(),
+        torch.nn.Linear(500, 100),
+        torch.nn.Dropout(0.4),
+        torch.nn.ReLU(),
+        torch.nn.Linear(100, 10),
+        torch.nn.Dropout(0.4),
+        torch.nn.ReLU(),
+        torch.nn.Linear(10, 2)
+    )
+    return model
 
 def plot(losses, val_losses, name):
     f = plt.figure()
@@ -97,17 +174,43 @@ def plot(losses, val_losses, name):
     plt.legend(['train', 'test'], loc='upper left')
     plt.savefig(name)
 
+def plot_accs(train_accs, val_accs, name):
+    f = plt.figure()
+    plt.plot(train_accs)
+    plt.plot(val_accs)
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.savefig(name)
 
-def train(batch_iterator, model, loss_fn, optimiser, n_trainbatch):
+def binary_acc(y_pred, y):
+    correct_results_sum = len(np.where(y_pred == y)[0])
+    acc = float(correct_results_sum) / len(y)
+    acc = np.round(acc * 100)
+
+    return acc
+
+
+def train(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
     i = 0
+    acc = 0
     while i < n_trainbatch:
         print("batch index %i" % i)
         batch = next(batch_iterator)
         X = batch[0].to(device)
+        # if clf:
+            # X = X.reshape(X.shape[0],X.shape[1],1)
+            # print(X)
         Y = batch[1].to(device)
         model.train()
+        #X = X.short()
         # forward pass
         y_pred = model(X.float())
+        if clf:
+            y_round = y_pred.argmax(dim=1)
+            acc = binary_acc(y_round.cpu(), Y.flatten().cpu())
+            Y = Y.flatten().long()
         # compute and print loss
         loss = loss_fn(y_pred, Y)
         # Zero the gradients before running the backward pass.
@@ -117,12 +220,14 @@ def train(batch_iterator, model, loss_fn, optimiser, n_trainbatch):
         # update weights with gradient descent
         optimiser.step()
         i += 1
-    return loss.item()
+    return loss.item(), acc
 
 
-def validate(batch_iterator, model, loss_fn, n_valbatch):
+def validate(batch_iterator, model, loss_fn, n_valbatch, clf):
     with torch.no_grad():
         i = 0
+        # null accuracy for regression
+        acc = 0
         while i < n_valbatch:
             print("validation batch index %i" % i)
             batch = next(batch_iterator)
@@ -131,13 +236,20 @@ def validate(batch_iterator, model, loss_fn, n_valbatch):
             model.eval()
             # forward pass
             y_pred = model(X.float())
+            #print("y pred:")
+            #print(y_pred)
+            if clf:
+                # X = X.reshape(X.shape[0],X.shape[1],1)
+                # print(X.shape)
+                y_round = y_pred.argmax(dim=1)
+                acc = binary_acc(y_round.cpu(), Y.flatten().cpu())
+                Y = Y.flatten().long()
             # compute and print loss
             val_loss = loss_fn(y_pred, Y)
             i += 1
-    return val_loss.item()
+    return val_loss.item(), acc
 
-
-def evaluate(batch_iterator, model, n_testbatch):
+def evaluate(batch_iterator, model, loss_fn, n_testbatch, clf):
     preds = []
     groundtruth = []
     with torch.no_grad():
@@ -150,38 +262,55 @@ def evaluate(batch_iterator, model, n_testbatch):
             model.eval()
             # make prediction
             y_pred = model(X.float())
+            # round to nearest integer if doing classification instead of regression
+            if clf:
+                # X = X.reshape(X.shape[0],X.shape[1],1)
+                # print(X.shape)
+                y_pred = y_pred.argmax(dim=1)
             # store predictions and ground truth labels
             preds.append(y_pred.cpu().numpy())
             groundtruth.append(Y.cpu().numpy())
+            test_loss = loss_fn(y_pred, Y)
             i += 1
-    return preds, groundtruth
+    return preds, groundtruth, test_loss
 
 def update_modelpath(modelpath, n_epochs):
     parts = modelpath.split(".")
     new_modelpath = parts[0] + "_" + str(n_epochs) + ".pt"
     return new_modelpath
 
-def main(modelpath, modeltype, n_epochs):
+def main(modelpath, modeltype, n_epochs, n_inputs):
+
+    REDUCTION_FACTOR = 10
+    DROPOUT = 0.2
+
     # if path points to existing model, load it
     if os.path.exists(modelpath):
         print("loading saved model...")
         model = torch.load(modelpath)
     elif modeltype == 1:
-        print("new sve model")
-        model = model1()
+        print("new sve modeln n inputs: %i"%n_inputs)
+        model = sve_model(n_inputs,REDUCTION_FACTOR,DROPOUT)
     elif modeltype == 2:
         print("new one hot model")
-        model = onehot_model()
+        model = onehot_model(n_inputs,REDUCTION_FACTOR,DROPOUT)
     elif modeltype == 3:
-        print("new embedding model")
-        model = embed_model()
+        print("new embedding model, n inputs: %i"%n_inputs)
+        model = embed_model(n_inputs,REDUCTION_FACTOR,DROPOUT)
     elif modeltype == 4:
         print("new effect embedding model")
-        model = embed_model()
+        model = embed_model(n_inputs,REDUCTION_FACTOR,DROPOUT)
+    elif modeltype == 5:
+        print("new embedding classification model")
+        model = embed_model_clf(n_inputs,REDUCTION_FACTOR,DROPOUT)
+    elif modeltype == 6:
+        print("new CNN classification model")
+        model = conv_model_clf()   # define the network   
     else:
-        print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs>")
+        print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
     print(model)
+    data_directory = str(n_inputs) + "_data"
     trainparams = {'batch_size': None,
                    'num_workers': 11}
     valparams = {'batch_size': None,
@@ -192,15 +321,18 @@ def main(modelpath, modeltype, n_epochs):
     n_valbatch = 8
     n_testbatch = 18
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-6
+    learning_rate = 1e-3
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     beta_mask = np.load('beta_mask.npy')
+    clf = False
 
     losses = []
     val_losses = []
+    accs = []
+    val_accs = []
 
     # initialise early stopping
-    tolerance = 10
+    tolerance = 30
     no_improvement = 0
     min_val_loss = np.Inf
 
@@ -209,9 +341,9 @@ def main(modelpath, modeltype, n_epochs):
         print("\n\n\nEpoch = " + str(t))
 
         if modeltype == 1:
-            train_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset('./train/', True), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset('./val/', True), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset('./tst/', True), **tstparams))
+            train_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset(data_directory+'/train/', True), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset(data_directory+'/val/', True), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset(data_directory+'/tst/', True), **tstparams))
         elif modeltype == 2:
             trainparams = {'batch_size': None,
                            'num_workers': 3}
@@ -219,53 +351,83 @@ def main(modelpath, modeltype, n_epochs):
                          'num_workers': 4}
             tstparams = {'batch_size': None,
                          'num_workers': 3}
-            train_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset('./train/', True), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset('./val/', True), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset('./tst/', True), **tstparams))
+            train_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/train/', True), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/val/', True), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
         elif modeltype == 3:
-            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset('./train/', True, 1), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset('./val/', True, 1), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset('./tst/', True, 1), **tstparams))
+            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1, clf=False), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1, clf=False), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1, clf=False), **tstparams))
         elif modeltype == 4:
-            train_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset('./train/', True, 2, beta_mask), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset('./val/', True, 2, beta_mask), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset('./tst/', True, 2, beta_mask), **tstparams))
-
+            train_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/train/', True, 2, beta_mask), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/val/', True, 2, beta_mask), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/tst/', True, 2, beta_mask), **tstparams))
+        elif modeltype == 5 or modeltype == 6:
+            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1, clf=True), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1, clf=True), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1, clf=True), **tstparams))
+            loss_fn = torch.nn.CrossEntropyLoss()
+            clf = True
+        
         print("training...")
         # full training step
-        loss = train(train_iterator, model, loss_fn, optimiser, n_trainbatch)
-        losses.append(loss)
-        print(loss)
+        train_loss, train_acc = train(train_iterator, model, loss_fn, optimiser, n_trainbatch, clf)
+        del(train_iterator)
+        losses.append(float(train_loss))
+        print(train_loss)
+        del(train_loss)
         # validation step
         print("validating...")
-        val_loss = validate(valid_iterator, model, loss_fn, n_valbatch)
-        val_losses.append(val_loss)
+        val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
+        del(valid_iterator)
+        val_losses.append(float(val_loss))
         print(val_loss)
+        del(val_loss)
+        if clf:
+            accs.append(int(train_acc))
+            print("training accuracy: %f"%train_acc)
+            del(train_acc)
+            val_accs.append(int(val_acc))
+            print("validation accuracy: %f"%val_acc)
+            del(val_acc)
         # early stopping
         # check conditions for early stopping
-        if val_loss < min_val_loss:
-            no_improvement = 0
-            min_val_loss = val_loss
-        else:
-            no_improvement += 1
-        if t > 5 and no_improvement == tolerance:
-            print("min validation loss: %f"%min_val_loss)
-            print("no improvement for %i epochs"%no_improvement)
-            print("STOPPING EARLY")
-            break
+        # if val_loss < min_val_loss:
+        #     no_improvement = 0
+        #     min_val_loss = val_loss
+        # else:
+        #     no_improvement += 1
+        # if t > 5 and no_improvement == tolerance:
+        #     print("min validation loss: %f"%min_val_loss)
+        #     print("no improvement for %i epochs"%no_improvement)
+        #     print("STOPPING EARLY")
+        #     break
     t1 = time()
     print("time taken: %f s" % (t1 - t0))
     modelpath = update_modelpath(modelpath, t)
     torch.save(model,modelpath)
     # plot
     plot(losses, val_losses, modelpath.split(".")[0]+".png")
+    if clf:
+        plot_accs(accs, val_accs, modelpath.split(".")[0]+"_accuracy.png")
     # evaluate
-    preds, groundtruths = evaluate(test_iterator,model,n_testbatch)
-    pr = np.concatenate(preds, 1).ravel()
-    gt = np.concatenate(groundtruths, 1).ravel()
-    r = stats.pearsonr(pr, gt)
-    print(r)
+    preds, groundtruths, test_loss = evaluate(test_iterator, model, loss_fn, n_testbatch, clf)
+    pr = np.concatenate(preds).ravel()
+    gt = np.concatenate(groundtruths).ravel()
 
+    if clf:
+        acc = binary_acc(pr,gt)
+        resultstring = "test accuracy: " + str(acc)
+    else:
+        r = stats.pearsonr(pr, gt)
+        resultstring = "pearson r coeff: " + str(r[0])
+    resultstring += (" test loss: "+str(test_loss.item()))
+    print(resultstring)
+    print("plot path: %s"%(modelpath.split(".")[0]+".png"))
+    # save
+    resultfile = modelpath.split(".")[0]+".txt"
+    with open(resultfile, 'w') as f:
+        f.write(resultstring)
 
 if __name__ == "__main__":
-    main(modelpath=sys.argv[1], modeltype = int(sys.argv[2]), n_epochs=int(sys.argv[3]))
+    main(modelpath=sys.argv[1], modeltype = int(sys.argv[2]), n_epochs=int(sys.argv[3]), n_inputs=int(sys.argv[4]))
