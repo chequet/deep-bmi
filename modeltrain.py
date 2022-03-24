@@ -310,7 +310,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
     print(model)
-    data_directory = str(n_inputs) + "_data"
+    data_directory = "new_data_" + str(n_inputs)
     trainparams = {'batch_size': None,
                    'num_workers': 11}
     valparams = {'batch_size': None,
