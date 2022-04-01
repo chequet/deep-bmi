@@ -282,7 +282,7 @@ def update_modelpath(modelpath, n_epochs):
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
     REDUCTION_FACTOR = 10
-    DROPOUT = 0.2
+    DROPOUT = 0
 
     # if path points to existing model, load it
     if os.path.exists(modelpath):
@@ -332,7 +332,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     val_accs = []
 
     # initialise early stopping
-    tolerance = 30
+    tolerance = 50
     no_improvement = 0
     min_val_loss = np.Inf
 
