@@ -335,7 +335,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             train_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/train/', True), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/val/', True), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
-        elif modeltype == 3:
+        elif modeltype == 3 or modeltype == 7:
             train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1), **tstparams))
