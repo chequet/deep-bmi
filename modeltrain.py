@@ -259,7 +259,7 @@ def update_modelpath(modelpath, n_epochs):
 
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
-    REDUCTION_FACTOR = 10
+    REDUCTION_FACTOR = 5
     DROPOUT = 0
 
     # if path points to existing model, load it
