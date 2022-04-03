@@ -283,7 +283,10 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         model = embed_model_clf(n_inputs,REDUCTION_FACTOR,DROPOUT)
     elif modeltype == 6:
         print("new CNN classification model")
-        model = conv_model_clf()   # define the network   
+        model = conv_model_clf()   # define the network
+    elif modeltype == 7:
+        print("new deeper embedding model")
+        model = embed_model2()   # define the network
     else:
         print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
