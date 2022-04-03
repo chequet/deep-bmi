@@ -76,6 +76,34 @@ def embed_model(n_inputs, reduction_factor, dropout):
     )
     return model
 
+def embed_model2(n_inputs, reduction_factor, dropout):
+    n_features = n_inputs*2
+    n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
+    n_out2 = math.ceil(n_out1/reduction_factor)
+    n_out3 = math.ceil(n_out2/reduction_factor)
+    n_out4 = math.ceil(n_out3/reduction_factor)
+    n_out5 = math.ceil(n_out4/reduction_factor)
+
+    model = torch.nn.Sequential(
+        torch.nn.Linear(n_features, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out3),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out3, n_out4),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out4, n_out5),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out5, 1),
+        )
+    return model
+
 def embed_model_clf(n_inputs, reduction_factor, dropout):
     n_features = n_inputs*2
     n_features = n_inputs*2
@@ -110,56 +138,6 @@ def conv_model_clf():
         torch.nn.Flatten(),
         torch.nn.Dropout(0.3),
         torch.nn.LeakyReLU(),
-        torch.nn.Linear(10, 2)
-    )
-    return model
-
-def embed_model2():
-    n_features = 100000
-    model = torch.nn.Sequential(
-        torch.nn.Linear(n_features, 5000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(5000, 5000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(5000, 1000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(1000, 1000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(1000, 100),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(100, 100),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(100, 10),
-        torch.nn.Dropout(0.4),
-        torch.nn.ELU(),
-        torch.nn.Linear(10, 1)
-    )
-    return model 
-
-def embed_model2_clf():
-    n_features = 100000
-    model = torch.nn.Sequential(
-        torch.nn.Linear(n_features, 5000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ReLU(),
-        torch.nn.Linear(5000, 1000),
-        torch.nn.Dropout(0.4),
-        torch.nn.ReLU(),
-        torch.nn.Linear(1000, 500),
-        torch.nn.Dropout(0.4),
-        torch.nn.ReLU(),
-        torch.nn.Linear(500, 100),
-        torch.nn.Dropout(0.4),
-        torch.nn.ReLU(),
-        torch.nn.Linear(100, 10),
-        torch.nn.Dropout(0.4),
-        torch.nn.ReLU(),
         torch.nn.Linear(10, 2)
     )
     return model
