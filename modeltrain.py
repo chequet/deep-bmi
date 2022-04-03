@@ -286,7 +286,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         model = conv_model_clf()   # define the network
     elif modeltype == 7:
         print("new deeper embedding model")
-        model = embed_model2()   # define the network
+        model = embed_model2(n_inputs,REDUCTION_FACTOR,DROPOUT)   # define the network
     else:
         print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
