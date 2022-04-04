@@ -259,8 +259,8 @@ def update_modelpath(modelpath, n_epochs):
 
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
-    REDUCTION_FACTOR = 5
-    DROPOUT = 0.2
+    REDUCTION_FACTOR = 10
+    DROPOUT = 0.1
 
     # if path points to existing model, load it
     if os.path.exists(modelpath):
@@ -302,7 +302,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     n_valbatch = 8
     n_testbatch = 18
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-3
+    learning_rate = 1e-2
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     #beta_mask = np.load('beta_mask.npy')
     clf = False
