@@ -24,3 +24,4 @@ for key in gene_dict.keys():
             mask[i] = np.array([0,0])
         mask = mask.ravel()
         gene_mask_dict[key] = mask
+pickle.dump(gene_mask_dict,open("gene_mask_dict.pkl","wb"))
