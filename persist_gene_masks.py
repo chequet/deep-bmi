@@ -4,8 +4,8 @@ import pickle
 N_SNPs = 10000
 # make dictionary of gene names to SNP masks
 gene_mask_dict = {}
-rsid_10k = np.load('10k_rsid.npy')
-gene_dict = pickle.load(open('gene_rsid_dict.pkl', 'rb'))
+rsid_10k = np.load('../10k_rsid.npy')
+gene_dict = pickle.load(open('../gene_rsid_dict.pkl', 'rb'))
 for key in gene_dict.keys():
     print(key)
     gene = gene_dict[key]
