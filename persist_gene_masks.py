@@ -21,5 +21,5 @@ for key in gene_dict.keys():
     print("populating mask...")
     for i in gene_inds:
         mask[i] = np.array([0,0])
-    mask = np.flatten(mask)
+    mask = mask.ravel()
     gene_mask_dict[key] = mask
