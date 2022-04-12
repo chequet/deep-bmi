@@ -302,7 +302,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     n_valbatch = 8
     n_testbatch = 18
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-2
+    learning_rate = 1e-4
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     #beta_mask = np.load('beta_mask.npy')
     clf = False
