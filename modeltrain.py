@@ -302,8 +302,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     n_valbatch = 8
     n_testbatch = 18
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-4
+    learning_rate = 1e-2
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    scheduler = optim.ExponentialLR(optimiser, gamma=0.9)
     #beta_mask = np.load('beta_mask.npy')
     clf = False
 
@@ -357,6 +358,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         losses.append(float(train_loss))
         print(train_loss)
         del(train_loss)
+        # update LR
+        scheduler.step()
+        print(optimiser.state_dict())
         # validation step
         print("validating...")
         val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
