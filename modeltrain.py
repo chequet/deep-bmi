@@ -360,7 +360,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         del(train_loss)
         # update LR
         scheduler.step()
-        print("lr: %f" %optimiser.state_dict()['param_groups']['lr'])
+        state = optimiser.state_dict()['param_groups']
+        lr = state['lr']
+        print("lr: %f" %lr)
         # validation step
         print("validating...")
         val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
