@@ -304,7 +304,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-2
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
-    scheduler = optim.ExponentialLR(optimiser, gamma=0.9)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9)
     #beta_mask = np.load('beta_mask.npy')
     clf = False
 
