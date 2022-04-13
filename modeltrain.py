@@ -360,7 +360,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         del(train_loss)
         # update LR
         scheduler.step()
-        state = optimiser.state_dict()['param_groups']
+        state = optimiser.state_dict()['param_groups'][0]
         lr = state['lr']
         print("lr: %f" %lr)
         # validation step
