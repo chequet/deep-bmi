@@ -30,5 +30,7 @@ class EmbedNetwork(nn.Module):
 
     def forward(self, x):
         #x = self.flatten(x)
-        logits = self.model(x)
-        return logits
+        residual = x
+        out = self.model(x)
+        out += x
+        return out
