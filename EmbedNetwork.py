@@ -14,7 +14,6 @@ class EmbedNetwork(nn.Module):
         # (reduction_factor**2))
         n_out2 = math.ceil(n_out1 / reduction_factor)
         n_out3 = math.ceil(n_out2 / reduction_factor)
-        #self.flatten = nn.Flatten()
         self.model = nn.Sequential(
             torch.nn.Linear(n_features, n_out1),
             torch.nn.Dropout(dropout),
@@ -27,10 +26,10 @@ class EmbedNetwork(nn.Module):
             torch.nn.LeakyReLU(),
             torch.nn.Linear(n_out3, 1)
         )
+        self.downsample = torch.nn.Linear(n_features,1)
 
     def forward(self, x):
-        #x = self.flatten(x)
-        residual = x
+        residual = self.downsample(x)
         out = self.model(x)
-        out += x
+        out += residual
         return out
