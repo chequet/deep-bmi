@@ -338,7 +338,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
         elif modeltype == 3 or modeltype == 7:
             train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1), **trainparams))
-            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1), **valparams))
+            #valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1), **tstparams))
         elif modeltype == 4:
             train_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/train/', True, 2, beta_mask), **trainparams))
@@ -354,7 +354,6 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("training...")
         # full training step
         train_loss, train_acc = train(train_iterator, model, loss_fn, optimiser, n_trainbatch, clf)
-        del(train_iterator)
         losses.append(float(train_loss))
         print(train_loss)
         del(train_loss)
@@ -365,8 +364,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("lr: %f" %lr)
         # validation step
         print("validating...")
-        val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
-        del(valid_iterator)
+        val_loss, val_acc = validate(train_iterator, model, loss_fn, n_valbatch, clf)
         val_losses.append(float(val_loss))
         print(val_loss)
         del(val_loss)
