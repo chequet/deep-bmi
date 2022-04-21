@@ -257,6 +257,14 @@ def update_modelpath(modelpath, n_epochs):
     new_modelpath = parts[0] + "_" + str(n_epochs) + ".pt"
     return new_modelpath
 
+def train_val_split(train_dir, proportion=0.7):
+    files = os.listdir(train_dir)
+    np.random.shuffle(files)
+    n_train = int(np.ceil(len(train_dir)*proportion))
+    trainfiles = files[:n_train]
+    valfiles = files[n_train:]
+    return trainfiles, valfiles
+
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
     REDUCTION_FACTOR = 10
@@ -313,6 +321,10 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     accs = []
     val_accs = []
 
+    # initialise training and validation sets
+    train_files, val_files = train_val_split(data_directory+'/train/')
+    test_files = os.listdir(data_directory+'/tst/')
+
     # initialise early stopping
     tolerance = 50
     no_improvement = 0
@@ -337,9 +349,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/val/', True), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
         elif modeltype == 3 or modeltype == 7:
-            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', True, 1), **trainparams))
-            #valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/val/', True, 1), **valparams))
-            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', True, 1), **tstparams))
+            train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(train_files, True, 1), **trainparams))
+            valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(val_files, True, 1), **valparams))
+            test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(test_files, True, 1), **tstparams))
         elif modeltype == 4:
             train_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/train/', True, 2, beta_mask), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(EffectEmbeddingDataset(data_directory+'/val/', True, 2, beta_mask), **valparams))
@@ -364,7 +376,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("lr: %f" %lr)
         # validation step
         print("validating...")
-        val_loss, val_acc = validate(train_iterator, model, loss_fn, n_valbatch, clf)
+        val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
         val_losses.append(float(val_loss))
         print(val_loss)
         del(val_loss)
