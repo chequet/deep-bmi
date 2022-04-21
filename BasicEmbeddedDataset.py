@@ -4,7 +4,7 @@ import math
 import os
 
 class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
-    """ Implementation of generating data from hail data structures"""
+    """ Implementation of generating projection encoded data on the fly from numpy arrays"""
 
     def __init__(self, filepath, files, shuffle, method):
         self.filepath = filepath
