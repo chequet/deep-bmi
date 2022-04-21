@@ -260,7 +260,7 @@ def update_modelpath(modelpath, n_epochs):
 def train_val_split(train_dir, proportion=0.7):
     files = os.listdir(train_dir)
     np.random.shuffle(files)
-    n_train = int(np.ceil(len(train_dir)*proportion))
+    n_train = int(np.ceil(len(files)*proportion))
     trainfiles = files[:n_train]
     valfiles = files[n_train:]
     return trainfiles, valfiles
@@ -299,16 +299,21 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
     print(model)
+
+    # initialise training and validation sets
     data_directory = "../new_data_" + str(n_inputs)
+    train_files, val_files = train_val_split(data_directory + '/train/')
+    test_files = os.listdir(data_directory + '/tst/')
+
     trainparams = {'batch_size': None,
                    'num_workers': 11}
     valparams = {'batch_size': None,
                  'num_workers': 4}
     tstparams = {'batch_size': None,
                  'num_workers': 6}
-    n_trainbatch = 33
-    n_valbatch = 8
-    n_testbatch = 18
+    n_trainbatch = len(train_files)
+    n_valbatch = len(val_files)
+    n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-2
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
@@ -321,9 +326,6 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     accs = []
     val_accs = []
 
-    # initialise training and validation sets
-    train_files, val_files = train_val_split(data_directory+'/train/')
-    test_files = os.listdir(data_directory+'/tst/')
 
     # initialise early stopping
     tolerance = 50
