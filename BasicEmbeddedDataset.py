@@ -52,8 +52,8 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         # get batch at specified index
         batch = self.files[index]
         #print("getting batch %s"%batch)
-        filename = self.filepath + batch
-        load = np.load(filename)
+        # filename = self.filepath + batch
+        load = np.load(batch)
         # load and convert to list
         X = load['x']
         Y = load['y'].astype('float32')
