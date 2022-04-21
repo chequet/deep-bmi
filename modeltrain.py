@@ -257,10 +257,13 @@ def update_modelpath(modelpath, n_epochs):
     new_modelpath = parts[0] + "_" + str(n_epochs) + ".pt"
     return new_modelpath
 
-def train_val_split(train_dir, proportion=0.7):
+def train_val_split(train_dir, n_train):
+    # for now let's just hard code this to do a nice round number of training samples
+    # that divides easily among workers
     files = os.listdir(train_dir)
     np.random.shuffle(files)
-    n_train = int(np.ceil(len(files)*proportion))
+    #n_train = int(np.ceil(len(files)*proportion))
+    n_train = 99
     trainfiles = files[:n_train]
     valfiles = files[n_train:]
     return trainfiles, valfiles
