@@ -6,8 +6,8 @@ import os
 class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
     """ Implementation of generating data from hail data structures"""
 
-    def __init__(self, files, shuffle, method):
-        # self.filepath = filepath
+    def __init__(self, filepath, files, shuffle, method):
+        self.filepath = filepath
         self.shuffle = shuffle
         # self.files = os.listdir(filepath)
         self.files = files
@@ -52,8 +52,8 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         # get batch at specified index
         batch = self.files[index]
         #print("getting batch %s"%batch)
-        # filename = self.filepath + batch
-        load = np.load(batch)
+        filename = self.filepath + batch
+        load = np.load(filename)
         # load and convert to list
         X = load['x']
         Y = load['y'].astype('float32')
