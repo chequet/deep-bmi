@@ -58,7 +58,7 @@ def onehot_model(n_inputs, reduction_factor, dropout):
 
 def embed_model(n_inputs, reduction_factor, dropout):
     n_features = n_inputs*2
-    n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
+    n_out1 = math.ceil(n_features/2)#(reduction_factor**2))
     n_out2 = math.ceil(n_out1/reduction_factor)
     n_out3 = math.ceil(n_out2/reduction_factor)
 
