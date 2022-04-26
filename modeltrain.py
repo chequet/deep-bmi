@@ -412,23 +412,23 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     if clf:
         plot_accs(accs, val_accs, modelpath.split(".")[0]+"_accuracy.png")
     # evaluate
-    preds, groundtruths, test_loss = evaluate(test_iterator, model, loss_fn, n_testbatch, clf)
-    pr = np.concatenate(preds).ravel()
-    gt = np.concatenate(groundtruths).ravel()
-
-    if clf:
-        acc = binary_acc(pr,gt)
-        resultstring = "test accuracy: " + str(acc)
-    else:
-        r = stats.pearsonr(pr, gt)
-        resultstring = "pearson r coeff: " + str(r[0])
-    resultstring += (" test loss: "+str(test_loss.item()))
-    print(resultstring)
+    # preds, groundtruths, test_loss = evaluate(test_iterator, model, loss_fn, n_testbatch, clf)
+    # pr = np.concatenate(preds).ravel()
+    # gt = np.concatenate(groundtruths).ravel()
+    #
+    # if clf:
+    #     acc = binary_acc(pr,gt)
+    #     resultstring = "test accuracy: " + str(acc)
+    # else:
+    #     r = stats.pearsonr(pr, gt)
+    #     resultstring = "pearson r coeff: " + str(r[0])
+    # resultstring += (" test loss: "+str(test_loss.item()))
+    # print(resultstring)
     print("plot path: %s"%(modelpath.split(".")[0]+".png"))
     # save
-    resultfile = modelpath.split(".")[0]+".txt"
-    with open(resultfile, 'w') as f:
-        f.write(resultstring)
+    # resultfile = modelpath.split(".")[0]+".txt"
+    # with open(resultfile, 'w') as f:
+    #     f.write(resultstring)
 
 if __name__ == "__main__":
     main(modelpath=sys.argv[1], modeltype = int(sys.argv[2]), n_epochs=int(sys.argv[3]), n_inputs=int(sys.argv[4]))
