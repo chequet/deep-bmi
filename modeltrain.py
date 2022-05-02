@@ -180,7 +180,7 @@ def train(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
     i = 0
     acc = 0
     while i < n_trainbatch:
-        print("batch index %i" % i)
+        print("batch index %i" % i, end='\r')
         batch = next(batch_iterator)
         X = batch[0].to(device)
         # if clf:
@@ -213,7 +213,7 @@ def validate(batch_iterator, model, loss_fn, n_valbatch, clf):
         # null accuracy for regression
         acc = 0
         while i < n_valbatch:
-            print("validation batch index %i" % i)
+            print("validation batch index %i" % i, end='\r')
             batch = next(batch_iterator)
             X = batch[0].to(device)
             Y = batch[1].to(device)
@@ -323,7 +323,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     n_valbatch = len(val_files)
     n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-2
+    learning_rate = 1e-3
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     #scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9)
     #beta_mask = np.load('beta_mask.npy')
