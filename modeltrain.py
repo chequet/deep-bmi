@@ -63,6 +63,7 @@ def embed_model(n_inputs, reduction_factor, dropout):
     n_out1 = math.ceil(n_features/2)#(reduction_factor**2))
     n_out2 = math.ceil(n_out1/reduction_factor)
     n_out3 = math.ceil(n_out2/reduction_factor)
+    n_out4 = math.ceil(n_out3/reduction_factor)
 
     model = torch.nn.Sequential(
         torch.nn.Linear(n_features, n_out1),
@@ -74,7 +75,10 @@ def embed_model(n_inputs, reduction_factor, dropout):
         torch.nn.Linear(n_out2, n_out3),
         torch.nn.Dropout(dropout),
         torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out3, 1)
+        torch.nn.Linear(n_out3, n_out4),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out4,1)
     )
     return model
 
