@@ -276,7 +276,7 @@ def train_val_split(train_dir, n_train=99):
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
     REDUCTION_FACTOR = 10
-    DROPOUT = 0.1
+    DROPOUT = 0
 
     # if path points to existing model, load it
     if os.path.exists(modelpath):
