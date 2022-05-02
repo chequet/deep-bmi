@@ -67,13 +67,13 @@ def embed_model(n_inputs, reduction_factor, dropout):
     model = torch.nn.Sequential(
         torch.nn.Linear(n_features, n_out1),
         torch.nn.Dropout(dropout),
-        torch.nn.Sigmoid(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(n_out1, n_out2),
         torch.nn.Dropout(dropout),
-        torch.nn.Sigmoid(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(n_out2, n_out3),
         torch.nn.Dropout(dropout),
-        torch.nn.Sigmoid(),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(n_out3, 1)
     )
     return model
