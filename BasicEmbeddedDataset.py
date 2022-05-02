@@ -18,7 +18,7 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         self.end = len(self.files) # and ending at the end
         self.counter = 0
         self.method = method
-        print("embedding method %i" %self.method)
+        #print("embedding method %i" %self.method)
         #self.lock = threading.Lock()   #Set self.lock
 
     def __len__(self):

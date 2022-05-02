@@ -84,7 +84,7 @@ def embed_model(n_inputs, reduction_factor, dropout):
 
 def embed_model2(n_inputs, reduction_factor, dropout):
     n_features = n_inputs*2
-    n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
+    n_out1 = math.ceil(n_features/2)#(reduction_factor**2))
     n_out2 = math.ceil(n_out1/reduction_factor)
     n_out3 = math.ceil(n_out2/reduction_factor)
     n_out4 = math.ceil(n_out3/reduction_factor)
@@ -94,7 +94,25 @@ def embed_model2(n_inputs, reduction_factor, dropout):
         torch.nn.Linear(n_features, n_out1),
         torch.nn.Dropout(dropout),
         torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out1, n_out1),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
         torch.nn.Linear(n_out1, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out2),
+        torch.nn.Dropout(dropout),
+        torch.nn.LeakyReLU(),
+        torch.nn.Linear(n_out2, n_out2),
         torch.nn.Dropout(dropout),
         torch.nn.LeakyReLU(),
         torch.nn.Linear(n_out2, n_out3),
@@ -103,10 +121,7 @@ def embed_model2(n_inputs, reduction_factor, dropout):
         torch.nn.Linear(n_out3, n_out4),
         torch.nn.Dropout(dropout),
         torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out4, n_out5),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out5, 1),
+        torch.nn.Linear(n_out4, 1),
         )
     return model
 
