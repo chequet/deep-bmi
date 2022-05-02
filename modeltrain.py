@@ -11,12 +11,14 @@ from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 from EffectEmbeddingDataset import *
 from Net4 import *
+from torch.utils.tensorboard import SummaryWriter
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 print(device)
 
-# print("\n\nSMALL BATCH DEMO\n\n")
+# initialise summary writer for tensorboard
+writer = SummaryWriter()
 
 def sve_model(n_inputs, reduction_factor, dropout):
     n_features = n_inputs
@@ -371,8 +373,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         # full training step
         train_loss, train_acc = train(train_iterator, model, loss_fn, optimiser, n_trainbatch, clf)
         losses.append(float(train_loss))
+        # log training loss w tensorboard
+        writer.add_scalar("Loss/train", train_loss, t)
         print(train_loss)
-        del(train_loss)
         # update LR
         #scheduler.step()
         state = optimiser.state_dict()['param_groups'][0]
@@ -382,8 +385,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         print("validating...")
         val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, clf)
         val_losses.append(float(val_loss))
+        # log training loss w tensorboard
+        writer.add_scalar("Loss/val", val_loss, t)
         print(val_loss)
-        del(val_loss)
         if clf:
             accs.append(int(train_acc))
             print("training accuracy: %f"%train_acc)
@@ -425,6 +429,8 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     # resultstring += (" test loss: "+str(test_loss.item()))
     # print(resultstring)
     print("plot path: %s"%(modelpath.split(".")[0]+".png"))
+    writer.flush()
+    writer.close()
     # save
     # resultfile = modelpath.split(".")[0]+".txt"
     # with open(resultfile, 'w') as f:
