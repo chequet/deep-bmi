@@ -9,10 +9,7 @@ from hail.utils import new_local_temp_file, local_path_uri
 from functools import partial
 import hail as hl
 import hailtop
-import pickle
 import pandas as pd
-import numpy as np
-import pickle
 from MyIterableDataset import *
 
 
@@ -96,7 +93,8 @@ def main(n_snps):
     chrs = import_and_index(numbers)
     full_mt = combine(chrs)
     # read in samples
-    samples = np.load('../qc_samples2.npy').tolist()
+    # try OLD SAMPLES to see what happens
+    samples = np.load('../qc_samples.npy').tolist()
     # filter mt for samples
     sample_set = hl.literal(samples)
     full_mt = full_mt.filter_cols(sample_set.contains(full_mt.s))
