@@ -355,7 +355,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     # initialise early stopping
     tolerance = 50
     no_improvement = 0
-    min_val_loss = np.Inf
+    prev_val_loss = 0
 
     t0 = time()
     for t in range(n_epochs):
@@ -418,16 +418,16 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             del(val_acc)
         # early stopping
         # check conditions for early stopping
-        # if val_loss < min_val_loss:
-        #     no_improvement = 0
-        #     min_val_loss = val_loss
-        # else:
-        #     no_improvement += 1
-        # if t > 5 and no_improvement == tolerance:
-        #     print("min validation loss: %f"%min_val_loss)
-        #     print("no improvement for %i epochs"%no_improvement)
-        #     print("STOPPING EARLY")
-        #     break
+        if val_loss - prev_val_loss > 0.05:
+            no_improvement += 1
+        else:
+            no_improvement = 0
+        prev_val_loss = val_loss
+        if t > 5 and no_improvement == tolerance:
+            print("min validation loss: %f"%min_val_loss)
+            print("loss increasing for %i epochs"%no_improvement)
+            print("STOPPING EARLY")
+            break
     t1 = time()
     print("time taken: %f s" % (t1 - t0))
     modelpath = update_modelpath(modelpath, t)
