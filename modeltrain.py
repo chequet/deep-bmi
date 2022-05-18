@@ -324,7 +324,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     print(model)
 
     # initialise training and validation sets
-    data_directory = "../new_data_" + str(n_inputs)
+    data_directory = "../old_data/" + str(n_inputs) + "_data/"
     train_files, val_files = train_val_split(data_directory + '/train/')
     test_files = os.listdir(data_directory + '/tst/')
 
