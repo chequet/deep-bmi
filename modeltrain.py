@@ -335,7 +335,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     tstparams = {'batch_size': None,
                  'num_workers': 6}
     n_trainbatch = len(train_files)
+    print("n train: "+ n_trainbatch)
     n_valbatch = len(val_files)
+    print("n val: "+n_valbatch)
     n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-3
