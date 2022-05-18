@@ -278,7 +278,7 @@ def update_modelpath(modelpath, n_epochs):
     new_modelpath = parts[0] + "_" + str(n_epochs) + ".pt"
     return new_modelpath
 
-def train_val_split(train_dir, n_train=99):
+def train_val_split(train_dir, n_train=88):
     # for now let's just hard code this to do a nice round number of training samples
     # that divides easily among workers
     files = os.listdir(train_dir)
