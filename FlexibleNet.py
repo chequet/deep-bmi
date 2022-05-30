@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class FlexibleNet(nn.Module):
-    def __init__(self, layer_list, dropout):
+    def __init__(self, layer_list, dropout, activation):
         super(FlexibleNet, self).__init__()
         # initialise architecture using provided layers list
         self.layers = nn.ModuleList([])
@@ -13,9 +13,16 @@ class FlexibleNet(nn.Module):
             # add dropout after all but final layer
             if i < len(layer_list)-2:
                 self.layers.append(nn.Dropout(dropout))
+                # add activation function depending on what was chosen
+                if activation == 'ELU':
+                    self.layers.append(nn.ELU())
+                elif activation == 'ReLU':
+                    self.layers.append(nn.ReLU())
+                elif activation == 'LeakyReLU':
+                    self.layers.append(nn.LeakyReLU())
 
     def forward(self, x):
         for layer in self.layers[:-1]:
-            x = F.relu(layer(x))
-        return self.layers[-1](x)
+            x = layer(x)
+        return x
 

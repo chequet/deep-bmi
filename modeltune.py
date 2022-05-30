@@ -21,17 +21,16 @@ from modeltrain import train_val_split
 def cross_validation(data, k=5):
     # leave for now
 
-def load_data(data_directory, type=3):
-    train_files, val_files = train_val_split(data_directory + '/train/')
-    data_directory = "../old_data/" + str(n_inputs) + "_data/"
+def get_dataloaders(data_directory, type=3):
     train_files, val_files = train_val_split(data_directory + '/train/',n_train=100)
-
     trainparams = {'batch_size': None,
                    'num_workers': 4}
     valparams = {'batch_size': None,
                  'num_workers': 2}
     if type == 1:
+        # code for SVE
     elif type ==2:
+        # code for one hot
     elif type == 3:
         train_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', train_files, True, 1),
@@ -40,5 +39,10 @@ def load_data(data_directory, type=3):
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', val_files, True, 1),
                                         **valparams))
 
+def main(n_epochs, n_inputs, encoding):
+    data_directory = "../old_data/" + str(n_inputs) + "_data/"
+    train_iterator, valid_iterator = get_dataloaders(data_directory,type=encoding)
 
 
+if __name__ == "__main__":
+    main(n_epochs=int(sys.argv[1]), n_inputs=int(sys.argv[2]), encoding=int(sys.argv[3]))
