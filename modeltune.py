@@ -23,9 +23,22 @@ def cross_validation(data, k=5):
 
 def load_data(data_directory, type=3):
     train_files, val_files = train_val_split(data_directory + '/train/')
+    data_directory = "../old_data/" + str(n_inputs) + "_data/"
+    train_files, val_files = train_val_split(data_directory + '/train/',n_train=100)
+
+    trainparams = {'batch_size': None,
+                   'num_workers': 4}
+    valparams = {'batch_size': None,
+                 'num_workers': 2}
     if type == 1:
     elif type ==2:
     elif type == 3:
+        train_iterator = iter(
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', train_files, True, 1),
+                                        **trainparams))
+        valid_iterator = iter(
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', val_files, True, 1),
+                                        **valparams))
 
 
 
