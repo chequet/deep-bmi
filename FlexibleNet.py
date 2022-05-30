@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class FlexibleNet(nn.module):
+class FlexibleNet(nn.Module):
     def __init__(self, layer_list, dropout):
         super(FlexibleNet, self).__init__()
         # initialise architecture using provided layers list
