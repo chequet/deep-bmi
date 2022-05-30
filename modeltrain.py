@@ -278,7 +278,7 @@ def update_modelpath(modelpath, n_epochs):
     new_modelpath = parts[0] + "_" + str(n_epochs) + ".pt"
     return new_modelpath
 
-def train_val_split(train_dir, n_train=99):
+def train_val_split(train_dir, n_train=88):
     # for now let's just hard code this to do a nice round number of training samples
     # that divides easily among workers
     files = os.listdir(train_dir)
@@ -291,7 +291,7 @@ def train_val_split(train_dir, n_train=99):
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
     REDUCTION_FACTOR = 10
-    DROPOUT = 0
+    DROPOUT = 0.2
 
     # if path points to existing model, load it
     if os.path.exists(modelpath):
@@ -324,7 +324,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     print(model)
 
     # initialise training and validation sets
-    data_directory = "../new_data_" + str(n_inputs)
+    data_directory = "../old_data/" + str(n_inputs) + "_data/"
     train_files, val_files = train_val_split(data_directory + '/train/')
     test_files = os.listdir(data_directory + '/tst/')
 
@@ -335,7 +335,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     tstparams = {'batch_size': None,
                  'num_workers': 6}
     n_trainbatch = len(train_files)
+    print("n train: "+ str(n_trainbatch))
     n_valbatch = len(val_files)
+    print("n val: "+ str(n_valbatch))
     n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-3
@@ -353,7 +355,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     # initialise early stopping
     tolerance = 50
     no_improvement = 0
-    min_val_loss = np.Inf
+    prev_val_loss = 0
 
     t0 = time()
     for t in range(n_epochs):
@@ -416,16 +418,16 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             del(val_acc)
         # early stopping
         # check conditions for early stopping
-        # if val_loss < min_val_loss:
-        #     no_improvement = 0
-        #     min_val_loss = val_loss
-        # else:
-        #     no_improvement += 1
-        # if t > 5 and no_improvement == tolerance:
-        #     print("min validation loss: %f"%min_val_loss)
-        #     print("no improvement for %i epochs"%no_improvement)
-        #     print("STOPPING EARLY")
-        #     break
+        if val_loss - prev_val_loss > 0.05:
+            no_improvement += 1
+        else:
+            no_improvement = 0
+        prev_val_loss = val_loss
+        if t > 5 and no_improvement == tolerance:
+            print("min validation loss: %f"%min_val_loss)
+            print("loss increasing for %i epochs"%no_improvement)
+            print("STOPPING EARLY")
+            break
     t1 = time()
     print("time taken: %f s" % (t1 - t0))
     modelpath = update_modelpath(modelpath, t)
