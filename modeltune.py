@@ -17,6 +17,10 @@ from BasicEmbeddedDataset import *
 from EffectEmbeddingDataset import *
 import os, re, sys
 from modeltrain import train_val_split
+import FlexibleNet
+
+N_INPUTS = 1000
+N_EPOCHS = 200
 
 def cross_validation(data, k=5):
     # leave for now
@@ -38,11 +42,28 @@ def get_dataloaders(data_directory, type=3):
         valid_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', val_files, True, 1),
                                         **valparams))
+    return train_iterator, valid_iterator
 
-def main(n_epochs, n_inputs, encoding):
-    data_directory = "../old_data/" + str(n_inputs) + "_data/"
-    train_iterator, valid_iterator = get_dataloaders(data_directory,type=encoding)
+def train(config, checkpoint_dir=None):
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if use_cuda else "cpu")
+    print(device)
+    model = FlexibleNet(config['arch'],config['dropout'],config['activation'])
+    loss_fn = torch.nn.MSELoss(reduction='mean')
+    learning_rate = config['lr']
+    # choose optimiser based on config
+    if config['optim'] == 'adam':
+        optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    # TODO add other optimiser options!
+    # The `checkpoint_dir` parameter gets passed by Ray Tune when a checkpoint
+    # should be restored.
+    if checkpoint_dir:
+        checkpoint = os.path.join(checkpoint_dir, "checkpoint")
+        model_state, optimizer_state = torch.load(checkpoint)
+        model.load_state_dict(model_state)
+        optimiser.load_state_dict(optimizer_state)
+    data_directory = "../old_data/" + str(N_INPUTS) + "_data/"
+    train_iterator, valid_iterator = get_dataloaders(data_directory, type=config['enc'])
 
 
-if __name__ == "__main__":
-    main(n_epochs=int(sys.argv[1]), n_inputs=int(sys.argv[2]), encoding=int(sys.argv[3]))
+
