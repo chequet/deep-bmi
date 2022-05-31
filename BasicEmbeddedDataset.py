@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import math
 import os
+from filelock import FileLock
 
 class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
     """ Implementation of generating projection encoded data on the fly from numpy arrays"""
@@ -53,13 +54,14 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         batch = self.files[index]
         #print("getting batch %s"%batch)
         filename = self.filepath + batch
-        #print("filename: %s"%filename)
-        load = np.load(filename)
-        # load and convert to list
-        X = load['x']
-        Y = load['y'].astype('float32')
-        # in-place edit batches to one-hot encoding, convert back to array of arrays
-        X = np.array([self.__basic_embedding(batch) for batch in X])
+        with FileLock(os.path.expanduser(filename.lock)):
+            #print("filename: %s"%filename)
+            load = np.load(filename)
+            # load and convert to list
+            X = load['x']
+            Y = load['y'].astype('float32')
+            # in-place edit batches to one-hot encoding, convert back to array of arrays
+            X = np.array([self.__basic_embedding(batch) for batch in X])
         return X, Y
 
     def __iter__(self):
