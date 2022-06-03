@@ -21,7 +21,7 @@ import FlexibleNet
 N_INPUTS = 1000
 N_EPOCHS = 10
 
-def cross_validation(data, k=5):
+# def cross_validation(data, k=5):
     # leave for now
 
 def get_dataloaders(data_directory, type=3):
