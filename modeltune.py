@@ -32,8 +32,10 @@ def get_dataloaders(data_directory, type=3):
                  'num_workers': 2}
     #TODO add code for other encodings
     if type == 1:
+        pass
         # code for SVE
     elif type ==2:
+        pass
         # code for one hot
     elif type == 3:
         train_iterator = iter(
