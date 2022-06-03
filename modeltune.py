@@ -19,7 +19,7 @@ from modeltrain import train_val_split
 import FlexibleNet
 
 N_INPUTS = 1000
-N_EPOCHS = 200
+N_EPOCHS = 100
 
 def cross_validation(data, k=5):
     # leave for now
@@ -66,33 +66,63 @@ def train(config, checkpoint_dir=None):
     data_directory = "../old_data/" + str(N_INPUTS) + "_data/"
     train_iterator, valid_iterator = get_dataloaders(data_directory, type=config['enc'])
     # train
-    i = 0
-    acc = 0
-    while i < n_trainbatch:
-        print("batch index %i" % i, end='\r')
-        batch = next(batch_iterator)
-        X = batch[0].to(device)
-        # if clf:
-            # X = X.reshape(X.shape[0],X.shape[1],1)
-            # print(X)
-        Y = batch[1].to(device)
-        model.train()
-        #X = X.short()
-        # forward pass
-        y_pred = model(X.float())
-        if clf:
-            y_round = y_pred.argmax(dim=1)
-            acc = binary_acc(y_round.cpu(), Y.flatten().cpu())
-            Y = Y.flatten().long()
-        # compute and print loss
-        loss = loss_fn(y_pred, Y)
-        # Zero the gradients before running the backward pass.
-        optimiser.zero_grad()
-        # backward pass
-        loss.backward()
-        # update weights with gradient descent
-        optimiser.step()
-        i += 1
+    for epoch in range(N_EPOCHS):
+        # TRAIN
+        i = 0
+        while i < n_trainbatch:
+            print("batch index %i" % i, end='\r')
+            batch = next(batch_iterator)
+            X = batch[0].to(device)
+            Y = batch[1].to(device)
+            # Zero the gradients
+            optimiser.zero_grad()
+            model.train()
+            # forward pass
+            y_pred = model(X.float())
+            # compute and print loss
+            loss = loss_fn(y_pred, Y)
+            # backward pass
+            loss.backward()
+            # update weights with gradient descent
+            optimiser.step()
+            i += 1
+        # VALIDATE
+        with torch.no_grad():
+            i = 0
+            while i < n_valbatch:
+                print("validation batch index %i" % i, end='\r')
+                batch = next(batch_iterator)
+                X = batch[0].to(device)
+                Y = batch[1].to(device)
+                model.eval()
+                # forward pass
+                y_pred = model(X.float())
+                # compute and print loss
+                val_loss = loss_fn(y_pred, Y)
+                i += 1
+        # Save a Ray Tune checkpoint & report score to Tune
+        with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+            path = os.path.join(checkpoint_dir, "checkpoint")
+            torch.save(
+                (net.state_dict(), optimizer.state_dict()), path)
+
+        tune.report(loss=(val_loss / val_steps), accuracy=correct / total)
+        print("done.")
+
+    def main(n_inputs, n_epochs):
+        # define config file
+        config = {
+            "arch": tune.grid_search([]),
+            "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
+            "dropout": tune.quniform(0, 0.4, 0.1),
+            "optim": tune.choice(["adam","other"]),
+            "lr": tune.loguniform(1e-4, 1e-1),
+        }
+
+    if __name__ == "__main__":
+        main()
+
+
 
 
 
