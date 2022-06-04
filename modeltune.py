@@ -15,6 +15,7 @@ from FlexibleNet import *
 
 N_INPUTS = 999
 N_EPOCHS = 10
+print("hello world")
 
 # def cross_validation(data, k=5):
     # leave for now
