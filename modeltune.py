@@ -111,7 +111,7 @@ def train(config, checkpoint_dir=None):
         tune.report(loss=(val_loss / val_steps), accuracy=correct / total)
         print("done.")
 
-    def main(n_inputs, n_epochs):
+    def main():
         # define config file
         config = {
             "arch": tune.grid_search([[1998,1000,100,10,1],
