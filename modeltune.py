@@ -46,11 +46,11 @@ def train(config, checkpoint_dir=None):
     device = torch.device("cuda:0" if use_cuda else "cpu")
     print(device)
     # set up model according to config
-    model = FlexibleNet(config['arch'],config['dropout'],config['activation'])
+    model = FlexibleNet(config["arch"],config["dropout"],config["activation"])
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = config['lr']
     # choose optimiser based on config
-    if config['optim'] == 'adam':
+    if config["optim"] == 'adam':
         optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     # TODO add other optimiser options!
     # The `checkpoint_dir` parameter gets passed by Ray Tune when a checkpoint
@@ -105,7 +105,7 @@ def train(config, checkpoint_dir=None):
     print("done.")
 
 def main():
-    # define config file
+    # define config
     config = {
         "arch": tune.grid_search([[1998,1000,100,10,1],
                                   [1998,200,20,2,1],
@@ -118,6 +118,10 @@ def main():
         "optim": tune.choice(["adam","other"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
+    # debug
+    print(config["arch"])
+    print(config["activation"])
+    print(config["dropout"])
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
         grace_period=1,
