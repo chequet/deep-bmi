@@ -115,7 +115,7 @@ def main():
                                   [1998,1000,500,250,125,60,30,1],
                                   [1998,500,125,25,5,1]]),
         "activation": tune.grid_search(["ELU","ReLU","LeakyReLU"]),
-        "dropout": tune.quniform(0, 0.4, 0.1),
+        "dropout": tune.loguniform(1e-4,1e-1),
         "optim": tune.choice(["adam"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
