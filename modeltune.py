@@ -9,7 +9,7 @@ from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
-import os, re, sys
+import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 
@@ -60,7 +60,7 @@ def train(config, checkpoint_dir=None):
         model_state, optimizer_state = torch.load(checkpoint)
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
-    data_directory = "../old_data/" + str(N_INPUTS) + "_data/"
+    data_directory = "/data/old_data/" + str(N_INPUTS) + "_data/"
     train_iterator, valid_iterator = get_dataloaders(data_directory, type=3)
     # train
     for epoch in range(N_EPOCHS):
@@ -113,9 +113,9 @@ def main():
                                   [1998,1998,1998,100,10,1],
                                   [1998,1000,500,250,125,60,30,1],
                                   [1998,500,125,25,5,1]]),
-        "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
+        "activation": tune.grid_search(["ELU","ReLU","LeakyReLU"]),
         "dropout": tune.quniform(0, 0.4, 0.1),
-        "optim": tune.choice(["adam","other"]),
+        "optim": tune.choice(["adam"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
