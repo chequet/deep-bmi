@@ -104,42 +104,42 @@ def train(config, checkpoint_dir=None):
         tune.report(loss=(val_loss / val_steps))
     print("done.")
 
-    def main():
-        # define config file
-        config = {
-            "arch": tune.grid_search([[1998,1000,100,10,1],
-                                      [1998,200,20,2,1],
-                                      [1998,100,100,100,10,1],
-                                      [1998,1998,1998,100,10,1],
-                                      [1998,1000,500,250,125,60,30,1],
-                                      [1998,500,125,25,5,1]]),
-            "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
-            "dropout": tune.quniform(0, 0.4, 0.1),
-            "optim": tune.choice(["adam","other"]),
-            "lr": tune.loguniform(1e-4, 1e-1),
-        }
-        scheduler = ASHAScheduler(
-            max_t=N_EPOCHS,
-            grace_period=1,
-            reduction_factor=2)
-        # run
-        print("running...")
-        result = tune.run(
-            tune.with_parameters(train),
-            resources_per_trial={"cpu": 3, "gpu": 0.25},
-            config=config,
-            metric="loss",
-            mode="min",
-            #num_samples=num_samples,
-            scheduler=scheduler
-        )
-        best_trial = result.get_best_trial("loss", "min", "last")
-        print("Best trial config: {}".format(best_trial.config))
-        print("Best trial final validation loss: {}".format(
-            best_trial.last_result["loss"]))
+def main():
+    # define config file
+    config = {
+        "arch": tune.grid_search([[1998,1000,100,10,1],
+                                  [1998,200,20,2,1],
+                                  [1998,100,100,100,10,1],
+                                  [1998,1998,1998,100,10,1],
+                                  [1998,1000,500,250,125,60,30,1],
+                                  [1998,500,125,25,5,1]]),
+        "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
+        "dropout": tune.quniform(0, 0.4, 0.1),
+        "optim": tune.choice(["adam","other"]),
+        "lr": tune.loguniform(1e-4, 1e-1),
+    }
+    scheduler = ASHAScheduler(
+        max_t=N_EPOCHS,
+        grace_period=1,
+        reduction_factor=2)
+    # run
+    print("running...")
+    result = tune.run(
+        tune.with_parameters(train),
+        resources_per_trial={"cpu": 3, "gpu": 0.25},
+        config=config,
+        metric="loss",
+        mode="min",
+        #num_samples=num_samples,
+        scheduler=scheduler
+    )
+    best_trial = result.get_best_trial("loss", "min", "last")
+    print("Best trial config: {}".format(best_trial.config))
+    print("Best trial final validation loss: {}".format(
+        best_trial.last_result["loss"]))
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
 
 
 
