@@ -11,7 +11,7 @@ from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 import os, re, sys
 from modeltrain import train_val_split
-import FlexibleNet
+from FlexibleNet import *
 
 N_INPUTS = 1000
 N_EPOCHS = 10
@@ -118,10 +118,6 @@ def main():
         "optim": tune.choice(["adam","other"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
-    # debug
-    print(config["arch"])
-    print(config["activation"])
-    print(config["dropout"])
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
         grace_period=1,
