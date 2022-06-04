@@ -47,6 +47,7 @@ def train(config, checkpoint_dir=None):
     print(device)
     # set up model according to config
     model = FlexibleNet(config["arch"],config["dropout"],config["activation"])
+    model.to(device)
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = config['lr']
     # choose optimiser based on config
