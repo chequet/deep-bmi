@@ -1,9 +1,5 @@
 ### architecture gridsearch with ray tune
-import numpy as np
-import os
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
@@ -13,7 +9,6 @@ from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
-from EffectEmbeddingDataset import *
 import os, re, sys
 from modeltrain import train_val_split
 import FlexibleNet
@@ -70,10 +65,8 @@ def train(config, checkpoint_dir=None):
     # train
     for epoch in range(N_EPOCHS):
         # TRAIN
-        i = 0
-        while i < n_trainbatch:
+        for i, batch in enumerate(train_iterator,0):
             print("batch index %i" % i, end='\r')
-            batch = next(batch_iterator)
             X = batch[0].to(device)
             Y = batch[1].to(device)
             # Zero the gradients
@@ -87,29 +80,29 @@ def train(config, checkpoint_dir=None):
             loss.backward()
             # update weights with gradient descent
             optimiser.step()
-            i += 1
         # VALIDATE
         with torch.no_grad():
-            i = 0
-            while i < n_valbatch:
+            val_loss = 0.0
+            val_steps = 0
+            for i, batch in enumerate(valid_iterator,0):
                 print("validation batch index %i" % i, end='\r')
-                batch = next(batch_iterator)
                 X = batch[0].to(device)
                 Y = batch[1].to(device)
                 model.eval()
                 # forward pass
                 y_pred = model(X.float())
                 # compute and print loss
-                val_loss = loss_fn(y_pred, Y)
-                i += 1
+                loss = loss_fn(y_pred, Y)
+                val_loss += loss.cpu().numpy()
+                val_steps += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
-                (net.state_dict(), optimizer.state_dict()), path)
+                (model.state_dict(), optimiser.state_dict()), path)
 
-        tune.report(loss=(val_loss / val_steps), accuracy=correct / total)
-        print("done.")
+        tune.report(loss=(val_loss / val_steps))
+    print("done.")
 
     def main():
         # define config file
@@ -130,13 +123,14 @@ def train(config, checkpoint_dir=None):
             grace_period=1,
             reduction_factor=2)
         # run
+        print("running...")
         result = tune.run(
             tune.with_parameters(train),
             resources_per_trial={"cpu": 3, "gpu": 0.25},
             config=config,
             metric="loss",
             mode="min",
-            num_samples=num_samples,
+            #num_samples=num_samples,
             scheduler=scheduler
         )
         best_trial = result.get_best_trial("loss", "min", "last")
