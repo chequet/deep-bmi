@@ -20,7 +20,7 @@ N_EPOCHS = 10
     # leave for now
 
 def get_dataloaders(data_directory, type=3):
-    train_files, val_files = train_val_split(data_directory + '/train/',n_train=100)
+    train_files, val_files = train_val_split(data_directory + 'train/',n_train=100)
     trainparams = {'batch_size': None,
                    'num_workers': 4}
     valparams = {'batch_size': None,
