@@ -13,7 +13,7 @@ import os, re, sys
 from modeltrain import train_val_split
 from FlexibleNet import *
 
-N_INPUTS = 1000
+N_INPUTS = 999
 N_EPOCHS = 10
 
 # def cross_validation(data, k=5):
@@ -34,10 +34,10 @@ def get_dataloaders(data_directory, type=3):
         # code for one hot
     elif type == 3:
         train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', train_files, True, 1),
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 1),
                                         **trainparams))
         valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', val_files, True, 1),
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 1),
                                         **valparams))
     return train_iterator, valid_iterator
 
