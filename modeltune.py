@@ -146,7 +146,7 @@ def main():
     print("running...")
     result = tune.run(
         tune.with_parameters(train),
-        resources_per_trial={"cpu": 3, "gpu": 0.25},
+        resources_per_trial={"cpu": 3, "gpu": 0.1},
         config=config,
         metric="loss",
         mode="min",
