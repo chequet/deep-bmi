@@ -53,9 +53,23 @@ def train(config, checkpoint_dir=None):
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = config['lr']
     # choose optimiser based on config
+    # choose optimiser based on config
     if config["optim"] == 'adam':
         optimiser = optim.Adam(model.parameters(), lr=learning_rate)
-    # TODO add other optimiser options!
+    elif config["optim"] == "sgd":
+        optimiser = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
+    elif config["optim"] == "rmsprop":
+        optimiser = torch.optim.RMSprop(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "adamw":
+        optimiser = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "spadam":
+        optimiser = torch.optim.SparseAdam(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "adamax":
+        optimiser = torch.optim.Adamax(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "nadam":
+        optimiser = torch.optim.NAdam(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "radam":
+        optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
     # The `checkpoint_dir` parameter gets passed by Ray Tune when a checkpoint
     # should be restored.
     if checkpoint_dir:
@@ -121,9 +135,9 @@ def main():
                                   [1998,1000,500,250,125,60,30,1],
                                   [1998,500,125,25,5,1]]),
         "activation": tune.grid_search(["ELU","ReLU","LeakyReLU"]),
-        "dropout": tune.loguniform(1e-4,1e-1),
+        "dropout": tune.choice([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam"]),
-        "lr": tune.loguniform(1e-4, 1e-1),
+        "lr": tune.choice([1e-3,1e-2,1e-1])
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -137,7 +151,7 @@ def main():
         config=config,
         metric="loss",
         mode="min",
-        #num_samples=num_samples,
+        num_samples=1,
         scheduler=scheduler
     )
     best_trial = result.get_best_trial("loss", "min", "last")
