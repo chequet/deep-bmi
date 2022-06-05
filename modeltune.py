@@ -133,10 +133,10 @@ def main():
                                   [1998,1998,1998,100,10,1],
                                   [1998,1000,500,250,125,60,30,1],
                                   [1998,500,125,25,5,1]]),
-        "activation": tune.grid_search(["ELU","ReLU","LeakyReLU"]),
-        "dropout": tune.grid_search([0,0.1,0.2,0.3,0.4]),
-        "optim": tune.grid_search(["adam","sgd","rmsprop","adamw","spadam","nadam","radam","adamax"]),
-        "lr": tune.grid_search([1e-4,1e-3,1e-2,1e-1]),
+        "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
+        "dropout": tune.choice([0,0.1,0.2,0.3,0.4]),
+        "optim": tune.choice(["adam","sgd","rmsprop","adamw","spadam","nadam","radam","adamax"]),
+        "lr": tune.choice([1e-4,1e-3,1e-2,1e-1]),
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -146,13 +146,13 @@ def main():
     print("running...")
     result = tune.run(
         tune.with_parameters(train),
-        resources_per_trial={"cpu": 3, "gpu": 1},
+        resources_per_trial={"cpu": 3, "gpu": 0.25},
         config=config,
         metric="loss",
         mode="min",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=1
+        max_concurrent_trials=3
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
