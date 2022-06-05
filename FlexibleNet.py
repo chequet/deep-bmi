@@ -22,7 +22,7 @@ class FlexibleNet(nn.Module):
                     self.layers.append(nn.LeakyReLU())
 
     def forward(self, x):
-        for layer in self.layers[:-1]:
+        for layer in self.layers:
             x = layer(x)
         return x
 
