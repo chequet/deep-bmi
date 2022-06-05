@@ -64,9 +64,9 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/old_data/" + str(N_INPUTS) + "_data/"
-    train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=3)
     # train
     for epoch in range(N_EPOCHS):
+        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=3)
         # TRAIN
         i = 0
         while i < n_train:
