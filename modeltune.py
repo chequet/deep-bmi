@@ -135,7 +135,7 @@ def main():
                                   [1998,500,125,25,5,1]]),
         "activation": tune.choice(["ELU","ReLU","LeakyReLU"]),
         "dropout": tune.choice([0,0.1,0.2,0.3,0.4]),
-        "optim": tune.choice(["adam","sgd","rmsprop","adamw","spadam","nadam","radam","adamax"]),
+        "optim": tune.choice(["adam","sgd","rmsprop","adamw","nadam","radam","adamax"]),#"spadam",
         "lr": tune.choice([1e-4,1e-3,1e-2,1e-1]),
     }
     scheduler = ASHAScheduler(
