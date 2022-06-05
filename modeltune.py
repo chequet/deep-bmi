@@ -146,13 +146,13 @@ def main():
     print("running...")
     result = tune.run(
         tune.with_parameters(train),
-        resources_per_trial={"cpu": 3, "gpu": 0.25},
+        resources_per_trial={"cpu": 3, "gpu": 1},
         config=config,
         metric="loss",
         mode="min",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=3
+        max_concurrent_trials=1
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
