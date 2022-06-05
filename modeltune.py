@@ -55,7 +55,20 @@ def train(config, checkpoint_dir=None):
     # choose optimiser based on config
     if config["optim"] == 'adam':
         optimiser = optim.Adam(model.parameters(), lr=learning_rate)
-    # TODO add other optimiser options!
+    elif config["optim"] == "sgd":
+        optimiser = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
+    elif config["optim"] == "rmsprop":
+        optimiser = torch.optim.RMSprop(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "adamw":
+        optimiser = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "spadam":
+        optimiser = torch.optim.SparseAdam(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "adamax":
+        optimiser = torch.optim.Adamax(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "nadam":
+        optimiser = torch.optim.NAdam(model.parameters(), lr=learning_rate)
+    elif config["optim"] == "radam":
+        optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
     # The `checkpoint_dir` parameter gets passed by Ray Tune when a checkpoint
     # should be restored.
     if checkpoint_dir:
@@ -71,7 +84,7 @@ def train(config, checkpoint_dir=None):
         i = 0
         while i < n_train:
             batch = next(train_iterator)
-            print("batch index %i" % i, end='\r')
+            # print("batch index %i" % i, end='\r')
             X = batch[0].to(device)
             Y = batch[1].to(device)
             # Zero the gradients
@@ -91,7 +104,7 @@ def train(config, checkpoint_dir=None):
             val_loss = 0.0
             i = 0
             while i < n_val:
-                print("validation batch index %i" % i, end='\r')
+                # print("validation batch index %i" % i, end='\r')
                 batch = next(valid_iterator)
                 X = batch[0].to(device)
                 Y = batch[1].to(device)
@@ -121,9 +134,9 @@ def main():
                                   [1998,1000,500,250,125,60,30,1],
                                   [1998,500,125,25,5,1]]),
         "activation": tune.grid_search(["ELU","ReLU","LeakyReLU"]),
-        "dropout": tune.loguniform(1e-4,1e-1),
-        "optim": tune.choice(["adam"]),
-        "lr": tune.loguniform(1e-4, 1e-1),
+        "dropout": tune.grid_search([0,0.1,0.2,0.3,0.4]),
+        "optim": tune.grid_search(["adam","sgd","rmsprop","adamw","spadam","nadam","radam","adamax"]),
+        "lr": tune.grid_search([1e-4,1e-3,1e-2,1e-1]),
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
