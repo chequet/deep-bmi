@@ -15,13 +15,14 @@ from FlexibleNet import *
 
 N_INPUTS = 999
 N_EPOCHS = 10
-print("hello world")
 
 # def cross_validation(data, k=5):
     # leave for now
 
 def get_dataloaders(data_directory, type=3):
     train_files, val_files = train_val_split(data_directory + 'train/',n_train=100)
+    n_train = len(train_files)
+    n_val = len(val_files)
     trainparams = {'batch_size': None,
                    'num_workers': 4}
     valparams = {'batch_size': None,
@@ -40,7 +41,7 @@ def get_dataloaders(data_directory, type=3):
         valid_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 1),
                                         **valparams))
-    return train_iterator, valid_iterator
+    return train_iterator, valid_iterator, n_train, n_val
 
 def train(config, checkpoint_dir=None):
     use_cuda = torch.cuda.is_available()
@@ -63,11 +64,13 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/old_data/" + str(N_INPUTS) + "_data/"
-    train_iterator, valid_iterator = get_dataloaders(data_directory, type=3)
+    train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=3)
     # train
     for epoch in range(N_EPOCHS):
         # TRAIN
-        for i, batch in enumerate(train_iterator,0):
+        i = 0
+        while i < n_train:
+            batch = next(train_iterator)
             print("batch index %i" % i, end='\r')
             X = batch[0].to(device)
             Y = batch[1].to(device)
@@ -82,12 +85,14 @@ def train(config, checkpoint_dir=None):
             loss.backward()
             # update weights with gradient descent
             optimiser.step()
+            i+=1
         # VALIDATE
         with torch.no_grad():
             val_loss = 0.0
-            val_steps = 0
-            for i, batch in enumerate(valid_iterator,0):
+            i = 0
+            while i < n_val:
                 print("validation batch index %i" % i, end='\r')
+                batch = next(valid_iterator)
                 X = batch[0].to(device)
                 Y = batch[1].to(device)
                 model.eval()
@@ -96,14 +101,14 @@ def train(config, checkpoint_dir=None):
                 # compute and print loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
-                val_steps += 1
+                i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
 
-        tune.report(loss=(val_loss / val_steps))
+        tune.report(loss=(val_loss / i))
     print("done.")
 
 def main():
