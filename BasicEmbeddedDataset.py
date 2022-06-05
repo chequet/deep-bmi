@@ -20,7 +20,7 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         self.counter = 0
         self.method = method
         #print("embedding method %i" %self.method)
-        #self.lock = threading.Lock()   #Set self.lock
+        self.lock = threading.Lock()   #Set self.lock
 
     def __len__(self):
         # how many batches I will return
@@ -54,16 +54,16 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         batch = self.files[index]
         #print("getting batch %s"%batch)
         filename = self.filepath + batch
-        lock = FileLock(os.path.expanduser(filename+".lock"))
-        with lock:
-            #print("filename: %s"%filename)
-            load = np.load(filename, allow_pickle=True)
-            # load and convert to list
-            X = load['x']
-            Y = load['y'].astype('float32')
-            # in-place edit batches to one-hot encoding, convert back to array of arrays
-            X = np.array([self.__basic_embedding(batch) for batch in X])
-        lock.release()
+        # lock = FileLock(os.path.expanduser(filename+".lock"))
+        # with lock:
+        #print("filename: %s"%filename)
+        load = np.load(filename, allow_pickle=True)
+        # load and convert to list
+        X = load['x']
+        Y = load['y'].astype('float32')
+        # in-place edit batches to one-hot encoding, convert back to array of arrays
+        X = np.array([self.__basic_embedding(batch) for batch in X])
+        # lock.release()
         return X, Y
 
     def __iter__(self):
