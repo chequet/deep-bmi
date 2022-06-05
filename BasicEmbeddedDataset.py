@@ -20,7 +20,7 @@ class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
         self.counter = 0
         self.method = method
         #print("embedding method %i" %self.method)
-        self.lock = threading.Lock()   #Set self.lock
+        # self.lock = threading.Lock()   #Set self.lock
 
     def __len__(self):
         # how many batches I will return
