@@ -151,7 +151,7 @@ def main():
         config=config,
         metric="loss",
         mode="min",
-        num_samples=1,
+        # num_samples=1,
         scheduler=scheduler
     )
     best_trial = result.get_best_trial("loss", "min", "last")
