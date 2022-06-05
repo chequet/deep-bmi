@@ -152,7 +152,7 @@ def main():
         mode="min",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=4
+        max_concurrent_trials=3
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
