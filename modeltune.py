@@ -134,7 +134,7 @@ def main():
                                   [1998, 1998, 1998, 100, 10, 1],
                                   [1998, 1000, 500, 250, 125, 60, 30, 1],
                                   [1998, 500, 125, 25, 5, 1]]),
-        "activation": tune.grid_search(["ELU", "ReLU", "LeakyReLU"]),
+        "activation": tune.grid_search(["ELU", "ReLU"]),
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam"]),
         "lr": tune.loguniform(1e-4, 1e-1),
@@ -147,7 +147,7 @@ def main():
     print("running...")
     result = tune.run(
         tune.with_parameters(train),
-        resources_per_trial={"cpu": 20, "gpu": 0.5},
+        resources_per_trial={"cpu": 20, "gpu": 1},
         config=config,
         metric="loss",
         mode="min",
@@ -161,7 +161,7 @@ def main():
         best_trial.last_result["loss"]))
     df = result.results_df
     print("\n\n=========================================")
-    print("All results: {}".format(df))
+    print("All results: {}".format(df.sort_values('loss')))
 
 if __name__ == "__main__":
     main()
