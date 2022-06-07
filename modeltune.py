@@ -133,10 +133,10 @@ def main():
                                   [1998, 100, 100, 100, 10, 1],
                                   [1998, 1998, 1998, 100, 10, 1],
                                   [1998, 1000, 500, 250, 125, 60, 30, 1],
-                                  [1998, 500, 125, 25, 5, 1]]),
+                                  [1998, 500, 125, 25, 5, 1]]),#
         "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
-        "optim": tune.choice(["adam","sgd","rmsprop","adamw"]),
+        "optim": tune.choice(["adam","sgd","rmsprop","adamw","spadam","adamax","radam","nadam"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
