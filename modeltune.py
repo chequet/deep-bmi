@@ -85,7 +85,7 @@ def train(config, checkpoint_dir=None):
         i = 0
         while i < n_train:
             batch = next(train_iterator)
-            print("batch index %i" % i, end='\r')
+            # print("batch index %i" % i, end='\r')
             X = batch[0].to(device)
             Y = batch[1].to(device)
             # Zero the gradients
@@ -105,7 +105,7 @@ def train(config, checkpoint_dir=None):
             val_loss = 0.0
             i = 0
             while i < n_val:
-                print("validation batch index %i" % i, end='\r')
+                # print("validation batch index %i" % i, end='\r')
                 batch = next(valid_iterator)
                 X = batch[0].to(device)
                 Y = batch[1].to(device)
@@ -151,7 +151,7 @@ def main():
         config=config,
         metric="loss",
         mode="min",
-        # num_samples=1,
+        num_samples=1,
         scheduler=scheduler
     )
     best_trial = result.get_best_trial("loss", "min", "last")
