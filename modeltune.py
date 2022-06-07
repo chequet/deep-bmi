@@ -147,18 +147,21 @@ def main():
     print("running...")
     result = tune.run(
         tune.with_parameters(train),
-        resources_per_trial={"cpu": 3, "gpu": 0.25},
+        resources_per_trial={"cpu": 20, "gpu": 0.5},
         config=config,
         metric="loss",
         mode="min",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=3
+        max_concurrent_trials=2
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation loss: {}".format(
         best_trial.last_result["loss"]))
+    df = result.results_df
+    print("\n\n=========================================")
+    print("All results: {}".format(df))
 
 if __name__ == "__main__":
     main()
