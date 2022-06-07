@@ -134,9 +134,9 @@ def main():
                                   [1998, 1998, 1998, 100, 10, 1],
                                   [1998, 1000, 500, 250, 125, 60, 30, 1],
                                   [1998, 500, 125, 25, 5, 1]]),
-        "activation": tune.grid_search(["ELU", "ReLU"]),
+        "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
-        "optim": tune.choice(["adam"]),
+        "optim": tune.grid_search(["adam","sgd","rmsprop","adamw"]),
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
@@ -153,15 +153,15 @@ def main():
         mode="min",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=2
+        max_concurrent_trials=3
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation loss: {}".format(
         best_trial.last_result["loss"]))
     df = result.results_df
-    print("\n\n=========================================")
-    print("All results: {}".format(df.sort_values('loss')))
+    print("\n\n====================================================================\n")
+    print(df.sort_values('loss'))
 
 if __name__ == "__main__":
     main()
