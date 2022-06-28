@@ -13,7 +13,7 @@ import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 
-N_INPUTS = 999
+N_INPUTS = 9994
 N_EPOCHS = 10
 
 # def cross_validation(data, k=5):
@@ -128,15 +128,15 @@ def train(config, checkpoint_dir=None):
 def main():
     # define config
     config = {
-        "arch": tune.grid_search([[1998, 1000, 100, 10, 1],
-                                  [1998, 200, 20, 2, 1],
-                                  [1998, 100, 100, 100, 10, 1],
-                                  [1998, 1998, 1998, 100, 10, 1],
-                                  [1998, 1000, 500, 250, 125, 60, 30, 1],
-                                  [1998, 500, 125, 25, 5, 1]]),#
+        "arch": tune.grid_search([[19988, 1000, 100, 10, 1],
+                                  [19988, 200, 20, 2, 1],
+                                  [19988, 2000, 200, 20, 2, 1],
+                                  [19988, 2000, 2000, 200, 20, 1],
+                                  [19988, 1000, 500, 250, 125, 60, 30, 1],
+                                  [19988, 1000, 500, 125, 25, 5, 1]]),#
         "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
-        "optim": tune.grid_search(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
+        "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
