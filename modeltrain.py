@@ -84,49 +84,37 @@ def embed_model(n_inputs, reduction_factor, dropout):
 
 def embed_model2(n_inputs, reduction_factor, dropout):
     n_features = n_inputs*2
-    n_out1 = math.ceil(n_features/2)#(reduction_factor**2))
+    n_out1 = math.ceil(n_features/reduction_factor*2)
     n_out2 = math.ceil(n_out1/reduction_factor)
     n_out3 = math.ceil(n_out2/reduction_factor)
     n_out4 = math.ceil(n_out3/reduction_factor)
     n_out5 = math.ceil(n_out4/reduction_factor)
+    n_out6 = math.ceil(n_out5/reduction_factor)
 
     model = torch.nn.Sequential(
         torch.nn.Linear(n_features, n_out1),
         torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out1, n_out1),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out1, n_out1),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out1, n_out1),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
+        torch.nn.ELU(),
         torch.nn.Linear(n_out1, n_out2),
         torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out2, n_out2),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out2, n_out2),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out2, n_out2),
-        torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
+        torch.nn.ELU(),
         torch.nn.Linear(n_out2, n_out3),
         torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
+        torch.nn.ELU(),
         torch.nn.Linear(n_out3, n_out4),
         torch.nn.Dropout(dropout),
-        torch.nn.LeakyReLU(),
-        torch.nn.Linear(n_out4, 1),
+        torch.nn.ELU(),
+        torch.nn.Linear(n_out4, n_out5),
+        torch.nn.Dropout(dropout),
+        torch.nn.ELU(),
+        torch.nn.Linear(n_out5, n_out6),
+        torch.nn.Dropout(dropout),
+        torch.nn.ELU(),
+        torch.nn.Linear(n_out6,1)
         )
     return model
 
 def embed_model_clf(n_inputs, reduction_factor, dropout):
-    n_features = n_inputs*2
     n_features = n_inputs*2
     n_out1 = math.ceil(n_features/reduction_factor)#(reduction_factor**2))
     n_out2 = math.ceil(n_out1/reduction_factor)
@@ -340,8 +328,8 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     print("n val: "+ str(n_valbatch))
     n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
-    learning_rate = 1e-3
-    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    learning_rate = 1e-4
+    optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
     #scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9)
     #beta_mask = np.load('beta_mask.npy')
     clf = False
