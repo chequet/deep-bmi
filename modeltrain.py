@@ -84,7 +84,7 @@ def embed_model(n_inputs, reduction_factor, dropout):
 
 def embed_model2(n_inputs, reduction_factor, dropout):
     n_features = n_inputs*2
-    n_out1 = math.ceil(n_features/reduction_factor*2)
+    n_out1 = math.ceil(n_features/(reduction_factor*10))
     n_out2 = math.ceil(n_out1/reduction_factor)
     n_out3 = math.ceil(n_out2/reduction_factor)
     n_out4 = math.ceil(n_out3/reduction_factor)
@@ -278,7 +278,7 @@ def train_val_split(train_dir, n_train=88):
 
 def main(modelpath, modeltype, n_epochs, n_inputs):
 
-    REDUCTION_FACTOR = 10
+    REDUCTION_FACTOR = 2
     DROPOUT = 0.2
 
     # if path points to existing model, load it
