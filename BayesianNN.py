@@ -11,7 +11,7 @@ class BayesianNN(nn.Module):
         for i, input_size in enumerate(layer_list[:-1]):
             output_size = layer_list[i+1]
             # add regular linear layers for input and output
-            if i == 0 or i == (len(layer_list)-1):
+            if i == 0 or i == (len(layer_list)-2):
                 self.layers.append(nn.Linear(input_size,output_size))
             else:
                 self.layers.append(BayesianLinear(input_size,output_size))
