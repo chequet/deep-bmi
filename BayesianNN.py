@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from blitz.modules import BayesianLinear
 
-class BayesianNN(nn.module):
+class BayesianNN(nn.Module):
     def __init__(self, layer_list, dropout, activation):
         super(BayesianNN, self).__init__()
         # initialise architecture using provided layers list
