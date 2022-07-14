@@ -341,7 +341,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
 
 
     # initialise early stopping
-    tolerance = 10
+    tolerance = 30
     no_improvement = 0
     best_val_loss = np.inf
 
@@ -412,7 +412,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
         else:
             no_improvement += 1
         if t > 5 and no_improvement == tolerance:
-            print("min validation loss: %f"%min_val_loss)
+            print("min validation loss: %f"%best_val_loss)
             print("loss increasing for %i epochs"%no_improvement)
             print("STOPPING EARLY")
             break
