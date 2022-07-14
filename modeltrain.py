@@ -341,7 +341,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
 
 
     # initialise early stopping
-    tolerance = 50
+    tolerance = 30
     no_improvement = 0
     best_val_loss = np.inf
 
