@@ -1,4 +1,4 @@
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import os, re, sys
@@ -341,9 +341,9 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
 
 
     # initialise early stopping
-    tolerance = 50
+    tolerance = 10
     no_improvement = 0
-    prev_val_loss = 0
+    best_val_loss = np.inf
 
     t0 = time()
     for t in range(n_epochs):
@@ -406,11 +406,11 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             del(val_acc)
         # early stopping
         # check conditions for early stopping
-        if val_loss - prev_val_loss > 0.05:
-            no_improvement += 1
-        else:
+        if val_loss < best_val_loss:
             no_improvement = 0
-        prev_val_loss = val_loss
+            best_val_loss = val_loss
+        else:
+            no_improvement += 1
         if t > 5 and no_improvement == tolerance:
             print("min validation loss: %f"%min_val_loss)
             print("loss increasing for %i epochs"%no_improvement)
