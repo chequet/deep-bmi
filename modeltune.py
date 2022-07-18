@@ -160,6 +160,7 @@ def main():
     print("Best trial final validation loss: {}".format(
         best_trial.last_result["loss"]))
     df = result.results_df
+    #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(df.sort_values('loss'))
 
