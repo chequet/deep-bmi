@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from blitz.modules import BayesianLinear
 
+@variational_estimator
 class BayesianNN(nn.Module):
     def __init__(self, layer_list, dropout, activation):
         super(BayesianNN, self).__init__()
