@@ -4,7 +4,7 @@ import math
 import os
 
 class MyIterableDataset(torch.utils.data.IterableDataset):
-    """ Implementation of generating data from hail data structures"""
+    """ Implementation of generating data for models from persisted batches - standard variable encoding"""
 
     def __init__(self, filepath, files, shuffle):
         self.filepath = filepath
