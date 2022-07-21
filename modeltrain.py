@@ -306,6 +306,10 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
     elif modeltype == 7:
         print("new deeper embedding model")
         model = embed_model2(n_inputs,REDUCTION_FACTOR,DROPOUT)   # define the network
+    elif modeltype == 8:
+        print("new bayesian embedding model")
+        layers = [19988,1000,500,250,125,63,32,1]
+        model = BayesianNN(layers,DROPOUT,'ELU')
     else:
         print("Usage: python modeltrain.py <modelpath> <modeltype> <n_epochs> <n_inputs>")
     model = model.to(device)
@@ -363,7 +367,7 @@ def main(modelpath, modeltype, n_epochs, n_inputs):
             train_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/train/', True), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/val/', True), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(OneHotIterableDataset(data_directory+'/tst/', True), **tstparams))
-        elif modeltype == 3 or modeltype == 7:
+        elif modeltype == 3 or modeltype == 7 or modeltype == 8:
             train_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', train_files, True, 1), **trainparams))
             valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/train/', val_files, True, 1), **valparams))
             test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory+'/tst/', test_files, True, 1), **tstparams))
