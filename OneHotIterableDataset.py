@@ -28,7 +28,7 @@ class OneHotIterableDataset(torch.utils.data.IterableDataset):
         shape = (len(data), 3) 
         onehot = np.zeros(shape) 
         rows = np.arange(len(data)) 
-        onehot[rows, data] = 1 
+        onehot[rows, data.astype(int)] = 1
         return onehot.flatten() 
 
 
