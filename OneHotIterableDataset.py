@@ -24,7 +24,7 @@ class OneHotIterableDataset(torch.utils.data.IterableDataset):
         return len(self.files)
 
     def __one_hot(self, data):
-        # convert single array of data to one-hot encoding, flatten
+        # convert single array of data to one-hot encoding, flatten.
         shape = (len(data), 3) 
         onehot = np.zeros(shape) 
         rows = np.arange(len(data)) 
