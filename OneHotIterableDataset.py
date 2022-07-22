@@ -43,7 +43,7 @@ class OneHotIterableDataset(torch.utils.data.IterableDataset):
         filename = self.filepath + batch
         load = np.load(filename)
         # load and convert to list
-        X = load['x'].tolist()
+        X = load['x']
         Y = load['y'].astype('float32')
         # in-place edit batches to one-hot encoding, convert back to array of arrays
         X = np.array([self.__one_hot(batch) for batch in X])
