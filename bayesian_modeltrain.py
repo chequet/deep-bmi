@@ -40,6 +40,22 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         i += 1
     return loss.item(), acc
 
+def evaluate_regression(model,
+                        valid_iterator,
+                        samples,
+                        std_multiplier = 2):
+    preds = []
+    while i < samples:
+        X, y = next(valid_iterator)
+        preds.append(model(X))
+        gt.append(y)
+    means = preds.mean(axis=0)
+    stds = preds.std(axis=0)
+    ci_upper = means + (std_multiplier * stds)
+    ci_lower = means - (std_multiplier * stds)
+    ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
+    ic_acc = ic_acc.float().mean()
+    return ic_acc, (ci_upper >= y).float().mean(), (ci_lower <= y).float().mean()
 
 def validate_BNN(batch_iterator, model, loss_fn, n_valbatch, clf):
     with torch.no_grad():
@@ -121,19 +137,24 @@ def main(modelpath, n_epochs):
         losses.append(float(train_loss))
         # log training loss w tensorboard
         writer.add_scalar("Loss/train", train_loss, t)
-        print(train_loss)
-        # update LR
-        # scheduler.step()
-        state = optimiser.state_dict()['param_groups'][0]
-        lr = state['lr']
         # print("lr: %f" %lr)
-        # validation step
-        print("validating...")
-        val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, False)
-        val_losses.append(float(val_loss))
-        # log training loss w tensorboard
-        writer.add_scalar("Loss/val", val_loss, t)
-        print(val_loss)
+        if t%10==0:
+            # validation step - only do every ten epochs to save computational complexity
+            print("validating...")
+            ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
+                                                                        X_test.to(device),
+                                                                        y_test.to(device),
+                                                                        samples=n_valbatch,
+                                                                        std_multiplier=3)
+
+            print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
+                                                                                      over_ci_lower))
+            print("Loss: {:.4f}".format(loss))
+            val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, False)
+            val_losses.append(float(val_loss))
+            # log training loss w tensorboard
+            writer.add_scalar("Loss/val", val_loss, t)
+            print(val_loss)
         # early stopping
         # check conditions for early stopping
         if val_loss < best_val_loss:
