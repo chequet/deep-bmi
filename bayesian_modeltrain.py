@@ -14,6 +14,8 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
     acc = 0
     while i < n_trainbatch:
         print("batch index %i" % i, end='\r')
+        # Zero the gradients before running the backward pass.
+        optimiser.zero_grad()
         batch = next(batch_iterator)
         X = batch[0].to(device)
         # if clf:
@@ -25,9 +27,12 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         # forward pass
         y_pred = model(X.float())
         # compute and print loss
-        loss = model.sample_elbo(inputs=X,)
-        # Zero the gradients before running the backward pass.
-        optimiser.zero_grad()
+        loss = regressor.sample_elbo(inputs=X,
+                                     labels=Y,
+                                     criterion=loss_fn,
+                                     sample_nbr=3,
+                                     complexity_cost_weight=1 / X_train.shape[0])
+
         # backward pass
         loss.backward()
         # update weights with gradient descent
