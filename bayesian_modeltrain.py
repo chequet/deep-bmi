@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from torch import optim
 from time import time
@@ -27,11 +28,11 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         # forward pass
         y_pred = model(X.float())
         # compute and print loss
-        loss = regressor.sample_elbo(inputs=X,
+        loss = model.sample_elbo(inputs=X,
                                      labels=Y,
                                      criterion=loss_fn,
-                                     sample_nbr=3,
-                                     complexity_cost_weight=1 / X_train.shape[0])
+                                     sample_nbr=3)
+                                     # complexity_cost_weight=1 / X.shape[0])
 
         # backward pass
         loss.backward()
@@ -45,43 +46,22 @@ def evaluate_regression(model,
                         samples,
                         std_multiplier = 2):
     preds = []
+    gt = []
+    i = 0
     while i < samples:
         X, y = next(valid_iterator)
         preds.append(model(X))
         gt.append(y)
+        i += 1
+    preds = np.concatenate(preds)
+    gt = np.concatenate(gt)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
     ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
     ic_acc = ic_acc.float().mean()
-    return ic_acc, (ci_upper >= y).float().mean(), (ci_lower <= y).float().mean()
-
-def validate_BNN(batch_iterator, model, loss_fn, n_valbatch, clf):
-    with torch.no_grad():
-        i = 0
-        # null accuracy for regression
-        acc = 0
-        while i < n_valbatch:
-            print("validation batch index %i" % i, end='\r')
-            batch = next(batch_iterator)
-            X = batch[0].to(device)
-            Y = batch[1].to(device)
-            model.eval()
-            # forward pass
-            y_pred = model(X.float())
-            #print("y pred:")
-            #print(y_pred)
-            if clf:
-                # X = X.reshape(X.shape[0],X.shape[1],1)
-                # print(X.shape)
-                y_round = y_pred.argmax(dim=1)
-                acc = binary_acc(y_round.cpu(), Y.flatten().cpu())
-                Y = Y.flatten().long()
-            # compute and print loss
-            val_loss = loss_fn(y_pred, Y)
-            i += 1
-    return val_loss.item(), acc
+    return ic_acc, (ci_upper >= gt).float().mean(), (ci_lower <= gt).float().mean()
 
 def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
@@ -142,21 +122,15 @@ def main(modelpath, n_epochs):
             # validation step - only do every ten epochs to save computational complexity
             print("validating...")
             ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
-                                                                        X_test.to(device),
-                                                                        y_test.to(device),
+                                                                        valid_iterator,
                                                                         samples=n_valbatch,
                                                                         std_multiplier=3)
 
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
                                                                                       over_ci_lower))
-            print("Loss: {:.4f}".format(loss))
-            val_loss, val_acc = validate(valid_iterator, model, loss_fn, n_valbatch, False)
-            val_losses.append(float(val_loss))
-            # log training loss w tensorboard
-            writer.add_scalar("Loss/val", val_loss, t)
-            print(val_loss)
         # early stopping
         # check conditions for early stopping
+        #TODO update early stopping to use new validation metrics - can we use loss?
         if val_loss < best_val_loss:
             no_improvement = 0
             best_val_loss = val_loss
