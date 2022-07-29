@@ -46,7 +46,9 @@ def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier =
     gt = []
     i = 0
     while i < samples:
-        X, y = next(valid_iterator)
+        batch = next(valid_iterator)
+        X = batch[0].to(device)
+        y = batch[1].to(device)
         preds.append(model(X))
         gt.append(y)
         i += 1
