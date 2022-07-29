@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from blitz.modules import BayesianLinear, variational_estimator
+from blitz.modules import BayesianLinear
+from blitz.utils import variational_estimator
 
 @variational_estimator
 class BayesianNN(nn.Module):
