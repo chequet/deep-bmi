@@ -41,10 +41,7 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         i += 1
     return loss.item(), acc
 
-def evaluate_regression(model,
-                        valid_iterator,
-                        samples,
-                        std_multiplier = 2):
+def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier = 2):
     preds = []
     gt = []
     i = 0
@@ -55,13 +52,18 @@ def evaluate_regression(model,
         i += 1
     preds = np.concatenate(preds)
     gt = np.concatenate(gt)
+    # calculate loss just for last batch for early stopping purposes
+    loss = model.sample_elbo(inputs=X,
+                                     labels=y,
+                                     criterion=loss_fn,
+                                     sample_nbr=3)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
     ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
     ic_acc = ic_acc.float().mean()
-    return ic_acc, (ci_upper >= gt).float().mean(), (ci_lower <= gt).float().mean()
+    return loss, ic_acc, (ci_upper >= gt).float().mean(), (ci_lower <= gt).float().mean()
 
 def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
@@ -121,26 +123,25 @@ def main(modelpath, n_epochs):
         if t%10==0:
             # validation step - only do every ten epochs to save computational complexity
             print("validating...")
-            ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
+            val_loss, ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
                                                                         valid_iterator,
                                                                         samples=n_valbatch,
                                                                         std_multiplier=3)
 
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
                                                                                       over_ci_lower))
-        # early stopping
-        # check conditions for early stopping
-        #TODO update early stopping to use new validation metrics - can we use loss?
-        if val_loss < best_val_loss:
-            no_improvement = 0
-            best_val_loss = val_loss
-        else:
-            no_improvement += 1
-        if t > 5 and no_improvement == tolerance:
-            print("min validation loss: %f" % best_val_loss)
-            print("loss increasing for %i epochs" % no_improvement)
-            print("STOPPING EARLY")
-            break
+            # early stopping
+            # check conditions for early stopping
+            if val_loss < best_val_loss:
+                no_improvement = 0
+                best_val_loss = val_loss
+            else:
+                no_improvement += 1
+            if t > 5 and no_improvement == tolerance:
+                print("min validation loss: %f" % best_val_loss)
+                print("loss increasing for %i epochs" % no_improvement)
+                print("STOPPING EARLY")
+                break
     t1 = time()
     print("time taken: %f s" % (t1 - t0))
     modelpath = update_modelpath(modelpath, t)
