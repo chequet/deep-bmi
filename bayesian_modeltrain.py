@@ -124,6 +124,7 @@ def main(modelpath, n_epochs):
             val_loss, ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
                                                                         valid_iterator,
                                                                         samples=n_valbatch,
+                                                                        loss_fn=loss_fn,
                                                                         std_multiplier=3)
 
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
