@@ -69,7 +69,7 @@ def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
-    LAYERS = [[19988, 1000, 500, 250, 125, 60, 30, 1]]
+    LAYERS = [19988, 1000, 500, 250, 125, 60, 30, 1]
     model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
     model = model.to(device)
     print(model)
@@ -84,13 +84,10 @@ def main(modelpath, n_epochs):
                    'num_workers': 11}
     valparams = {'batch_size': None,
                  'num_workers': 4}
-    tstparams = {'batch_size': None,
-                 'num_workers': 6}
     n_trainbatch = len(train_files)
     print("n train: "+ str(n_trainbatch))
     n_valbatch = len(val_files)
     print("n val: "+ str(n_valbatch))
-    n_testbatch = len(test_files)
     loss_fn = torch.nn.MSELoss(reduction='mean')
     learning_rate = 1e-4
     optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
