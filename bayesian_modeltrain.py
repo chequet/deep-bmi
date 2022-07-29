@@ -75,6 +75,7 @@ def main(modelpath, n_epochs):
     print(model)
 
     # initialise training and validation sets
+    n_inputs = 9994
     data_directory = "../old_data/" + str(n_inputs) + "_data/"
     train_files, val_files = train_val_split(data_directory + '/train/')
     test_files = os.listdir(data_directory + '/tst/')
