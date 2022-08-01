@@ -57,7 +57,7 @@ def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier =
     preds = np.concatenate(preds)
     gt = np.concatenate(gt)
     # calculate loss just for last batch for early stopping purposes
-    loss = model.sample_elbo(inputs=X,
+    loss = model.sample_elbo(inputs=X.float(),
                                      labels=y,
                                      criterion=loss_fn,
                                      sample_nbr=3)
