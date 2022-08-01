@@ -126,7 +126,7 @@ def main(modelpath, n_epochs):
         if t%10==0:
             # validation step - only do every ten epochs to save computational complexity
             print("validating...")
-            val_loss, ic_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
+            val_loss, ci_acc, under_ci_upper, over_ci_lower = evaluate_regression(model,
                                                                         valid_iterator,
                                                                         samples=n_valbatch,
                                                                         loss_fn=loss_fn,
