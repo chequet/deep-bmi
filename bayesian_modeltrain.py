@@ -119,6 +119,7 @@ def main(modelpath, n_epochs):
         # add extra loss step!
 
         losses.append(float(train_loss))
+        print("loss: {:.2f}".format(train_loss))
         # log training loss w tensorboard
         writer.add_scalar("Loss/train", train_loss, t)
         # print("lr: %f" %lr)
@@ -130,7 +131,7 @@ def main(modelpath, n_epochs):
                                                                         samples=n_valbatch,
                                                                         loss_fn=loss_fn,
                                                                         std_multiplier=3)
-
+            print("validation loss: {:.2f}".format(val_loss))
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
                                                                                       over_ci_lower))
             # early stopping
