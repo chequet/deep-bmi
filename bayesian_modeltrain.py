@@ -51,8 +51,8 @@ def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier =
         y = batch[1].to(device)
         model.eval()
         y_pred = model(X.float())
-        preds.append(y_pred.cpu().numpy())
-        gt.append(y.cpu().numpy())
+        preds.append(y_pred.detach().numpy())
+        gt.append(y.detach().numpy())
         i += 1
     preds = np.concatenate(preds)
     gt = np.concatenate(gt)
