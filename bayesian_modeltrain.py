@@ -66,8 +66,8 @@ def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier =
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
     ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
-    ic_acc = ic_acc.float().mean()
-    return loss, ic_acc, (ci_upper >= gt).float().mean(), (ci_lower <= gt).float().mean()
+    ic_acc = ic_acc.mean()
+    return loss, ic_acc, (ci_upper >= gt).mean(), (ci_lower <= gt).mean()
 
 def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
