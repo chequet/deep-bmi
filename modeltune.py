@@ -128,12 +128,10 @@ def train(config, checkpoint_dir=None):
 def main():
     # define config
     config = {
-        "arch": tune.grid_search([[19988, 1000, 100, 10, 1],
-                                  [19988, 200, 20, 2, 1],
-                                  [19988, 2000, 200, 20, 2, 1],
-                                  [19988, 2000, 2000, 200, 20, 1],
-                                  [19988, 1000, 500, 250, 125, 60, 30, 1],
-                                  [19988, 1000, 500, 125, 25, 5, 1]]),#
+        "arch": tune.grid_search([[19988, 2000, 1000, 500, 200, 100, 20, 2, 1],
+                                  [19988, 2000, 1000, 1000, 500, 200, 100, 50, 20, 1],
+                                  [1988, 1000, 1000, 500, 500, 250, 125, 60, 30, 15, 1],
+                                  [19988, 1000, 500, 250, 125, 60, 30, 1]]),
         "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
