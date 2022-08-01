@@ -96,10 +96,10 @@ def main(modelpath, n_epochs):
     learning_rate = 1e-4
     optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
 
-    # initialise early stopping
-    tolerance = 30
+    # initialise early stopping with ci_acc
+    tolerance = 10
     no_improvement = 0
-    best_val_loss = np.inf
+    best_ci_acc = 0
 
     losses = []
     val_losses = []
@@ -132,18 +132,19 @@ def main(modelpath, n_epochs):
                                                                         loss_fn=loss_fn,
                                                                         std_multiplier=3)
             print("validation loss: {:.2f}".format(val_loss))
-            print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ic_acc, under_ci_upper,
+            print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
+            writer.add_scalar("ci_acc", ci_acc, t)
+            writer.add_scalar("Loss/val", val_loss, t)
             # early stopping
             # check conditions for early stopping
-            if val_loss < best_val_loss:
+            if ci_acc > best_ci_acc:
                 no_improvement = 0
-                best_val_loss = val_loss
+                best_ci_acc = ci_acc
             else:
                 no_improvement += 1
             if t > 5 and no_improvement == tolerance:
-                print("min validation loss: %f" % best_val_loss)
-                print("loss increasing for %i epochs" % no_improvement)
+                print("best confidence interval accuracy: %f" % best_ci_acc)
                 print("STOPPING EARLY")
                 break
     t1 = time()
