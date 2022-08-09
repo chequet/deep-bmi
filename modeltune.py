@@ -14,7 +14,7 @@ from modeltrain import train_val_split
 from FlexibleNet import *
 
 N_INPUTS = 9994
-N_EPOCHS = 10
+N_EPOCHS = 50
 
 # def cross_validation(data, k=5):
     # leave for now
@@ -138,7 +138,7 @@ def main():
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
-        max_t=N_EPOCHS,
+        max_t=5,
         grace_period=1,
         reduction_factor=2)
     # run
