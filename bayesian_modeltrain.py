@@ -97,7 +97,7 @@ def main(modelpath, n_epochs):
     optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
 
     # initialise early stopping with ci_acc
-    tolerance = 10
+    tolerance = 3
     no_improvement = 0
     best_ci_acc = 0
 
