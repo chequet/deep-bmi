@@ -109,10 +109,10 @@ def main(modelpath, n_epochs):
     for t in range(n_epochs):
         print("\n\n\nEpoch = " + str(t))
         train_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset3(data_directory + '/train/', train_files, True),
+            torch.utils.data.DataLoader(MyIterableDataset(data_directory + '/train/', train_files, True),
                                         **trainparams))
         valid_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset3(data_directory + '/train/', val_files, True),
+            torch.utils.data.DataLoader(MyIterableDataset(data_directory + '/train/', val_files, True),
                                         **valparams))
         print("training...")
         # full training step
