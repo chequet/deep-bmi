@@ -73,7 +73,7 @@ def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
-    LAYERS = [19988, 2000, 1000, 500, 250, 125, 60, 30, 15, 1]
+    LAYERS = [9994, 1000, 500, 250, 125, 60, 30, 1]
     model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
     model = model.to(device)
     print(model)
@@ -108,10 +108,10 @@ def main(modelpath, n_epochs):
     for t in range(n_epochs):
         print("\n\n\nEpoch = " + str(t))
         train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', train_files, True, 1),
+            torch.utils.data.DataLoader(MyIterableDataset3(data_directory + '/train/', train_files, True),
                                         **trainparams))
         valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + '/train/', val_files, True, 1),
+            torch.utils.data.DataLoader(MyIterableDataset3(data_directory + '/train/', val_files, True),
                                         **valparams))
         print("training...")
         # full training step
