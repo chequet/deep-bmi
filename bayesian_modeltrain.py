@@ -7,6 +7,7 @@ from BasicEmbeddedDataset import *
 from torch.utils.tensorboard import SummaryWriter
 from modeltrain import *
 from BayesianNN import *
+from MyIterableDataset3 import *
 
 ## CURRENTLY FIXED AT 10K INPUTS
 
