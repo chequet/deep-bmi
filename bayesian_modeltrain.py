@@ -8,6 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 from modeltrain import *
 from BayesianNN import *
 from MyIterableDataset3 import *
+from OneHotIterableDataset import *
 
 ## CURRENTLY FIXED AT 10K INPUTS
 
@@ -74,7 +75,7 @@ def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
-    LAYERS = [9994, 1000, 500, 250, 125, 60, 30, 1]
+    LAYERS = [9994*3, 1000, 500, 250, 125, 60, 30, 1]
     model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
     model = model.to(device)
     print(model)
@@ -109,10 +110,10 @@ def main(modelpath, n_epochs):
     for t in range(n_epochs):
         print("\n\n\nEpoch = " + str(t))
         train_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + '/train/', train_files, True),
+            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + '/train/', train_files, True),
                                         **trainparams))
         valid_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + '/train/', val_files, True),
+            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + '/train/', val_files, True),
                                         **valparams))
         print("training...")
         # full training step
