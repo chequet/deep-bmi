@@ -138,6 +138,7 @@ def main(modelpath, n_epochs):
                                                                                       over_ci_lower))
             writer.add_scalar("ci_acc", ci_acc, t)
             writer.add_scalar("Loss/val", val_loss, t)
+            val_losses.append(val_loss)
             # early stopping
             # check conditions for early stopping
             if ci_acc > best_ci_acc:
