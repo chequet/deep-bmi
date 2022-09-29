@@ -75,14 +75,15 @@ def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
-    LAYERS = [9994*2, 1000, 500, 250, 125, 60, 30, 1]
+    N_FEATURES = 100
+    LAYERS = [N_FEATURES*2, 1000, 500, 250, 125, 60, 30, 1]
     model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
     model = model.to(device)
     print(model)
 
     # initialise training and validation sets
-    n_inputs = 9994
-    data_directory = "../old_data/" + str(n_inputs) + "_data/"
+
+    data_directory = "../old_data/" + str(N_FEATURES)+ "_data/"
     train_files, val_files = train_val_split(data_directory + '/train/')
     test_files = os.listdir(data_directory + '/tst/')
 
