@@ -75,7 +75,7 @@ def main(modelpath, n_epochs):
     REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
-    N_FEATURES = 999
+    N_FEATURES = 5006
     LAYERS = [N_FEATURES*2, 1000, 500, 250, 125, 60, 30, 1]
     model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
     model = model.to(device)
