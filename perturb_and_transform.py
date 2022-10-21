@@ -50,16 +50,14 @@ def get_low_mse_samples(mse_cutoff, n_samples, bmi_lower, bmi_upper, groundtruth
     np.random.shuffle(locs)
     return locs[:n_samples]
 
-def get_sample(index, files, batch_size, fpath):
+def get_sample(index, generator, batch_size):
     # get batch number
     batch_i = math.floor(index/batch_size)
     print(batch_i)
-    batch = files[batch_i]
+    batch = generator.__getitem__(batch_i)[0]
     print(batch)
-    filepath = fpath + batch
-    b = np.load(filepath)
     # get array to extract
     array_i = index%batch_size
     print(array_i)
-    array = b['x'][array_i]
+    array = batch[array_i]
     return array
