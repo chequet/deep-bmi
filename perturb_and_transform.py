@@ -1,4 +1,5 @@
 import torch
+from torch import Tensor
 import numpy as np
 from numpy.random import default_rng
 import math
