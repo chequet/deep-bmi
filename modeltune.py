@@ -29,17 +29,32 @@ def get_dataloaders(data_directory, type=3):
                  'num_workers': 2}
     #TODO add code for other encodings
     if type == 1:
-        pass
-        # code for SVE
+        train_iterator = iter(
+            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
+                                        **trainparams))
+        valid_iterator = iter(
+            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', val_files, True),
+                                        **valparams))
     elif type ==2:
-        pass
-        # code for one hot
+        train_iterator = iter(
+            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', train_files, True),
+                                        **trainparams))
+        valid_iterator = iter(
+            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', val_files, True),
+                                        **valparams))
     elif type == 3:
         train_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 1),
                                         **trainparams))
         valid_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 1),
+                                        **valparams))
+    elif type == 4:
+        train_iterator = iter(
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 2),
+                                        **trainparams))
+        valid_iterator = iter(
+            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 2),
                                         **valparams))
     return train_iterator, valid_iterator, n_train, n_val
 
@@ -159,9 +174,12 @@ def main():
     print("Best trial final validation loss: {}".format(
         best_trial.last_result["loss"]))
     df = result.results_df
+    sorted = df.sort_values('loss')
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
-    print(df.sort_values('loss'))
+    print(sorted)
+    filename = "encoding" + type + "_" + N_INPUTS + "_tuneresults.csv"
+    sorted.to_csv(filename)
 
 if __name__ == "__main__":
     main()
