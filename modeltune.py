@@ -13,21 +13,20 @@ import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 
-N_INPUTS = 9994
+N_INPUTS = 100
 N_EPOCHS = 50
 
 # def cross_validation(data, k=5):
     # leave for now
 
 def get_dataloaders(data_directory, type=3):
-    train_files, val_files = train_val_split(data_directory + 'train/',n_train=100)
+    train_files, val_files = train_val_split(data_directory + 'train/',n_train=50)
     n_train = len(train_files)
     n_val = len(val_files)
     trainparams = {'batch_size': None,
                    'num_workers': 4}
     valparams = {'batch_size': None,
                  'num_workers': 2}
-    #TODO add code for other encodings
     if type == 1:
         train_iterator = iter(
             torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
@@ -92,7 +91,7 @@ def train(config, checkpoint_dir=None):
         model_state, optimizer_state = torch.load(checkpoint)
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
-    data_directory = "/data/old_data/" + str(N_INPUTS) + "_data/"
+    data_directory = "/data/" + str(N_INPUTS) + "_data/"
     # train
     for epoch in range(N_EPOCHS):
         train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=3)
