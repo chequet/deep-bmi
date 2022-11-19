@@ -94,7 +94,7 @@ def train(config, checkpoint_dir=None):
     data_directory = "/data/" + str(N_INPUTS) + "_data/"
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=3)
+        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=1)
         # TRAIN
         i = 0
         while i < n_train:
@@ -139,14 +139,20 @@ def train(config, checkpoint_dir=None):
         tune.report(loss=(val_loss / i))
     print("done.")
 
+# [19988, 1000, 500, 250, 125, 60, 30, 1],
+#             [19988, 1000, 1000, 500, 500, 120, 120, 1],
+#             [19988, 2000, 1500, 1000, 500, 250, 120, 1],
+#             [19988, 1000, 800, 600, 400, 200, 100, 50, 1]
+
 def main():
     # define config
     config = {
-        "arch": tune.grid_search([[19988, 1000, 500, 250, 125, 60, 30, 1],
-                                  [19988, 1000, 1000, 500, 500, 120, 120, 1],
-                                  [19988, 2000, 1500, 1000, 500, 250, 120, 1],
-                                  [19988, 1000, 800, 600, 400, 200, 100, 50, 1]
-                                  ]),
+        "arch": tune.grid_search([
+            [100, 50, 25, 12, 1],
+            [100, 50, 50, 25, 25, 12, 6, 1],
+            [100, 10, 10, 1],
+            [100, 80, 60, 40, 20, 10, 5, 1]
+        ]),
         "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
