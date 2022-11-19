@@ -19,7 +19,7 @@ from FlexibleNet import *
 N_SNPS = 100
 N_INPUTS = 200
 N_EPOCHS = 50
-ENCODING = 3
+ENCODING = 4
 #==============================================
 
 # def cross_validation(data, k=5):
@@ -208,7 +208,7 @@ def main():
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
