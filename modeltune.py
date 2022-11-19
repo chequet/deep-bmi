@@ -15,9 +15,12 @@ import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 
+# PARAMS TO CHANGE ============================
+N_SNPS = 100
 N_INPUTS = 300
 N_EPOCHS = 50
 ENCODING = 2
+#==============================================
 
 # def cross_validation(data, k=5):
     # leave for now
@@ -94,7 +97,7 @@ def train(config, checkpoint_dir=None):
         model_state, optimizer_state = torch.load(checkpoint)
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
-    data_directory = "/data/" + str(N_INPUTS) + "_data/"
+    data_directory = "/data/" + str(N_SNPS) + "_data/"
     # train
     for epoch in range(N_EPOCHS):
         train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=ENCODING)
@@ -205,7 +208,7 @@ def main():
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "encoding" + str(ENCODING) + "_" + str(N_INPUTS) + "_tuneresults.csv"
+    filename = "encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
