@@ -16,10 +16,10 @@ from modeltrain import train_val_split
 from FlexibleNet import *
 
 # PARAMS TO CHANGE ============================
-N_SNPS = 100
-N_INPUTS = 200
+N_SNPS = 500
+N_INPUTS = 500
 N_EPOCHS = 50
-ENCODING = 4
+ENCODING = 1
 #==============================================
 
 # def cross_validation(data, k=5):
@@ -166,8 +166,8 @@ def main():
     layer_params = [
         [2, 2, 2],
         [1, 10],
-        [2, 1, 2, 1],
-        [10, 10]
+        [2, 2, 5, 5],
+        [2, 5, 2, 5, 2]
     ]
     architectures = []
     for r in layer_params:
