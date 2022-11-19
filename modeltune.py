@@ -17,9 +17,9 @@ from FlexibleNet import *
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 1000
-N_INPUTS = 1000
+N_INPUTS = 3000
 N_EPOCHS = 10
-ENCODING = 1
+ENCODING = 2
 #==============================================
 
 # def cross_validation(data, k=5):
