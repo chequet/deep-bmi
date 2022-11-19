@@ -1,4 +1,6 @@
 ### architecture gridsearch with ray tune
+import sys
+
 import torch
 import torch.optim as optim
 import torchvision
@@ -13,13 +15,14 @@ import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 
-N_INPUTS = 100
+N_INPUTS = 300
 N_EPOCHS = 50
+ENCODING = 2
 
 # def cross_validation(data, k=5):
     # leave for now
 
-def get_dataloaders(data_directory, type=3):
+def get_dataloaders(data_directory, type):
     train_files, val_files = train_val_split(data_directory + 'train/',n_train=48)
     n_train = len(train_files)
     n_val = len(val_files)
@@ -34,7 +37,7 @@ def get_dataloaders(data_directory, type=3):
         valid_iterator = iter(
             torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', val_files, True),
                                         **valparams))
-    elif type ==2:
+    elif type == 2:
         train_iterator = iter(
             torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', train_files, True),
                                         **trainparams))
@@ -94,7 +97,7 @@ def train(config, checkpoint_dir=None):
     data_directory = "/data/" + str(N_INPUTS) + "_data/"
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=1)
+        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=ENCODING)
         # TRAIN
         i = 0
         while i < n_train:
@@ -144,15 +147,34 @@ def train(config, checkpoint_dir=None):
 #             [19988, 2000, 1500, 1000, 500, 250, 120, 1],
 #             [19988, 1000, 800, 600, 400, 200, 100, 50, 1]
 
+def make_architecture(inp, outp, reduction_factors):
+    arch = [inp]
+    current = inp
+    for i in range(len(reduction_factors)):
+        redf = reduction_factors[i]
+        next_layer = math.ceil(current/redf)
+        arch.append(next_layer)
+        current = next_layer
+    arch.append(outp)
+    return arch
+
 def main():
+    # generate architectures
+    layer_params = [
+        [2, 2, 2],
+        [1, 10],
+        [2, 1, 2, 1],
+        [10, 10]
+    ]
+    architectures = []
+    for r in layer_params:
+        a = make_architecture(N_INPUTS, 1, r)
+        architectures.append(a)
+    print("\nARCHITECTURE CHOICES")
+    print(architectures)
     # define config
     config = {
-        "arch": tune.grid_search([
-            [100, 50, 25, 12, 1],
-            [100, 50, 50, 25, 25, 12, 6, 1],
-            [100, 10, 10, 1],
-            [100, 80, 60, 40, 20, 10, 5, 1]
-        ]),
+        "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
@@ -183,7 +205,7 @@ def main():
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "encoding" + type + "_" + str(N_INPUTS) + "_tuneresults.csv"
+    filename = "encoding" + str(ENCODING) + "_" + str(N_INPUTS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
