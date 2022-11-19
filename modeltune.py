@@ -178,7 +178,7 @@ def main():
     # define config
     config = {
         "arch": tune.grid_search(architectures),
-        "activation": tune.grid_search(["ELU", "ReLU"]),#"LeakyReLU"
+        "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"])
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
         "lr": tune.loguniform(1e-4, 1e-1),
