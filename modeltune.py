@@ -183,7 +183,7 @@ def main():
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "encoding" + type + "_" + N_INPUTS + "_tuneresults.csv"
+    filename = "encoding" + type + "_" + str(N_INPUTS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
