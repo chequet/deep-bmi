@@ -17,9 +17,9 @@ from FlexibleNet import *
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 500
-N_INPUTS = 1500
+N_INPUTS = 1000
 N_EPOCHS = 50
-ENCODING = 2
+ENCODING = 3
 #==============================================
 
 # def cross_validation(data, k=5):
@@ -184,7 +184,7 @@ def main():
         "lr": tune.loguniform(1e-4, 1e-1),
     }
     scheduler = ASHAScheduler(
-        max_t=5,
+        max_t=N_EPOCHS,
         grace_period=1,
         reduction_factor=2)
     # run
