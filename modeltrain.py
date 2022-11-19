@@ -10,7 +10,7 @@ from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 from EffectEmbeddingDataset import *
-from Net4 import *
+# from Net4 import *
 from torch.utils.tensorboard import SummaryWriter
 
 use_cuda = torch.cuda.is_available()
