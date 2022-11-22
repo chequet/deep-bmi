@@ -9,6 +9,8 @@ import torch
 import math
 from sklearn.metrics import mean_squared_error, r2_score
 
+N_SNPS = 100
+
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 print(device)
@@ -19,8 +21,8 @@ param_grid = {
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 sgd = SGDRegressor(early_stopping=True)
-clf = GridSearchCV(sgd, param_grid, scoring=['neg_mean_squared_error', 'r2'], refit='neg_mean_squared_error')
-DATA_DIR = '../10000_data/test/'
+clf = GridSearchCV(sgd, param_grid, scoring=['r2'], refit='neg_mean_squared_error')
+DATA_DIR = '../' + str(N_SNPS) + '_data/train/'
 FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
           'num_workers': 1}  # using one worker as it doesn't take that long anyway
