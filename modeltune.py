@@ -16,10 +16,10 @@ from modeltrain import train_val_split
 from FlexibleNet import *
 
 # PARAMS TO CHANGE ============================
-N_SNPS = 5000
+N_SNPS = 10000
 N_INPUTS = 10000
 N_EPOCHS = 10
-ENCODING = 4
+ENCODING = 1
 #==============================================
 
 # def cross_validation(data, k=5):
