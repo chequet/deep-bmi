@@ -34,8 +34,8 @@ def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=
                    'num_workers': trainworkers}
     valparams = {'batch_size': None,
                  'num_workers': valworkers}
-    train_iterator = null
-    valid_iterator = null
+    train_iterator = None
+    valid_iterator = None
     if type == 1:
         train_iterator = iter(
             torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
