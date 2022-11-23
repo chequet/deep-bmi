@@ -32,14 +32,14 @@ FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
           'num_workers': 1}  # using one worker as it doesn't take that long anyway
 
-test_iterator = get_dataloaders(DATA_DIR,ENC,trainworkers=1,valworkers=1,n_train=len(FILES))[0]
+train_iterator, val_iterator, n_train, n_val = get_dataloaders(DATA_DIR,ENC,trainworkers=1,valworkers=1,n_train=len(FILES))[0]
 print("generating data...")
 # get test set
 data = []
 target = []
 i = 0
 while i < len(FILES):
-    batch = next(test_iterator)
+    batch = next(train_iterator)
     X = batch[0].to(device)
     Y = batch[1].to(device)
     data.append(X.cpu().numpy())
