@@ -26,7 +26,7 @@ ENCODING = 4
 # def cross_validation(data, k=5):
     # leave for now
 
-def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=48):
+def get_dataloaders(data_directory, type=1, trainworkers=4, valworkers=2, n_train=48):
     train_files, val_files = train_val_split(data_directory + 'train/',n_train=n_train)
     n_train = len(train_files)
     n_val = len(val_files)
