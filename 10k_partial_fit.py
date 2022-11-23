@@ -27,7 +27,7 @@ param_grid = {
 }
 sgd = SGDRegressor(early_stopping=True)
 clf = GridSearchCV(sgd, param_grid, scoring=['r2'], refit='neg_mean_squared_error')
-DATA_DIR = '../' + str(N_SNPS) + '_data/train/'
+DATA_DIR = '../' + str(N_SNPS) + '_data/'
 FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
           'num_workers': 1}  # using one worker as it doesn't take that long anyway
