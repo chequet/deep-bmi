@@ -32,7 +32,7 @@ FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
           'num_workers': 1}  # using one worker as it doesn't take that long anyway
 
-test_iterator = get_dataloaders(DATA_DIR,ENC,trainworkers=1,valworkers=1,n_train=len(FILES))
+test_iterator = get_dataloaders(DATA_DIR,ENC,trainworkers=1,valworkers=1,n_train=len(FILES))[0]
 print("generating data...")
 # get test set
 data = []
