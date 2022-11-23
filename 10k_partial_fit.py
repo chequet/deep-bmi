@@ -52,8 +52,8 @@ print("fitting classifier...")
 clf.fit(data, target)
 
 print("writing...")
-fname = '../linear_gridsearch_results' + str(N_SNPS) + "_encoding_" + str(ENC)
-best_fname = fname + 'SGDRegressor.txt'
+fname = '../linear_gridsearch_results/' + str(N_SNPS) + "_encoding_" + str(ENC)
+best_fname = fname + '_SGDRegressor.txt'
 with open(best_fname) as f:
     f.write("STANDARD VARIABLE ENCODING\n")
     f.write("best params: ")
