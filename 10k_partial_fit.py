@@ -8,8 +8,12 @@ from sklearn.model_selection import GridSearchCV
 import torch
 import math
 from sklearn.metrics import mean_squared_error, r2_score
+from modeltune import *
+import pickle as pkl
 
-N_SNPS = 100
+N_SNPS = sys.argv[1]
+ENC = sys.argv[2]
+
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -19,6 +23,7 @@ print(device)
 param_grid = {
     'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
+
 }
 sgd = SGDRegressor(early_stopping=True)
 clf = GridSearchCV(sgd, param_grid, scoring=['r2'], refit='neg_mean_squared_error')
@@ -27,7 +32,7 @@ FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
           'num_workers': 1}  # using one worker as it doesn't take that long anyway
 
-test_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(DATA_DIR, FILES, False, 2), **params))
+test_iterator = get_dataloaders(DATA_DIR,ENC,trainworkers=1,valworkers=1,n_train=len(FILES))
 print("generating data...")
 # get test set
 data = []
@@ -47,7 +52,9 @@ print("fitting classifier...")
 clf.fit(data, target)
 
 print("writing...")
-with open('10k_p2_SGDRegressor.txt', 'w') as f:
+fname = '../linear_gridsearch_results' + str(N_SNPS) + "_encoding_" + str(ENC)
+best_fname = fname + 'SGDRegressor.txt'
+with open(best_fname) as f:
     f.write("STANDARD VARIABLE ENCODING\n")
     f.write("best params: ")
     f.write(str(clf.cv_results_['params'][clf.best_index_]))
@@ -56,3 +63,6 @@ with open('10k_p2_SGDRegressor.txt', 'w') as f:
     f.write("\nbest R: ")
     f.write(str(math.sqrt((-1 * clf.cv_results_['mean_test_r2'][clf.best_index_]))))
 f.close()
+results_fname = fname + "_resultsCV.pkl"
+with open(results_fname, 'wb') as f:
+    pkl.dump(clf.cv_results_, f)

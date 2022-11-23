@@ -26,14 +26,14 @@ ENCODING = 4
 # def cross_validation(data, k=5):
     # leave for now
 
-def get_dataloaders(data_directory, type):
-    train_files, val_files = train_val_split(data_directory + 'train/',n_train=48)
+def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=48):
+    train_files, val_files = train_val_split(data_directory + 'train/',n_train=n_train)
     n_train = len(train_files)
     n_val = len(val_files)
     trainparams = {'batch_size': None,
-                   'num_workers': 4}
+                   'num_workers': trainworkers}
     valparams = {'batch_size': None,
-                 'num_workers': 2}
+                 'num_workers': valworkers}
     if type == 1:
         train_iterator = iter(
             torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
