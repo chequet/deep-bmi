@@ -19,7 +19,7 @@ from FlexibleNet import *
 N_SNPS = 10000
 N_INPUTS = 20000
 N_EPOCHS = 10
-ENCODING = 3
+ENCODING = 4
 
 #==============================================
 
