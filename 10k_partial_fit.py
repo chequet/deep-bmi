@@ -26,7 +26,7 @@ param_grid = {
 
 }
 sgd = SGDRegressor(early_stopping=True)
-clf = GridSearchCV(sgd, param_grid, scoring=['r2'], refit='neg_mean_squared_error')
+clf = GridSearchCV(sgd, param_grid, scoring=['r2', 'neg_mean_squared_error'], refit='r2')
 DATA_DIR = '../' + str(N_SNPS) + '_data/'
 FILES = os.listdir(DATA_DIR)
 params = {'batch_size': None,
