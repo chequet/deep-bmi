@@ -13,7 +13,7 @@ import pickle as pkl
 
 N_SNPS = sys.argv[1]
 ENC = sys.argv[2]
-
+print(N_SNPS, ENC)
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
