@@ -192,7 +192,7 @@ def main():
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
         "optim": tune.choice(["adam","adamw","adamax","radam"]), #"nadam","spadam","sgd","rmsprop",
         "lr": tune.loguniform(1e-4, 1e-1),
-        "loss" : tune.grid_search(["MSE, huber"])
+        "loss": tune.grid_search(["MSE, huber"])
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -210,16 +210,16 @@ def main():
         scheduler=scheduler,
         max_concurrent_trials=3
     )
-    best_trial = result.get_best_trial("loss", "min", "last")
+    best_trial = result.get_best_trial("r2", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
-    print("Best trial final validation loss: {}".format(
-        best_trial.last_result["loss"]))
+    print("Best trial final validation r2: {}".format(
+        best_trial.last_result["r2"]))
     df = result.results_df
-    sorted = df.sort_values('loss')
+    sorted = df.sort_values('r2', ascending=False)
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search2/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
