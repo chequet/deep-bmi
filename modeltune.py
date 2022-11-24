@@ -3,9 +3,10 @@ import sys
 
 import torch
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-import ray
+import torch.nn as nn
+# import torchvision
+# import torchvision.transforms as transforms
+# import ray
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
@@ -14,6 +15,7 @@ from BasicEmbeddedDataset import *
 import os
 from modeltrain import train_val_split
 from FlexibleNet import *
+from sklearn.metrics import r2_score
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 10000
@@ -73,7 +75,10 @@ def train(config, checkpoint_dir=None):
     # set up model according to config
     model = FlexibleNet(config["arch"],config["dropout"],config["activation"])
     model.to(device)
-    loss_fn = torch.nn.MSELoss(reduction='mean')
+    if config["loss"] == "MSE":
+        loss = nn.MSELoss(reduction='mean')
+    elif config["loss"] == "huber":
+        loss = nn.HuberLoss()
     learning_rate = config['lr']
     # choose optimiser based on config
     # choose optimiser based on config
@@ -126,6 +131,7 @@ def train(config, checkpoint_dir=None):
         # VALIDATE
         with torch.no_grad():
             val_loss = 0.0
+            val_r2 = 0.0
             i = 0
             while i < n_val:
                 # print("validation batch index %i" % i, end='\r')
@@ -138,13 +144,14 @@ def train(config, checkpoint_dir=None):
                 # compute and print loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
+                val_r2 += r2_score(y_pred.cpu().numpy(),Y.cpu().numpy())
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-
+        tune.report(r2=(val_r2 / i))
         tune.report(loss=(val_loss / i))
     print("done.")
 
@@ -183,8 +190,9 @@ def main():
         "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
-        "optim": tune.choice(["adam","sgd","rmsprop","adamw","adamax","radam"]), #"nadam","spadam"
+        "optim": tune.choice(["adam","adamw","adamax","radam"]), #"nadam","spadam","sgd","rmsprop",
         "lr": tune.loguniform(1e-4, 1e-1),
+        "loss" : tune.grid_search(["MSE, huber"])
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -196,8 +204,8 @@ def main():
         tune.with_parameters(train),
         resources_per_trial={"cpu": 60, "gpu": 1},
         config=config,
-        metric="loss",
-        mode="min",
+        metric="r2",
+        mode="max",
         num_samples=1,
         scheduler=scheduler,
         max_concurrent_trials=3
