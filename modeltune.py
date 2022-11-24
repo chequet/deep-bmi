@@ -145,12 +145,14 @@ def train(config, checkpoint_dir=None):
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
                 val_r2 += r2_score(y_pred.cpu().numpy(),Y.cpu().numpy())
+                print(val_r2)
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
+        print("r2 = " + str(val_r2/i))
         tune.report(r2=(val_r2 / i))
         tune.report(loss=(val_loss / i))
     print("done.")
