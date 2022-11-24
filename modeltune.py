@@ -18,10 +18,10 @@ from FlexibleNet import *
 from sklearn.metrics import r2_score
 
 # PARAMS TO CHANGE ============================
-N_SNPS = 10000
-N_INPUTS = 20000
+N_SNPS = 100
+N_INPUTS = 100
 N_EPOCHS = 10
-ENCODING = 4
+ENCODING = 1
 
 #==============================================
 
