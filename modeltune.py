@@ -76,9 +76,9 @@ def train(config, checkpoint_dir=None):
     model = FlexibleNet(config["arch"],config["dropout"],config["activation"])
     model.to(device)
     if config["loss"] == "MSE":
-        loss = nn.MSELoss(reduction='mean')
+        loss_fn = nn.MSELoss(reduction='mean')
     elif config["loss"] == "huber":
-        loss = nn.HuberLoss()
+        loss_fn = nn.HuberLoss()
     learning_rate = config['lr']
     # choose optimiser based on config
     # choose optimiser based on config
