@@ -23,7 +23,7 @@ print(device)
 param_grid = {
     'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
-
+    'epsilon' : [0.1, 0.5, 0.75, 1]
 }
 sgd = SGDRegressor(early_stopping=True)
 clf = GridSearchCV(sgd, param_grid, scoring=['r2', 'neg_mean_squared_error'], refit='r2')
