@@ -16,13 +16,14 @@ import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
+from scipy.stats import pearsonr
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 100
 N_INPUTS = 100
 N_EPOCHS = 10
 ENCODING = 1
-
+BATCH_SIZE = 4096
 #==============================================
 
 # def cross_validation(data, k=5):
@@ -132,6 +133,7 @@ def train(config, checkpoint_dir=None):
         with torch.no_grad():
             val_loss = 0.0
             val_r2 = 0.0
+            val_r = 0.0
             i = 0
             while i < n_val:
                 # print("validation batch index %i" % i, end='\r')
@@ -144,14 +146,15 @@ def train(config, checkpoint_dir=None):
                 # compute and print loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
-                val_r2 += r2_score(y_pred.cpu().numpy(),Y.cpu().numpy())
+                val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
+                val_r += pearsonr(y_pred.cpu().numpy(), Y.cpu().numpy())
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-        tune.report(r2=(val_r2 / i), loss=(val_loss / i))
+        tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=(val_r / i))
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
@@ -167,10 +170,10 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [10, 2, 2, 2],
-        [10, 1, 10],
-        [10, 2, 2, 5, 5],
-        [10, 5, 2, 5, 2]
+        [2, 2, 2],
+        [1, 10],
+        [10, 10],
+        [2, 1, 2, 1]
     ]
     architectures = []
     for r in layer_params:
