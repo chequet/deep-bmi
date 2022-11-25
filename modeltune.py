@@ -75,12 +75,12 @@ def train(config, checkpoint_dir=None):
     # set up model according to config
     model = FlexibleNet(config["arch"],config["dropout"],config["activation"])
     model.to(device)
+    # choose loss fn based on config
     if config["loss"] == "MSE":
         loss_fn = nn.MSELoss(reduction='mean')
     elif config["loss"] == "huber":
         loss_fn = nn.HuberLoss()
     learning_rate = config['lr']
-    # choose optimiser based on config
     # choose optimiser based on config
     if config["optim"] == 'adam':
         optimiser = optim.Adam(model.parameters(), lr=learning_rate)
@@ -144,7 +144,7 @@ def train(config, checkpoint_dir=None):
                 # compute and print loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
-                val_r2 += r2_score(y_pred.cpu().numpy(),Y.cpu().numpy())
+                val_r2 += r2_score(y_pred.cpu().numpy(),Y.cpu().numpy()).cpu()
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
