@@ -152,7 +152,7 @@ def train(config, checkpoint_dir=None):
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
         print("r2 = " + str(val_r2/i))
-        tune.report({"r2":(val_r2 / i),"loss":(val_loss / i)})
+        tune.report({"r2": (val_r2 / i), "loss": (val_loss / i)})
     print("done.")
 
 # [19988, 1000, 500, 250, 125, 60, 30, 1],
