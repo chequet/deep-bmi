@@ -147,14 +147,14 @@ def train(config, checkpoint_dir=None):
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
                 val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
-                val_r += pearsonr(y_pred.cpu().numpy().ravel(), Y.cpu().numpy().ravel())
+                # val_r += pearsonr(y_pred.cpu().numpy().ravel(), Y.cpu().numpy().ravel())
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-        tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=(val_r / i))
+        tune.report(r2=(val_r2 / i), loss=(val_loss / i))#, r=(val_r / i))
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
