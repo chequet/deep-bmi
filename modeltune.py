@@ -25,8 +25,6 @@ ENCODING = 1
 
 #==============================================
 
-TUNE_DISABLE_STRICT_METRIC_CHECKING=1
-
 # def cross_validation(data, k=5):
     # leave for now
 
@@ -153,7 +151,7 @@ def train(config, checkpoint_dir=None):
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-            tune.report({"R2": (val_r2 / i), "loss": (val_loss / i)})
+            tune.report({"R2": (val_r2 / i)})#, "loss": (val_loss / i)})
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
