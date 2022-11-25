@@ -25,6 +25,8 @@ ENCODING = 1
 
 #==============================================
 
+TUNE_DISABLE_STRICT_METRIC_CHECKING=1
+
 # def cross_validation(data, k=5):
     # leave for now
 
