@@ -151,7 +151,7 @@ def train(config, checkpoint_dir=None):
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-            tune.report({"R2": (val_r2 / i)})#, "loss": (val_loss / i)})
+        tune.report(r2=(val_r2 / i), loss=(val_loss / i))
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
@@ -197,18 +197,18 @@ def main():
         tune.with_parameters(train),
         resources_per_trial={"cpu": 60, "gpu": 1},
         config=config,
-        metric="R2",
+        metric="r2",
         mode="max",
         num_samples=1,
         scheduler=scheduler,
         max_concurrent_trials=3
     )
-    best_trial = result.get_best_trial("R2", "max", "last")
+    best_trial = result.get_best_trial("r2", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation r2: {}".format(
-        best_trial.last_result["R2"]))
+        best_trial.last_result["r2"]))
     df = result.results_df
-    sorted = df.sort_values('R2', ascending=False)
+    sorted = df.sort_values('r2', ascending=False)
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
