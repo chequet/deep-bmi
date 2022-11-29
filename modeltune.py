@@ -147,7 +147,7 @@ def train(config, checkpoint_dir=None):
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
                 val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
-                # val_r += pearsonr(y_pred.cpu().numpy().ravel(), Y.cpu().numpy().ravel())
+                val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy().ravel())
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
