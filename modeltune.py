@@ -17,6 +17,7 @@ from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
+import warnings
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 100
@@ -147,14 +148,21 @@ def train(config, checkpoint_dir=None):
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
                 val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
-                val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
+                # suppress constant input warnings
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
                 i += 1
         # Save a Ray Tune checkpoint & report score to Tune
         with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-        tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=(val_r / i))
+        if not np.isnan(val_r):
+            r = (val_r / i)
+        else:
+            r = np.nan
+        tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=r)
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
@@ -208,8 +216,8 @@ def main():
     )
     best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
-    print("Best trial final validation r2: {}".format(
-        best_trial.last_result["r2"]))
+    print("Best trial final validation loss: {}".format(
+        best_trial.last_result["loss"]))
     df = result.results_df
     sorted = df.sort_values('loss')
     #TODO filter for NaN before printing
