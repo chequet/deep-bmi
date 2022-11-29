@@ -20,9 +20,9 @@ from scipy.stats import pearsonr
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 100
-N_INPUTS = 100
+N_INPUTS = 300
 N_EPOCHS = 10
-ENCODING = 1
+ENCODING = 2
 BATCH_SIZE = 4096
 #==============================================
 
@@ -154,7 +154,7 @@ def train(config, checkpoint_dir=None):
             path = os.path.join(checkpoint_dir, "checkpoint")
             torch.save(
                 (model.state_dict(), optimiser.state_dict()), path)
-        tune.report(r2=(val_r2 / i), loss=(val_loss / i))#, r=(val_r / i))
+        tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=(val_r / i))
 
 def make_architecture(inp, outp, reduction_factors):
     arch = [inp]
@@ -200,18 +200,18 @@ def main():
         tune.with_parameters(train),
         resources_per_trial={"cpu": 60, "gpu": 1},
         config=config,
-        metric="r2",
-        mode="max",
+        metric="loss",
+        mode="min",
         num_samples=1,
         scheduler=scheduler,
         max_concurrent_trials=3
     )
-    best_trial = result.get_best_trial("r2", "max", "last")
+    best_trial = result.get_best_trial("loss", "min", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation r2: {}".format(
         best_trial.last_result["r2"]))
     df = result.results_df
-    sorted = df.sort_values('r2', ascending=False)
+    sorted = df.sort_values('loss')
     #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
