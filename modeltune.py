@@ -21,9 +21,9 @@ import warnings
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 100
-N_INPUTS = 300
+N_INPUTS = 200
 N_EPOCHS = 10
-ENCODING = 2
+ENCODING = 3
 BATCH_SIZE = 4096
 #==============================================
 
@@ -220,7 +220,6 @@ def main():
         best_trial.last_result["loss"]))
     df = result.results_df
     sorted = df.sort_values('loss')
-    #TODO filter for NaN before printing
     print("\n\n====================================================================\n")
     print(sorted)
     filename = "grid_search2/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
