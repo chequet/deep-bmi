@@ -20,10 +20,10 @@ from scipy.stats import pearsonr
 import warnings
 
 # PARAMS TO CHANGE ============================
-N_SNPS = sys.argv[1]
-N_INPUTS = sys.argv[2]
+N_SNPS = int(sys.argv[1])
+N_INPUTS = int(sys.argv[2])
 N_EPOCHS = 10
-ENCODING = sys.argv[3]
+ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
 
