@@ -21,9 +21,9 @@ import warnings
 
 # PARAMS TO CHANGE ============================
 N_SNPS = 100
-N_INPUTS = 200
+N_INPUTS = 100
 N_EPOCHS = 10
-ENCODING = 3
+ENCODING = 1
 BATCH_SIZE = 4096
 #==============================================
 
