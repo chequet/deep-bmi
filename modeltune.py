@@ -178,10 +178,11 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [2, 2, 2],
-        [1, 10],
-        [10, 10],
-        [2, 1, 2, 1]
+        [10, 2, 2, 2],
+        [10, 1, 10],
+        [10, 10, 10],
+        [10, 2, 2, 5, 5],
+        [10, 5, 2, 5, 2]
     ]
     architectures = []
     for r in layer_params:
@@ -194,7 +195,7 @@ def main():
         "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),
-        "optim": tune.choice(["adam","adamw","adamax","radam"]), #"nadam","spadam","sgd","rmsprop",
+        "optim": tune.choice(["adam","adamw","radam"]), #"nadam","spadam","sgd","rmsprop","adamax",
         "lr": tune.loguniform(1e-4, 1e-1),
         "loss": tune.grid_search(["huber"])
     }
