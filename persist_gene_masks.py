@@ -4,10 +4,11 @@ import pickle
 N_SNPs = 10000
 # make dictionary of gene names to SNP masks
 gene_mask_dict = {}
-rsid_10k = np.load('../10k_rsid.npy')
+rsid_10k = pickle.load(open('../10k_rsid.pkl','rb'))
 gene_dict = pickle.load(open('../gene_rsid_dict.pkl', 'rb'))
 for key in gene_dict.keys():
-    if key == key: # avoid nan key
+    # avoid nan key
+    if key == key:
         print(key)
         gene = gene_dict[key]
         snp_set = set(gene)
