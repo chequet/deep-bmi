@@ -22,7 +22,7 @@ import warnings
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = 50
+N_EPOCHS = 20
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
@@ -192,10 +192,10 @@ def main():
     config = {
         "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),
-        "dropout": tune.grid_search([0,0.1]),#,0.2,0.3
+        "dropout": tune.grid_search([0,0.1,0.2]),#,0.3
         "optim": tune.choice(["adam","adamw","radam"]), #"nadam","spadam","sgd","rmsprop","adamax",
         "lr": tune.loguniform(1e-4, 1e-1),
-        "loss": tune.grid_search(["MSE","huber"])#
+        "loss": tune.grid_search(["MSE"])#,"huber"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
