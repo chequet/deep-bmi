@@ -22,7 +22,7 @@ import warnings
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = 40
+N_EPOCHS = 20
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
@@ -179,8 +179,8 @@ def main():
     # generate architectures
     layer_params = [
         [2, 2, 2],
-        [1, 10],
-        [2, 1, 2, 1]
+        [10, 10],
+        [2, 5, 2, 5]
     ]
     architectures = []
     for r in layer_params:
@@ -195,7 +195,7 @@ def main():
         "dropout": tune.grid_search([0,0.1]),#,0.2,0.3
         "optim": tune.choice(["adam","adamw","radam"]), #"nadam","spadam","sgd","rmsprop","adamax",
         "lr": tune.loguniform(1e-4, 1e-1),
-        "loss": tune.grid_search(["MSE","huber"])
+        "loss": tune.grid_search(["MSE"])#,"huber"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -221,7 +221,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_mse/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
