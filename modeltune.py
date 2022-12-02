@@ -222,7 +222,7 @@ def main():
     sorted = df.sort_values('loss')
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search2/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search3/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
