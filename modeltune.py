@@ -208,18 +208,18 @@ def main():
         tune.with_parameters(train),
         resources_per_trial={"cpu": 60, "gpu": 1},
         config=config,
-        metric="loss",
-        mode="min",
+        metric="r",
+        mode="max",
         num_samples=1,
         scheduler=scheduler,
         max_concurrent_trials=3
     )
-    best_trial = result.get_best_trial("loss", "min", "last")
+    best_trial = result.get_best_trial("r", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation loss: {}".format(
-        best_trial.last_result["loss"]))
+        best_trial.last_result["r"]))
     df = result.results_df
-    sorted = df.sort_values('loss')
+    sorted = df.sort_values('r')
     print("\n\n====================================================================\n")
     print(sorted)
     filename = "grid_search3/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
