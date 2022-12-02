@@ -22,7 +22,7 @@ import warnings
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = 10
+N_EPOCHS = 20
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
