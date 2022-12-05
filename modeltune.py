@@ -22,7 +22,7 @@ import warnings
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = 50
+N_EPOCHS = 20
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
@@ -178,9 +178,9 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [10, 2, 2, 2],
-        [10, 10, 10],
-        [10, 2, 5, 2, 5]
+        [50, 2, 2, 2],
+        [50, 10, 10],
+        [50, 2, 5, 2, 5]
     ]
     architectures = []
     for r in layer_params:
@@ -221,7 +221,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_mse/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
