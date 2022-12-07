@@ -161,7 +161,7 @@ def train(config, checkpoint_dir=None):
         if not np.isnan(val_r):
             r = (val_r / i)
         else:
-            r = np.nan
+            r = 0
         tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=r)
 
 def make_architecture(inp, outp, reduction_factors):
