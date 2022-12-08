@@ -170,7 +170,7 @@ def main():
         "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
-        "optim": tune.choice(["radam""adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
+        "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-1),
         "loss": tune.grid_search(["MSE","huber"])#
     }
