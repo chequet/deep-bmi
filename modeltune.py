@@ -89,7 +89,7 @@ def train(config, checkpoint_dir=None):
         valid_iterator = get_dataloader(data_directory+'train/', ENCODING, 2, val_files)
         # TRAIN
         i = 0
-        while i < n_train:
+        while i < len(train_files):
             batch = next(train_iterator)
             # print("batch index %i" % i, end='\r')
             X = batch[0].to(device)
@@ -112,7 +112,7 @@ def train(config, checkpoint_dir=None):
             val_r2 = 0.0
             val_r = 0.0
             i = 0
-            while i < n_val:
+            while i < len(val_files):
                 # print("validation batch index %i" % i, end='\r')
                 batch = next(valid_iterator)
                 X = batch[0].to(device)
