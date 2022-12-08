@@ -159,7 +159,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             val_r2 = 0.0
             val_r = 0.0
             i = 0
-            while i < len(validation_set):
+            while i < len(val_set):
                 print("validation batch index %i" % i, end='\r')
                 batch = next(validation_iterator)
                 X = batch[0].to(device)
