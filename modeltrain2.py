@@ -115,35 +115,37 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
 
 def main():
 
-
-    # let's just go for leakyrelu and radam and huber loss
-    #-------------PARAMS-----------------------------------------------
-    arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
-    learning_rate = 1e-4
-    loss_fn = nn.HuberLoss()
-    optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
-    data_directory = "/data/" + str(N_SNPS) + "_data/"
-    #------------------------------------------------------------------
-
     # save results for printing and persisting
     results = {'validation_sets':[], 'validation_loss':[], 'validation_r':[], 'validation_r2':[], 'n_epochs':[]}
     # 5-fold cross validation
     cross_val_partitions = k_fold_split(data_directory+'train/')
     print(len(cross_val_partitions))
+
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
         print("validation set:\n")
         print(val_set)
+
         # new model
+        arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
         model = FlexibleNet(arch, 0, 'LeakyReLU')
         model = model.to(device)
+        # let's just go for leakyrelu and radam and huber loss
+        # -------------PARAMS-----------------------------------------------
+        learning_rate = 1e-4
+        loss_fn = nn.HuberLoss()
+        optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
+        data_directory = "/data/" + str(N_SNPS) + "_data/"
+        # ------------------------------------------------------------------
+
         # initialise summary writer for tensorboard
         writer = SummaryWriter()
         # initialise early stopping
         tolerance = 10
         no_improvement = 0
         best_val_loss = np.inf
+
         for t in range(N_EPOCHS):
             print("epoch %i"%t)
             train_iterator = get_dataloader(data_directory, ENCODING, 4, train_set)
