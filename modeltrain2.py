@@ -143,7 +143,7 @@ def main():
         tolerance = 10
         no_improvement = 0
         best_val_loss = np.inf
-        for epoch in N_EPOCHS:
+        for epoch in range(N_EPOCHS):
             loss = train(model,train_set,train_iterator,loss_fn,optimiser)
             # log training loss w tensorboard
             writer.add_scalar("Loss/train", loss, epoch)
