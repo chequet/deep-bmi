@@ -88,7 +88,8 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
         val_loss = 0.0
         val_r2 = 0.0
         val_r = 0.0
-        for i in range(len(validation_set)):
+        i = 0
+        while i < len(validation_set):
             print("validation batch index %i" % i, end='\r')
             batch = next(validation_iterator)
             X = batch[0].to(device)
@@ -101,6 +102,7 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
             val_loss += loss.cpu().numpy()
             val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
             val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
+            i+=1
         if not np.isnan(val_r):
             r = (val_r / i)
         else:
