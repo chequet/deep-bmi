@@ -43,7 +43,7 @@ def k_fold_split(train_dir, n=5):
     partitions.append(files[start:])
     return partitions
 
-def train_val_split(train_dir, val_files):
+def get_train_files(train_dir, val_files):
     # get training set given holdout set
     files = os.listdir(train_dir)
     train_files = [item for item in files if item not in val_files]
@@ -126,7 +126,6 @@ def main():
     loss_fn = nn.HuberLoss()
     optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
-    print(data_directory)
     #------------------------------------------------------------------
 
     # save results for printing and persisting
@@ -135,7 +134,7 @@ def main():
     cross_val_partitions = k_fold_split(data_directory)
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
-        train_set = train_val_split(data_directory, val_set)
+        train_set = get_train_files(data_directory+'train/', val_set)
         train_iterator = get_dataloader(data_directory,ENCODING,4,train_set)
         valid_iterator = get_dataloader(data_directory,ENCODING,2,val_set)
         # initialise summary writer for tensorboard
