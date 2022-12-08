@@ -145,14 +145,14 @@ def main():
         tolerance = 10
         no_improvement = 0
         best_val_loss = np.inf
-        for i in range(N_EPOCHS):
+        for t in range(N_EPOCHS):
             loss = train(model,train_set,train_iterator,loss_fn,optimiser)
             # log training loss w tensorboard
-            writer.add_scalar("Loss/train", loss, i)
+            writer.add_scalar("Loss/train", loss, t)
             val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
-            writer.add_scalar("Loss/val", val_loss, i)
-            writer.add_scalar("Pearson_R", val_r, i)
-            writer.add_scalar("R2", val_r2, i)
+            writer.add_scalar("Loss/val", val_loss, t)
+            writer.add_scalar("Pearson_R", val_r, t)
+            writer.add_scalar("R2", val_r2, t)
             # check conditions for early stopping
             if val_loss < best_val_loss:
                 no_improvement = 0
@@ -166,7 +166,7 @@ def main():
         results['validation_loss'].append(val_loss)
         results['validation_r'].append(val_r)
         results['validation_r2'].append(val_r2)
-        results['n_epochs'].append(i)
+        results['n_epochs'].append(t)
         writer.flush()
         writer.close()
     # save results
