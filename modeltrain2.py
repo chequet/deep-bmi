@@ -143,14 +143,14 @@ def main():
         tolerance = 10
         no_improvement = 0
         best_val_loss = np.inf
-        for epoch in range(N_EPOCHS):
+        for i in range(N_EPOCHS):
             loss = train(model,train_set,train_iterator,loss_fn,optimiser)
             # log training loss w tensorboard
-            writer.add_scalar("Loss/train", loss, epoch)
+            writer.add_scalar("Loss/train", loss, i)
             val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
-            writer.add_scalar("Loss/val", val_loss, epoch)
-            writer.add_scalar("Pearson_R", val_r, epoch)
-            writer.add_scalar("R2", val_r2, epoch)
+            writer.add_scalar("Loss/val", val_loss, i)
+            writer.add_scalar("Pearson_R", val_r, i)
+            writer.add_scalar("R2", val_r2, i)
             # check conditions for early stopping
             if val_loss < best_val_loss:
                 no_improvement = 0
@@ -164,6 +164,7 @@ def main():
         results['validation_loss'].append(val_loss)
         results['validation_r'].append(val_r)
         results['validation_r2'].append(val_r2)
+        results['n_epochs'].append(i)
         writer.flush()
         writer.close()
     # save results
@@ -171,12 +172,13 @@ def main():
     results_path = '../results/' + PATH + '_results.pkl'
     pickle.dump(results, open(results_path, 'wb'))
     # print interesting results
-    print('mean validation loss: %f'%np.mean(np.array(results['validation_loss'])))
+    print('mean validation loss: %f' %np.mean(np.array(results['validation_loss'])))
     print('best validation loss: %f' % np.min(np.array(results['validation_loss'])))
     print('mean validation r: %f' % np.mean(np.array(results['validation_r'])))
     print('best validation r: %f' % np.max(np.array(results['validation_r'])))
     print('mean validation r2: %f' % np.mean(np.array(results['validation_r2'])))
     print('best validation r2: %f' % np.max(np.array(results['validation_r2'])))
+    print('mean number of epochs: %i' %np.mean(np.array(results['n_epochs'])))
 
 if __name__ == "__main__":
     main()
