@@ -158,13 +158,15 @@ def main():
             writer.add_scalar("Pearson_R", val_r, t)
             writer.add_scalar("R2", val_r2, t)
             # check conditions for early stopping
+            if t%10 == 0:
+                print("no improvement for %i epochs" %t)
             if val_loss < best_val_loss:
                 no_improvement = 0
                 best_val_loss = val_loss
             else:
                 no_improvement += 1
-                print("no improvement for %i epochs"%no_improvement)
-            if t > 10 and no_improvement >= tolerance:
+            # 30 epoch grace period
+            if t > 30 and no_improvement >= tolerance:
                 print("min validation loss: %f" % best_val_loss)
                 print("STOPPING EARLY\n\n")
                 break
