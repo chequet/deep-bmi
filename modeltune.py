@@ -192,7 +192,7 @@ def main():
         "activation": tune.grid_search(["LeakyReLU"]),#"ELU", "ReLU",
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam"]), #"nadam","spadam","sgd","rmsprop","adamax","adam","adamw",
-        "lr": tune.choice([1e-1]),#tune.loguniform(1e-4, 1e-1),
+        "lr": tune.choice([1e-4]),#tune.loguniform(1e-4, 1e-1),
         "loss": tune.grid_search(["huber"])#"MSE",
     }
     scheduler = ASHAScheduler(
