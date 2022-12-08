@@ -13,7 +13,7 @@ from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 import os
-from modeltrain import train_val_split
+# from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
