@@ -111,7 +111,7 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
 def main():
 
     # get or create model
-    if os.path.exists(PATH):
+    if os.path.exists('../models/' + PATH):
         print("loading saved model...")
         model = torch.load(PATH)
     else:
