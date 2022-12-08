@@ -26,7 +26,7 @@ N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
-PATH = str(N_SNPS) + '_huber_radam_leakyrelu_dropout02_' + str(ENCODING)
+PATH = str(N_SNPS) + '_huber_radam_leakyrelu_dropout04_' + str(ENCODING)
 #==============================================
 
 def k_fold_split(train_dir, n=5):
@@ -131,7 +131,7 @@ def main():
 
         # new model
         # -------------PARAMS-----------------------------------------------
-        model = FlexibleNet(arch, 0.2, 'LeakyReLU').to(device)
+        model = FlexibleNet(arch, 0.4, 'LeakyReLU').to(device)
         learning_rate = 1e-4
         loss_fn = nn.HuberLoss()
         optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
