@@ -126,6 +126,7 @@ def main():
     loss_fn = nn.HuberLoss()
     optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
+    print(data_directory)
     #------------------------------------------------------------------
 
     # save results for printing and persisting
