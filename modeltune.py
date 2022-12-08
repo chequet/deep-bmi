@@ -219,7 +219,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
