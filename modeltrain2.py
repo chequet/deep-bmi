@@ -18,13 +18,13 @@ device = torch.device("cuda:0" if use_cuda else "cpu")
 print(device)
 
 # PARAMS TO CHANGE ============================
-N_SNPS = int(sys.argv[2])
-N_INPUTS = int(sys.argv[3])
-N_EPOCHS = int(sys.argv[5])
-ENCODING = int(sys.argv[4])
+N_SNPS = int(sys.argv[1])
+N_INPUTS = int(sys.argv[2])
+N_EPOCHS = int(sys.argv[4])
+ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
-REDUCTIONS = [50, 10, 10]
-PATH = sys.argv[1]
+REDUCTIONS = [1, 10]
+PATH = str(N_SNPS) + '_huber_radam_' + str(ENCODING)
 #==============================================
 
 def k_fold_split(train_dir, n=5):
