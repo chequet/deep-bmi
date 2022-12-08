@@ -163,6 +163,7 @@ def main():
                 best_val_loss = val_loss
             else:
                 no_improvement += 1
+                print("no improvement for %i epochs"%no_improvement)
             if t > 10 and no_improvement == tolerance:
                 print("min validation loss: %f" % best_val_loss)
                 print("STOPPING EARLY\n\n")
