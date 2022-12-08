@@ -27,50 +27,22 @@ ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
 
-# def cross_validation(data, k=5):
-    # leave for now
-
-def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=48):
-    train_files, val_files = train_val_split(data_directory + 'train/',n_train=n_train)
-    print(train_files)
-    print(val_files)
-    n_train = len(train_files)
-    n_val = len(val_files)
-    trainparams = {'batch_size': None,
-                   'num_workers': trainworkers}
-    valparams = {'batch_size': None,
-                 'num_workers': valworkers}
-    train_iterator = None
-    valid_iterator = None
-    if type == 1:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', val_files, True),
-                                        **valparams))
-    elif type == 2:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', train_files, True),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', val_files, True),
-                                        **valparams))
-    elif type == 3:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 1),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 1),
-                                        **valparams))
-    elif type == 4:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 2),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 2),
-                                        **valparams))
-    return train_iterator, valid_iterator, n_train, n_val
+def get_dataloader(data_directory, encoding, workers, files):
+    params = {'batch_size': None,
+              'num_workers': workers}
+    if encoding == 1:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (MyIterableDataset(data_directory + 'train/', files, True),**params))
+    elif encoding == 2:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (OneHotIterableDataset(data_directory + 'train/', files, True),**params))
+    elif encoding == 3:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 1),**params))
+    elif encoding == 4:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
+    return dataloader
 
 def train(config, checkpoint_dir=None):
     use_cuda = torch.cuda.is_available()
@@ -110,9 +82,11 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
+    train_files, val_files = train_val_split(data_directory+'train/')
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=ENCODING)
+        train_iterator = get_dataloader(data_directory+'train/',4,train_files)
+        valid_iterator = get_dataloader(data_directory+'train/',2,val_files)
         # TRAIN
         i = 0
         while i < n_train:
