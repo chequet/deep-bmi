@@ -179,6 +179,7 @@ def main():
     print('mean validation r2: %f' % np.mean(np.array(results['validation_r2'])))
     print('best validation r2: %f' % np.max(np.array(results['validation_r2'])))
     print('mean number of epochs: %i' %np.mean(np.array(results['n_epochs'])))
+    print('epoch range: %i' %( np.max(np.array(results['n_epochs'])) - np.min(np.array(results['n_epochs'])) ))
 
 if __name__ == "__main__":
     main()
