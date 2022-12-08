@@ -178,9 +178,7 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [50, 2, 2, 2],
-        [50, 10, 10],
-        [50, 2, 5, 2, 5]
+        [2, 2, 2]
     ]
     architectures = []
     for r in layer_params:
@@ -191,11 +189,11 @@ def main():
     # define config
     config = {
         "arch": tune.grid_search(architectures),
-        "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),
-        "dropout": tune.grid_search([0,0.1]),#,0.2,0.3
-        "optim": tune.choice(["adam","adamw","radam"]), #"nadam","spadam","sgd","rmsprop","adamax",
-        "lr": tune.loguniform(1e-4, 1e-1),
-        "loss": tune.grid_search(["MSE","huber"])#
+        "activation": tune.grid_search(["LeakyReLU"]),#"ELU", "ReLU",
+        "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
+        "optim": tune.choice(["radam"]), #"nadam","spadam","sgd","rmsprop","adamax","adam","adamw",
+        "lr": tune.choice([1e-1])#tune.loguniform(1e-4, 1e-1),
+        "loss": tune.grid_search(["huber"])#"MSE",
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,

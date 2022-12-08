@@ -179,7 +179,6 @@ def main():
     # save results
     torch.save(model,PATH)
     results_path = '../results/' + PATH + '_results.csv'
-    # pickle.dump(results, open(results_path, 'wb'))
     with open(results_path, 'w') as f:
         w = csv.writer(f)
         w.writerows(results.items())
