@@ -67,7 +67,8 @@ def get_dataloader(data_directory, encoding, workers, files):
     return dataloader
 
 def train(model, train_set, train_iterator, loss_fn, optimiser):
-    for i in range(len(train_set)):
+    i = 0
+    while i < len(train_set):
         print("batch index %i" % i, end='\r')
         batch = next(train_iterator)
         X = batch[0].to(device)
@@ -81,6 +82,7 @@ def train(model, train_set, train_iterator, loss_fn, optimiser):
         loss.backward()
         # update weights with gradient descent
         optimiser.step()
+        i += 1
     return loss.item()
 
 def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
@@ -137,10 +139,6 @@ def main():
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
-        print("val set:\n")
-        print(val_set)
-        print("train set:\n")
-        print(train_set)
         train_iterator = get_dataloader(data_directory,ENCODING,4,train_set)
         valid_iterator = get_dataloader(data_directory,ENCODING,2,val_set)
         # initialise summary writer for tensorboard
