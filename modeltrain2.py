@@ -11,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
-import pickle as pkl
+import pickle
 import sys
 
 use_cuda = torch.cuda.is_available()
@@ -139,7 +139,8 @@ def main():
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
-
+        print("validation set:\n")
+        print(val_set)
         # initialise summary writer for tensorboard
         writer = SummaryWriter()
         # initialise early stopping
