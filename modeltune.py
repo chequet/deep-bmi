@@ -82,7 +82,7 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
-    train_files, val_files = train_val_split(data_directory+'train/')
+    train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
         train_iterator = get_dataloader(data_directory, ENCODING, 4, train_files)
