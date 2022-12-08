@@ -32,6 +32,8 @@ BATCH_SIZE = 4096
 
 def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=48):
     train_files, val_files = train_val_split(data_directory + 'train/',n_train=n_train)
+    print(train_files)
+    print(val_files)
     n_train = len(train_files)
     n_val = len(val_files)
     trainparams = {'batch_size': None,
