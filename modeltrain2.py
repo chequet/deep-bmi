@@ -135,6 +135,9 @@ def main():
         learning_rate = 0.0001
         loss_fn = nn.HuberLoss()
         optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
+        print("new model state dict")
+        for param_tensor in model.state_dict():
+            print(param_tensor, "\t", model.state_dict()[param_tensor].size())
         # ------------------------------------------------------------------
 
         # initialise summary writer for tensorboard
@@ -150,6 +153,9 @@ def main():
             valid_iterator = get_dataloader(data_directory, ENCODING, 2, val_set)
             loss = train(model,train_set,train_iterator,loss_fn,optimiser)
             print("training loss: %f"%loss)
+            print("model state dict")
+            for param_tensor in model.state_dict():
+                print(param_tensor, "\t", model.state_dict()[param_tensor].size())
             # log training loss w tensorboard
             writer.add_scalar("Loss/train", loss, t)
             val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
