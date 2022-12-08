@@ -11,6 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
+import pickle as pkl
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -115,10 +116,10 @@ def main():
         model = torch.load(PATH)
     else:
         arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
-        model = FlexibleNet(arch, 0, 'ELU')
+        model = FlexibleNet(arch, 0, 'LeakyReLU')
     model = model.to(device)
     print(model)
-    # let's just go for elu and radam and huber loss
+    # let's just go for leakyrelu and radam and huber loss
     #-------------PARAMS-----------------------------------------------
     learning_rate = 1e-4
     loss_fn = nn.HuberLoss()
@@ -126,9 +127,12 @@ def main():
     data_directory = "/data/" + str(N_SNPS) + "_data/"
     #------------------------------------------------------------------
 
+    # save results for printing and persisting
+    results = {'validation_sets':[], 'validation_loss':[], 'validation_r':[], 'validation_r2':[], 'n_epochs':[]}
     # 5-fold cross validation
     cross_val_partitions = k_fold_split(data_directory)
     for val_set in cross_val_partitions:
+        results['validation_sets'].append(val_set)
         train_set = train_val_split(val_set)
         train_iterator = get_dataloader(data_directory,ENCODING,4,train_set)
         valid_iterator = get_dataloader(data_directory,ENCODING,2,val_set)
@@ -154,14 +158,24 @@ def main():
                 no_improvement += 1
             if t > 5 and no_improvement == tolerance:
                 print("min validation loss: %f" % best_val_loss)
-                print("loss increasing for %i epochs" % no_improvement)
                 print("STOPPING EARLY")
                 break
+        results['validation_loss'].append(val_loss)
+        results['validation_r'].append(val_r)
+        results['validation_r2'].append(val_r2)
         writer.flush()
         writer.close()
-
-
-
+    # save results
+    torch.save(model,PATH)
+    results_path = '../results/' + PATH.split('.')[0] + '_results.pkl'
+    pickle.dump(results, open(results_path, 'wb'))
+    # print interesting results
+    print('mean validation loss: %f'%np.mean(np.array(results['validation_loss'])))
+    print('best validation loss: %f' % np.min(np.array(results['validation_loss'])))
+    print('mean validation r: %f' % np.mean(np.array(results['validation_r'])))
+    print('best validation r: %f' % np.max(np.array(results['validation_r'])))
+    print('mean validation r2: %f' % np.mean(np.array(results['validation_r2'])))
+    print('best validation r2: %f' % np.max(np.array(results['validation_r2'])))
 
 if __name__ == "__main__":
     main()
