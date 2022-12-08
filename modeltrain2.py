@@ -15,9 +15,7 @@ from scipy.stats import pearsonr
 import csv
 import sys
 
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:0" if use_cuda else "cpu")
-print(device)
+
 
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
@@ -115,6 +113,95 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
         loss = (val_loss / i)
         return loss, r, r2
 
+def train_and_validate(data_directory, train_set, val_set):
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if use_cuda else "cpu")
+    print(device)
+    # new model
+    # -------------PARAMS-----------------------------------------------
+    model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
+    learning_rate = 0.0001
+    loss_fn = nn.HuberLoss()
+    optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
+    # ------------------------------------------------------------------
+    # initialise summary writer for tensorboard
+    writer = SummaryWriter()
+    # initialise early stopping
+    tolerance = 10
+    no_improvement = 0
+    best_val_r = -np.inf
+    for t in range(N_EPOCHS):
+        print("epoch %i" % t)
+        train_iterator = get_dataloader(data_directory, ENCODING, 4, train_set)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 2, val_set)
+        i = 0
+        while i < len(train_set):
+            print("batch index %i" % i, end='\r')
+            batch = next(train_iterator)
+            X = batch[0].to(device)
+            Y = batch[1].to(device)
+            optimiser.zero_grad()
+            model.train()
+            # forward pass
+            y_pred = model(X.float())
+            # compute and print loss
+            loss = loss_fn(y_pred, Y)
+            # backward pass
+            loss.backward()
+            # update weights with gradient descent
+            optimiser.step()
+            i += 1
+        print("training loss: %f" % loss)
+        # log training loss w tensorboard
+        writer.add_scalar("Loss/train", loss, t)
+        with torch.no_grad():
+            val_loss = 0.0
+            val_r2 = 0.0
+            val_r = 0.0
+            i = 0
+            while i < len(validation_set):
+                print("validation batch index %i" % i, end='\r')
+                batch = next(validation_iterator)
+                X = batch[0].to(device)
+                Y = batch[1].to(device)
+                model.eval()
+                # forward pass
+                y_pred = model(X.float())
+                # compute loss
+                loss = loss_fn(y_pred, Y)
+                val_loss += loss.cpu().numpy()
+                val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
+                val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
+                i += 1
+            if not np.isnan(val_r):
+                r = (val_r / i)
+            else:
+                r = 0
+            r2 = (val_r2 / i)
+            loss = (val_loss / i)
+        print("validation loss: %f" % val_loss)
+        print("pearson r: %f" % val_r)
+        writer.add_scalar("Loss/val", val_loss, t)
+        writer.add_scalar("Pearson_R", val_r, t)
+        writer.add_scalar("R2", val_r2, t)
+        # check conditions for early stopping
+        if t % 10 == 0:
+            print("no improvement for %i epochs" % t)
+        if val_r > best_val_r:
+            no_improvement = 0
+            best_val_r = val_r
+        else:
+            no_improvement += 1
+        # 30 epoch grace period
+        if t > 30 and no_improvement >= tolerance:
+            print("best validation r: %f" % best_val_r)
+            print("STOPPING EARLY\n\n")
+            break
+    writer.flush()
+    writer.close()
+    return val_loss, val_r, val_r2, t
+
+
 def main():
     arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
     # save results for printing and persisting
@@ -128,61 +215,11 @@ def main():
         train_set = get_train_files(data_directory+'train/', val_set)
         print("\nvalidation set:")
         print(val_set)
-
-        # new model
-        # -------------PARAMS-----------------------------------------------
-        model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
-        learning_rate = 0.0001
-        loss_fn = nn.HuberLoss()
-        optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
-        print("new optimiser state dict")
-        for param in optimiser.state_dict():
-            print(param, "\t", optimiser.state_dict()[param])
-        # ------------------------------------------------------------------
-
-        # initialise summary writer for tensorboard
-        writer = SummaryWriter()
-        # initialise early stopping
-        tolerance = 10
-        no_improvement = 0
-        best_val_r = -np.inf
-
-        for t in range(N_EPOCHS):
-            print("epoch %i"%t)
-            train_iterator = get_dataloader(data_directory, ENCODING, 4, train_set)
-            valid_iterator = get_dataloader(data_directory, ENCODING, 2, val_set)
-            loss = train(model,train_set,train_iterator,loss_fn,optimiser)
-            print("training loss: %f"%loss)
-            print("optimiser state dict")
-            for param in optimiser.state_dict():
-                print(param, "\t", optimiser.state_dict()[param])
-            # log training loss w tensorboard
-            writer.add_scalar("Loss/train", loss, t)
-            val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
-            print("validation loss: %f" % val_loss)
-            print("pearson r: %f" % val_r)
-            writer.add_scalar("Loss/val", val_loss, t)
-            writer.add_scalar("Pearson_R", val_r, t)
-            writer.add_scalar("R2", val_r2, t)
-            # check conditions for early stopping
-            if t%10 == 0:
-                print("no improvement for %i epochs" %t)
-            if val_r > best_val_r:
-                no_improvement = 0
-                best_val_r = val_r
-            else:
-                no_improvement += 1
-            # 30 epoch grace period
-            if t > 30 and no_improvement >= tolerance:
-                print("best validation r: %f" % best_val_r)
-                print("STOPPING EARLY\n\n")
-                break
+        val_loss, val_r, val_r2, t = train_and_validate(data_directory, train_set, val_set)
         results['validation_loss'].append(val_loss)
         results['validation_r'].append(val_r)
         results['validation_r2'].append(val_r2)
         results['n_epochs'].append(t)
-        writer.flush()
-        writer.close()
     # save results
     torch.save(model,PATH)
     results_path = '../results/' + PATH + '_results.csv'
