@@ -137,7 +137,7 @@ def train(config, checkpoint_dir=None):
         if not np.isnan(val_r):
             r = (val_r / i)
         else:
-            r = 0
+            r = -1000
         tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=r)
 
 def make_architecture(inp, outp, reduction_factors):
@@ -188,7 +188,8 @@ def main():
         mode="max",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=3
+        max_concurrent_trials=3,
+
     )
     best_trial = result.get_best_trial("r", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
