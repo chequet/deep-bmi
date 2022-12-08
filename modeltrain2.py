@@ -8,7 +8,7 @@ import os
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
@@ -126,8 +126,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     loss_fn = nn.HuberLoss()
     optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
-    # initialise summary writer for tensorboard
-    writer = SummaryWriter()
+    # # initialise summary writer for tensorboard
+    # writer = SummaryWriter()
     # initialise early stopping
     tolerance = 10
     no_improvement = 0
@@ -183,9 +183,9 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             loss = (val_loss / i)
         print("validation loss: %f" % val_loss)
         print("pearson r: %f" % val_r)
-        writer.add_scalar("Loss/val", val_loss, t)
-        writer.add_scalar("Pearson_R", val_r, t)
-        writer.add_scalar("R2", val_r2, t)
+        # writer.add_scalar("Loss/val", val_loss, t)
+        # writer.add_scalar("Pearson_R", val_r, t)
+        # writer.add_scalar("R2", val_r2, t)
         # check conditions for early stopping
         if t % 10 == 0:
             print("no improvement for %i epochs" % t)
@@ -199,8 +199,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             print("best validation r: %f" % best_val_r)
             print("STOPPING EARLY\n\n")
             break
-    writer.flush()
-    writer.close()
+    # writer.flush()
+    # writer.close()
     return val_loss, val_r, val_r2, t
 
 
