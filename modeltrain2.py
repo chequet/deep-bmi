@@ -114,10 +114,11 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
         return loss, r, r2
 
 def main():
-
+    arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
     # save results for printing and persisting
     results = {'validation_sets':[], 'validation_loss':[], 'validation_r':[], 'validation_r2':[], 'n_epochs':[]}
     # 5-fold cross validation
+    data_directory = "/data/" + str(N_SNPS) + "_data/"
     cross_val_partitions = k_fold_split(data_directory+'train/')
     print(len(cross_val_partitions))
 
@@ -127,16 +128,12 @@ def main():
         print("validation set:\n")
         print(val_set)
 
-        # new model
-        arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
-        model = FlexibleNet(arch, 0, 'LeakyReLU')
-        model = model.to(device)
-        # let's just go for leakyrelu and radam and huber loss
+        # new model / leakyrelu / radam / huber loss
         # -------------PARAMS-----------------------------------------------
+        model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
         learning_rate = 1e-4
         loss_fn = nn.HuberLoss()
         optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
-        data_directory = "/data/" + str(N_SNPS) + "_data/"
         # ------------------------------------------------------------------
 
         # initialise summary writer for tensorboard
