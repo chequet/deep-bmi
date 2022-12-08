@@ -85,8 +85,8 @@ def train(config, checkpoint_dir=None):
     train_files, val_files = train_val_split(data_directory+'train/')
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator = get_dataloader(data_directory+'train/',4,train_files)
-        valid_iterator = get_dataloader(data_directory+'train/',2,val_files)
+        train_iterator = get_dataloader(data_directory+'train/', ENCODING, 4, train_files)
+        valid_iterator = get_dataloader(data_directory+'train/', ENCODING, 2, val_files)
         # TRAIN
         i = 0
         while i < n_train:
