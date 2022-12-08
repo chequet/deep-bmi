@@ -131,8 +131,8 @@ def main():
 
         # new model
         # -------------PARAMS-----------------------------------------------
-        model = FlexibleNet(arch, 0.4, 'LeakyReLU').to(device)
-        learning_rate = 1e-4
+        model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
+        learning_rate = 0.0001
         loss_fn = nn.HuberLoss()
         optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
         # ------------------------------------------------------------------
@@ -154,6 +154,7 @@ def main():
             writer.add_scalar("Loss/train", loss, t)
             val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
             print("validation loss: %f" % val_loss)
+            print("pearson r: %f" % val_r)
             writer.add_scalar("Loss/val", val_loss, t)
             writer.add_scalar("Pearson_R", val_r, t)
             writer.add_scalar("R2", val_r2, t)
