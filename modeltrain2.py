@@ -1,5 +1,6 @@
 ### TIDIER SCRIPT FOR TRAINING MODELS
 from FlexibleNet import *
+from BayesianNN import *
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
@@ -119,7 +120,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
+    #model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
+    model = BayesianNN(arch, 0, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
