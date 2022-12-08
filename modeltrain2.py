@@ -134,7 +134,7 @@ def main():
     cross_val_partitions = k_fold_split(data_directory)
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
-        train_set = train_val_split(val_set)
+        train_set = train_val_split(data_directory, val_set)
         train_iterator = get_dataloader(data_directory,ENCODING,4,train_set)
         valid_iterator = get_dataloader(data_directory,ENCODING,2,val_set)
         # initialise summary writer for tensorboard
