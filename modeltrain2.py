@@ -137,6 +137,10 @@ def main():
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
+        print("val set:\n")
+        print(val_set)
+        print("train set:\n")
+        print(train_set)
         train_iterator = get_dataloader(data_directory,ENCODING,4,train_set)
         valid_iterator = get_dataloader(data_directory,ENCODING,2,val_set)
         # initialise summary writer for tensorboard
@@ -147,6 +151,7 @@ def main():
         best_val_loss = np.inf
         for t in range(N_EPOCHS):
             loss = train(model,train_set,train_iterator,loss_fn,optimiser)
+            print("training loss: %f"%loss)
             # log training loss w tensorboard
             writer.add_scalar("Loss/train", loss, t)
             val_loss, val_r, val_r2 = validate(model,val_set,valid_iterator,loss_fn,optimiser)
