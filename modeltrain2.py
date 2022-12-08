@@ -113,7 +113,7 @@ def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
         loss = (val_loss / i)
         return loss, r, r2
 
-def train_and_validate(data_directory, train_set, val_set):
+def train_and_validate(arch, data_directory, train_set, val_set):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
     print(device)
@@ -215,7 +215,7 @@ def main():
         train_set = get_train_files(data_directory+'train/', val_set)
         print("\nvalidation set:")
         print(val_set)
-        val_loss, val_r, val_r2, t = train_and_validate(data_directory, train_set, val_set)
+        val_loss, val_r, val_r2, t = train_and_validate(arch, data_directory, train_set, val_set)
         results['validation_loss'].append(val_loss)
         results['validation_r'].append(val_r)
         results['validation_r2'].append(val_r2)
