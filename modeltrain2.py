@@ -25,8 +25,8 @@ N_INPUTS = int(sys.argv[2])
 N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
-REDUCTIONS = [1, 10]
-PATH = str(N_SNPS) + '_huber_adamw_0.1_' + str(ENCODING)
+REDUCTIONS = [2,2,2]
+PATH = str(N_SNPS) + '_huber_adamw_relu_' + str(ENCODING)
 #==============================================
 
 def k_fold_split(train_dir, n=5):
@@ -126,12 +126,12 @@ def main():
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
-        print("validation set:\n")
+        print("\nvalidation set:")
         print(val_set)
 
         # new model
         # -------------PARAMS-----------------------------------------------
-        model = FlexibleNet(arch, 0.1, 'LeakyReLU').to(device)
+        model = FlexibleNet(arch, 0, 'ReLU').to(device)
         learning_rate = 1e-4
         loss_fn = nn.HuberLoss()
         optimiser = torch.optim.AdamW(model.parameters(), lr=learning_rate)
