@@ -12,6 +12,7 @@ from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import pickle as pkl
+import sys
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -167,7 +168,7 @@ def main():
         writer.close()
     # save results
     torch.save(model,PATH)
-    results_path = '../results/' + PATH.split('.')[0] + '_results.pkl'
+    results_path = '../results/' + PATH + '_results.pkl'
     pickle.dump(results, open(results_path, 'wb'))
     # print interesting results
     print('mean validation loss: %f'%np.mean(np.array(results['validation_loss'])))
