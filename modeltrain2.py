@@ -74,6 +74,7 @@ def train(model, train_set, train_iterator, loss_fn, optimiser):
         batch = next(train_iterator)
         X = batch[0].to(device)
         Y = batch[1].to(device)
+        optimiser.zero_grad()
         model.train()
         # forward pass
         y_pred = model(X.float())
