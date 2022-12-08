@@ -85,8 +85,8 @@ def train(config, checkpoint_dir=None):
     train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator = get_dataloader(data_directory, ENCODING, 4, train_files)
-        valid_iterator = get_dataloader(data_directory, ENCODING, 2, val_files)
+        train_iterator = get_dataloader(data_directory, ENCODING, 8, train_files)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 3, val_files)
         # TRAIN
         i = 0
         while i < len(train_files):
@@ -154,7 +154,10 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [2, 2, 2]
+        [2, 2, 2],
+        [1,10],
+        [2,1,2,1],
+        [10,10]
     ]
     architectures = []
     for r in layer_params:
@@ -165,11 +168,11 @@ def main():
     # define config
     config = {
         "arch": tune.grid_search(architectures),
-        "activation": tune.grid_search(["LeakyReLU"]),#"ELU", "ReLU",
+        "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
-        "optim": tune.choice(["radam"]), #"nadam","spadam","sgd","rmsprop","adamax","adam","adamw",
-        "lr": tune.choice([1e-4]),#tune.loguniform(1e-4, 1e-1),
-        "loss": tune.grid_search(["huber"])#"MSE",
+        "optim": tune.choice(["radam""adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
+        "lr": tune.loguniform(1e-4, 1e-1),
+        "loss": tune.grid_search(["MSE","huber"])#
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
