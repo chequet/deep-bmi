@@ -142,7 +142,7 @@ def main():
         # initialise early stopping
         tolerance = 10
         no_improvement = 0
-        best_val_loss = np.inf
+        best_val_r = -np.inf
 
         for t in range(N_EPOCHS):
             print("epoch %i"%t)
@@ -161,14 +161,14 @@ def main():
             # check conditions for early stopping
             if t%10 == 0:
                 print("no improvement for %i epochs" %t)
-            if val_loss < best_val_loss:
+            if val_r > best_val_r:
                 no_improvement = 0
-                best_val_loss = val_loss
+                best_val_r = val_r
             else:
                 no_improvement += 1
             # 30 epoch grace period
             if t > 30 and no_improvement >= tolerance:
-                print("min validation loss: %f" % best_val_loss)
+                print("best validation r: %f" % best_val_r)
                 print("STOPPING EARLY\n\n")
                 break
         results['validation_loss'].append(val_loss)
