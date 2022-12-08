@@ -133,7 +133,7 @@ def main():
     # save results for printing and persisting
     results = {'validation_sets':[], 'validation_loss':[], 'validation_r':[], 'validation_r2':[], 'n_epochs':[]}
     # 5-fold cross validation
-    cross_val_partitions = k_fold_split(data_directory)
+    cross_val_partitions = k_fold_split(data_directory+'train/')
     for val_set in cross_val_partitions:
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
