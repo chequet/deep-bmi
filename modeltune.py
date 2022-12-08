@@ -7,8 +7,8 @@ import torch.nn as nn
 # import torchvision
 # import torchvision.transforms as transforms
 # import ray
-from ray import tune
-from ray.tune.schedulers import ASHAScheduler
+# from ray import tune
+# from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
