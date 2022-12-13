@@ -7,13 +7,13 @@ import torch.nn as nn
 # import torchvision
 # import torchvision.transforms as transforms
 # import ray
-from ray import tune
-from ray.tune.schedulers import ASHAScheduler
+# from ray import tune
+# from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 import os
-from modeltrain import train_val_split
+# from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
@@ -27,48 +27,22 @@ ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
 
-# def cross_validation(data, k=5):
-    # leave for now
-
-def get_dataloaders(data_directory, type, trainworkers=4, valworkers=2, n_train=48):
-    train_files, val_files = train_val_split(data_directory + 'train/',n_train=n_train)
-    n_train = len(train_files)
-    n_val = len(val_files)
-    trainparams = {'batch_size': None,
-                   'num_workers': trainworkers}
-    valparams = {'batch_size': None,
-                 'num_workers': valworkers}
-    train_iterator = None
-    valid_iterator = None
-    if type == 1:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', train_files, True),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(MyIterableDataset(data_directory + 'train/', val_files, True),
-                                        **valparams))
-    elif type == 2:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', train_files, True),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(OneHotIterableDataset(data_directory + 'train/', val_files, True),
-                                        **valparams))
-    elif type == 3:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 1),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 1),
-                                        **valparams))
-    elif type == 4:
-        train_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', train_files, True, 2),
-                                        **trainparams))
-        valid_iterator = iter(
-            torch.utils.data.DataLoader(BasicEmbeddedDataset(data_directory + 'train/', val_files, True, 2),
-                                        **valparams))
-    return train_iterator, valid_iterator, n_train, n_val
+def get_dataloader(data_directory, encoding, workers, files):
+    params = {'batch_size': None,
+              'num_workers': workers}
+    if encoding == 1:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (MyIterableDataset(data_directory + 'train/', files, True),**params))
+    elif encoding == 2:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (OneHotIterableDataset(data_directory + 'train/', files, True),**params))
+    elif encoding == 3:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 1),**params))
+    elif encoding == 4:
+        dataloader = iter(torch.utils.data.DataLoader
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
+    return dataloader
 
 def train(config, checkpoint_dir=None):
     use_cuda = torch.cuda.is_available()
@@ -108,12 +82,14 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
+    train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator, valid_iterator, n_train, n_val = get_dataloaders(data_directory, type=ENCODING)
+        train_iterator = get_dataloader(data_directory, ENCODING, 8, train_files)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 3, val_files)
         # TRAIN
         i = 0
-        while i < n_train:
+        while i < len(train_files):
             batch = next(train_iterator)
             # print("batch index %i" % i, end='\r')
             X = batch[0].to(device)
@@ -136,7 +112,7 @@ def train(config, checkpoint_dir=None):
             val_r2 = 0.0
             val_r = 0.0
             i = 0
-            while i < n_val:
+            while i < len(val_files):
                 # print("validation batch index %i" % i, end='\r')
                 batch = next(valid_iterator)
                 X = batch[0].to(device)
@@ -161,7 +137,7 @@ def train(config, checkpoint_dir=None):
         if not np.isnan(val_r):
             r = (val_r / i)
         else:
-            r = 0
+            r = -1000
         tune.report(r2=(val_r2 / i), loss=(val_loss / i), r=r)
 
 def make_architecture(inp, outp, reduction_factors):
@@ -178,9 +154,10 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [50, 2, 2, 2],
-        [50, 10, 10],
-        [50, 2, 5, 2, 5]
+        [2, 2, 2],
+        [1,10],
+        [2,1,2,1],
+        [10,10]
     ]
     architectures = []
     for r in layer_params:
@@ -191,11 +168,11 @@ def main():
     # define config
     config = {
         "arch": tune.grid_search(architectures),
-        "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),
-        "dropout": tune.grid_search([0,0.1]),#,0.2,0.3
-        "optim": tune.choice(["adam","adamw","radam"]), #"nadam","spadam","sgd","rmsprop","adamax",
-        "lr": tune.loguniform(1e-4, 1e-1),
-        "loss": tune.grid_search(["MSE","huber"])#
+        "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
+        "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
+        "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
+        "lr": tune.loguniform(1e-4, 1e-2),
+        "loss": tune.grid_search(["huber"])#,"MSE"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -211,7 +188,8 @@ def main():
         mode="max",
         num_samples=1,
         scheduler=scheduler,
-        max_concurrent_trials=3
+        max_concurrent_trials=3,
+
     )
     best_trial = result.get_best_trial("r", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
@@ -221,7 +199,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
