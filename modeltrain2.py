@@ -122,7 +122,7 @@ def main():
     #-------------PARAMS-----------------------------------------------
     learning_rate = 1e-4
     loss_fn = nn.HuberLoss()
-    optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     data_directory = "/data/" + str(N_SNPS) + "_data/"
     #------------------------------------------------------------------
 
