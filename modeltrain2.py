@@ -155,7 +155,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             i += 1
         print("training loss: %f" % loss)
         # log training loss w tensorboard
-        writer.add_scalar("Loss/train", loss, t)
+        # writer.add_scalar("Loss/train", loss, t)
         with torch.no_grad():
             val_loss = 0.0
             val_r2 = 0.0
