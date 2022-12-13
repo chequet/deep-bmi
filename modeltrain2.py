@@ -124,7 +124,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     model = BayesianNN(arch, 0, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
-    optimiser = torch.optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     # writer = SummaryWriter()
@@ -181,11 +181,11 @@ def train_and_validate(arch, data_directory, train_set, val_set):
                 r = 0
             r2 = (val_r2 / i)
             loss = (val_loss / i)
-        print("validation loss: %f" % val_loss)
-        print("pearson r: %f" % val_r)
-        # writer.add_scalar("Loss/val", val_loss, t)
-        # writer.add_scalar("Pearson_R", val_r, t)
-        # writer.add_scalar("R2", val_r2, t)
+        print("validation loss: %f" % loss)
+        print("pearson r: %f" % r)
+        # writer.add_scalar("Loss/val", loss, t)
+        # writer.add_scalar("Pearson_R", r, t)
+        # writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
         if t % 10 == 0:
             print("no improvement for %i epochs" % t)
@@ -201,7 +201,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             break
     # writer.flush()
     # writer.close()
-    return val_loss, val_r, val_r2, t
+    torch.save(model, PATH)
+    return loss, r, r2, t
 
 
 def main():
@@ -223,7 +224,6 @@ def main():
         results['validation_r2'].append(val_r2)
         results['n_epochs'].append(t)
     # save results
-    torch.save(model,PATH)
     results_path = '../results/' + PATH + '_results.csv'
     with open(results_path, 'w') as f:
         w = csv.writer(f)
