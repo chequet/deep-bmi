@@ -23,7 +23,7 @@ N_INPUTS = int(sys.argv[2])
 N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
-REDUCTIONS = [2,2,2]
+REDUCTIONS = [10,10,10]
 PATH = str(N_SNPS) + '_huber_radam_leakyrelu_dropout05_' + str(ENCODING)
 #==============================================
 
