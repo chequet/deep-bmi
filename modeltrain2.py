@@ -124,7 +124,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     model = BayesianNN(arch, 0, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
-    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     # writer = SummaryWriter()
