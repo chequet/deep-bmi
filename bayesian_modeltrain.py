@@ -52,6 +52,97 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         i += 1
     return loss.item(), acc
 
+def train_and_validate(arch, data_directory, train_set, val_set):
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if use_cuda else "cpu")
+    print(device)
+    # new model
+    # -------------PARAMS-----------------------------------------------
+    model = BayesianNN(arch, 0.5, 'LeakyReLU').to(device)
+    learning_rate = 0.0001
+    loss_fn = torch.nn.HuberLoss()
+    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    # ------------------------------------------------------------------
+    print(model)
+    # # initialise summary writer for tensorboard
+    writer = SummaryWriter()
+    # initialise early stopping
+    tolerance = 10
+    no_improvement = 0
+    best_val_r = -np.inf
+    for t in range(N_EPOCHS):
+        print("epoch %i" % t)
+        train_iterator = get_dataloader(data_directory, ENCODING, 8, train_set)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_set)
+        i = 0
+        while i < len(train_set):
+            print("batch index %i" % i, end='\r')
+            batch = next(train_iterator)
+            X = batch[0].to(device)
+            Y = batch[1].to(device)
+            optimiser.zero_grad()
+            model.train()
+            # forward pass
+            y_pred = model(X.float())
+            # compute and print loss
+            loss = loss_fn(y_pred, Y)
+            # backward pass
+            loss.backward()
+            # update weights with gradient descent
+            optimiser.step()
+            i += 1
+        print("training loss: %f" % loss)
+        # log training loss w tensorboard
+        writer.add_scalar("Loss/train", loss, t)
+        with torch.no_grad():
+            val_loss = 0.0
+            val_r2 = 0.0
+            val_r = 0.0
+            i = 0
+            while i < len(val_set):
+                print("validation batch index %i" % i, end='\r')
+                batch = next(valid_iterator)
+                X = batch[0].to(device)
+                Y = batch[1].to(device)
+                model.eval()
+                # forward pass
+                y_pred = model(X.float())
+                # compute loss
+                loss = loss_fn(y_pred, Y)
+                val_loss += loss.cpu().numpy()
+                val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
+                val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
+                i += 1
+            if not np.isnan(val_r):
+                r = (val_r / i)
+            else:
+                r = 0
+            r2 = (val_r2 / i)
+            loss = (val_loss / i)
+        print("validation loss: %f" % loss)
+        print("pearson r: %f" % r)
+        writer.add_scalar("Loss/val", loss, t)
+        writer.add_scalar("Pearson_R", r, t)
+        writer.add_scalar("R2", r2, t)
+        # check conditions for early stopping
+        if t % 10 == 0:
+            print("no improvement for %i epochs" % t)
+        if r > best_val_r:
+            no_improvement = 0
+            best_val_r = r
+        else:
+            no_improvement += 1
+        # 30 epoch grace period
+        if t > 30 and no_improvement >= tolerance:
+            print("best validation r: %f" % best_val_r)
+            print("STOPPING EARLY\n\n")
+            break
+    writer.flush()
+    writer.close()
+    torch.save(model, PATH)
+    return loss, r, r2, t
+
+
 def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier = 2):
     preds = []
     gt = []
@@ -80,14 +171,9 @@ def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier 
     ic_acc = ic_acc.mean()
     return loss, ic_acc, (ci_upper >= gt).mean(), (ci_lower <= gt).mean()
 
+
+
 def main(modelpath, n_epochs):
-    DROPOUT = 0.2
-    ACTIVATION = 'ELU'
-    N_FEATURES = 5006
-    LAYERS = [N_FEATURES*2, 1000, 500, 250, 125, 60, 30, 1]
-    model = BayesianNN(LAYERS, DROPOUT, ACTIVATION)
-    model = model.to(device)
-    print(model)
 
     # initialise training and validation sets
 

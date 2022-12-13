@@ -129,7 +129,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # initialise early stopping
     tolerance = 10
     no_improvement = 0
-    best_val_r = -np.inf
+    best_val_loss = np.inf
     for t in range(N_EPOCHS):
         print("epoch %i" % t)
         train_iterator = get_dataloader(data_directory, ENCODING, 8, train_set)
@@ -186,15 +186,15 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
         if t % 10 == 0:
-            print("no improvement for %i epochs" % t)
-        if r > best_val_r:
+            print("no improvement for %i epochs" % no_improvement)
+        if loss < best_val_loss:
             no_improvement = 0
-            best_val_r = r
+            best_val_loss = loss
         else:
             no_improvement += 1
         # 30 epoch grace period
         if t > 30 and no_improvement >= tolerance:
-            print("best validation r: %f" % best_val_r)
+            print("best validation loss: %f" % best_val_loss)
             print("STOPPING EARLY\n\n")
             break
     writer.flush()
