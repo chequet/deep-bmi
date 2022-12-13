@@ -1,13 +1,9 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch import optim
-from time import time
-from BasicEmbeddedDataset import *
 from torch.utils.tensorboard import SummaryWriter
 from modeltrain import *
 from BayesianNN import *
-from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from modeltune import make_architecture
 from modeltrain2 import k_fold_split, get_train_files, get_dataloader
