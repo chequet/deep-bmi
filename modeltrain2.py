@@ -1,6 +1,5 @@
 ### TIDIER SCRIPT FOR TRAINING MODELS
 from FlexibleNet import *
-from BayesianNN import *
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
@@ -8,7 +7,7 @@ import os
 import torch
 import torch.optim as optim
 import torch.nn as nn
-# from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
@@ -120,14 +119,13 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    #model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
-    model = BayesianNN(arch, 0, 'LeakyReLU').to(device)
+    model = FlexibleNet(arch, 0, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
-    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
-    # writer = SummaryWriter()
+    writer = SummaryWriter()
     # initialise early stopping
     tolerance = 10
     no_improvement = 0
@@ -183,15 +181,15 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             loss = (val_loss / i)
         print("validation loss: %f" % loss)
         print("pearson r: %f" % r)
-        # writer.add_scalar("Loss/val", loss, t)
-        # writer.add_scalar("Pearson_R", r, t)
-        # writer.add_scalar("R2", r2, t)
+        writer.add_scalar("Loss/val", loss, t)
+        writer.add_scalar("Pearson_R", r, t)
+        writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
         if t % 10 == 0:
             print("no improvement for %i epochs" % t)
-        if val_r > best_val_r:
+        if r > best_val_r:
             no_improvement = 0
-            best_val_r = val_r
+            best_val_r = r
         else:
             no_improvement += 1
         # 30 epoch grace period
@@ -199,8 +197,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             print("best validation r: %f" % best_val_r)
             print("STOPPING EARLY\n\n")
             break
-    # writer.flush()
-    # writer.close()
+    writer.flush()
+    writer.close()
     torch.save(model, PATH)
     return loss, r, r2, t
 
