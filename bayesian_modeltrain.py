@@ -9,9 +9,11 @@ from modeltrain import *
 from BayesianNN import *
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
-from modeltrain2 import k_fold_split, make_architecture, get_train_files, get_dataloader
+from modeltune import make_architecture
+from modeltrain2 import k_fold_split, get_train_files, get_dataloader
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
+import csv
 
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
@@ -129,7 +131,48 @@ def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier 
 
 
 
-def main(modelpath, n_epochs):
+def main():
+    arch = make_architecture(N_INPUTS, 1, REDUCTIONS)
+    # save results for printing and persisting
+    results = {
+        'validation_sets': [], 'validation_loss': [],
+        'ci_acc': [], 'under_ci_upper': [], 'over_ci_lower': [],
+        'validation_r': [], 'validation_r2': [], 'n_epochs': []
+               }
+    # 5-fold cross validation
+    data_directory = "/data/" + str(N_SNPS) + "_data/"
+    cross_val_partitions = k_fold_split(data_directory + 'train/')
+
+    for val_set in cross_val_partitions:
+        results['validation_sets'].append(val_set)
+        train_set = get_train_files(data_directory + 'train/', val_set)
+        print("\nvalidation set:")
+        print(val_set)
+        val_loss, ci_acc, under_upper, over_lower, val_r, val_r2, t = \
+            train_and_validate_BNN(arch, data_directory, train_set, val_set)
+        results['validation_loss'].append(val_loss)
+        results['ci_acc'].append(ci_acc)
+        results['over_ci_lower'].append(over_lower)
+        results['under_ci_upper'].append(under_upper)
+        results['validation_r'].append(val_r)
+        results['validation_r2'].append(val_r2)
+        results['n_epochs'].append(t)
+    # save results
+    results_path = '../results/' + PATH + '_results.csv'
+    with open(results_path, 'w') as f:
+        w = csv.writer(f)
+        w.writerows(results.items())
+    # print interesting results
+    print('mean validation loss: %f' % np.mean(np.array(results['validation_loss'])))
+    print('best validation loss: %f' % np.min(np.array(results['validation_loss'])))
+    print('mean validation ci acc: %f' % np.mean(np.array(results['ci_acc'])))
+    print('best validation ci acc: %f' % np.max(results['ci_acc']))
+    print('mean validation r: %f' % np.mean(np.array(results['validation_r'])))
+    print('best validation r: %f' % np.max(np.array(results['validation_r'])))
+    print('mean validation r2: %f' % np.mean(np.array(results['validation_r2'])))
+    print('best validation r2: %f' % np.max(np.array(results['validation_r2'])))
+    print('mean number of epochs: %i' % np.mean(np.array(results['n_epochs'])))
+    print('epoch range: %i' % (np.max(np.array(results['n_epochs'])) - np.min(np.array(results['n_epochs']))))
 
 
 if __name__ == "__main__":
