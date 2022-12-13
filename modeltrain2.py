@@ -132,7 +132,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     best_val_loss = np.inf
     for t in range(N_EPOCHS):
         print("epoch %i" % t)
-        train_iterator = get_dataloader(data_directory, ENCODING, 8, train_set)
+        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_set)
         valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_set)
         i = 0
         while i < len(train_set):
