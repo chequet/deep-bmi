@@ -23,7 +23,7 @@ N_INPUTS = int(sys.argv[2])
 N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
-REDUCTIONS = [10,10,10]
+REDUCTIONS = [50,10,10]
 PATH = str(N_SNPS) + '_huber_radam_leakyrelu_dropout05_' + str(ENCODING)
 #==============================================
 
@@ -122,7 +122,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     model = FlexibleNet(arch, 0.5, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
-    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
@@ -132,8 +132,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     best_val_r = -np.inf
     for t in range(N_EPOCHS):
         print("epoch %i" % t)
-        train_iterator = get_dataloader(data_directory, ENCODING, 4, train_set)
-        valid_iterator = get_dataloader(data_directory, ENCODING, 2, val_set)
+        train_iterator = get_dataloader(data_directory, ENCODING, 6, train_set)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 4, val_set)
         i = 0
         while i < len(train_set):
             print("batch index %i" % i, end='\r')
@@ -153,7 +153,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             i += 1
         print("training loss: %f" % loss)
         # log training loss w tensorboard
-        # writer.add_scalar("Loss/train", loss, t)
+        writer.add_scalar("Loss/train", loss, t)
         with torch.no_grad():
             val_loss = 0.0
             val_r2 = 0.0

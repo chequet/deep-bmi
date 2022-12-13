@@ -9,8 +9,17 @@ from modeltrain import *
 from BayesianNN import *
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
+from modeltrain2 import k_fold_split, make_architecture, get_train_files, get_dataloader
 
-## CURRENTLY FIXED AT 10K INPUTS
+# PARAMS TO CHANGE ============================
+N_SNPS = int(sys.argv[1])
+N_INPUTS = int(sys.argv[2])
+N_EPOCHS = int(sys.argv[4])
+ENCODING = int(sys.argv[3])
+BATCH_SIZE = 4096
+REDUCTIONS = [50,10,10]
+PATH = 'BNN_' + str(N_SNPS) + '_huber_radam_leakyrelu_dropout05_' + str(ENCODING)
+#==============================================
 
 def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
     i = 0
@@ -43,7 +52,7 @@ def train_BNN(batch_iterator, model, loss_fn, optimiser, n_trainbatch, clf):
         i += 1
     return loss.item(), acc
 
-def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier = 2):
+def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier = 2):
     preds = []
     gt = []
     i = 0
@@ -72,7 +81,6 @@ def evaluate_regression(model, valid_iterator, samples,loss_fn, std_multiplier =
     return loss, ic_acc, (ci_upper >= gt).mean(), (ci_lower <= gt).mean()
 
 def main(modelpath, n_epochs):
-    REDUCTION_FACTOR = 2
     DROPOUT = 0.2
     ACTIVATION = 'ELU'
     N_FEATURES = 5006
