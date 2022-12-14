@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from torch import optim
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 from modeltrain import *
 from BayesianNN import *
 from OneHotIterableDataset import *
@@ -34,7 +34,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
-    writer = SummaryWriter()
+    # writer = SummaryWriter()
     # initialise early stopping
     tolerance = 10
     no_improvement = 0
@@ -72,10 +72,10 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
             print("pearson r: %f" % r)
-            writer.add_scalar("Loss/val", loss, t)
-            writer.add_scalar("ci_acc", ci_acc, t)
-            writer.add_scalar("Pearson_R", r, t)
-            writer.add_scalar("R2", r2, t)
+            # writer.add_scalar("Loss/val", loss, t)
+            # writer.add_scalar("ci_acc", ci_acc, t)
+            # writer.add_scalar("Pearson_R", r, t)
+            # writer.add_scalar("R2", r2, t)
             # check conditions for early stopping
             if t % 10 == 0:
                 print("no improvement for %i epochs" % no_improvement)
@@ -89,8 +89,8 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
                 print("best validation loss: %f" % best_val_loss)
                 print("STOPPING EARLY\n\n")
                 break
-    writer.flush()
-    writer.close()
+    # writer.flush()
+    # writer.close()
     torch.save(model, PATH)
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 

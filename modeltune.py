@@ -4,16 +4,16 @@ import sys
 import torch
 import torch.optim as optim
 import torch.nn as nn
-# import torchvision
-# import torchvision.transforms as transforms
-# import ray
-# from ray import tune
-# from ray.tune.schedulers import ASHAScheduler
+import torchvision
+import torchvision.transforms as transforms
+import ray
+from ray import tune
+from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
 import os
-# from modeltrain import train_val_split
+from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
@@ -22,7 +22,7 @@ import warnings
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = 50
+N_EPOCHS = 20
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
@@ -157,7 +157,7 @@ def main():
         [2, 2, 2],
         [1,10],
         [2,1,2,1],
-        [10,10]
+        [5,2,5,2]
     ]
     architectures = []
     for r in layer_params:
@@ -172,7 +172,7 @@ def main():
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["huber"])#,"MSE"
+        "loss": tune.grid_search(["MSE"])#,"huber"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
