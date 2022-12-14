@@ -85,8 +85,8 @@ def train(config, checkpoint_dir=None):
     train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator = get_dataloader(data_directory, ENCODING, 8, train_files)
-        valid_iterator = get_dataloader(data_directory, ENCODING, 3, val_files)
+        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_files)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_files)
         # TRAIN
         i = 0
         while i < len(train_files):
@@ -172,7 +172,7 @@ def main():
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["MSE"])#,"huber"
+        "loss": tune.grid_search(["huber"])#,"MSE"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -199,7 +199,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_mse/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
+    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
