@@ -163,14 +163,15 @@ def main():
     for r in layer_params:
         a = make_architecture(N_INPUTS, 1, r)
         architectures.append(a)
-    print("\nARCHITECTURE CHOICES")
-    print(architectures)
+
     bellot_architectures = [
         [N_INPUTS, 32, 1],
         [N_INPUTS, 64, 64, 1],
         [N_INPUTS, 32, 32, 32, 32, 32, 1],
         [N_INPUTS, 128, 128, 128, 128, 1]
     ]
+    print("\nARCHITECTURE CHOICES")
+    print(bellot_architectures)
     # define config
     config = {
         "arch": tune.grid_search(bellot_architectures),
