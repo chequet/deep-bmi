@@ -156,8 +156,8 @@ def main():
     layer_params = [
         [10, 2, 2, 2],
         [10,1,10],
-        [2,2,5,5],
-        [5,2,5,2]
+        [10,2,2,5,5],
+        [10,5,2,5,2]
     ]
     architectures = []
     for r in layer_params:
@@ -171,15 +171,15 @@ def main():
         [N_INPUTS, 128, 128, 128, 128, 1]
     ]
     print("\nARCHITECTURE CHOICES")
-    print(bellot_architectures)
+    print(architectures)
     # define config
     config = {
-        "arch": tune.grid_search(bellot_architectures),
+        "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["MSE"])#,"huber"
+        "loss": tune.grid_search(["huber"])#,"MSE"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -206,7 +206,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_bellot/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
+    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
