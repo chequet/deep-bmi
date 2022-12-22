@@ -171,10 +171,10 @@ def main():
         [N_INPUTS, 128, 128, 128, 128, 1]
     ]
     print("\nARCHITECTURE CHOICES")
-    print(architectures)
+    print(bellot_architectures)
     # define config
     config = {
-        "arch": tune.grid_search(architectures),
+        "arch": tune.grid_search(bellot_architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
@@ -206,7 +206,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
+    filename = "grid_search_bellot/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_CONSTRAINED_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
