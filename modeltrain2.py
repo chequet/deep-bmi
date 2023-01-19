@@ -195,7 +195,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         else:
             no_improvement += 1
         # 30 epoch grace period
-        if t > 30 and no_improvement >= tolerance:
+        if t > 50 and no_improvement >= tolerance:
             print("best validation loss: %f" % best_val_loss)
             print("STOPPING EARLY\n\n")
             break
