@@ -51,6 +51,7 @@ def get_train_files(train_dir, val_files):
 def get_dataloader(data_directory, encoding, workers, files):
     params = {'batch_size': None,
               'num_workers': workers}
+    dataloader = None
     if encoding == 1:
         dataloader = iter(torch.utils.data.DataLoader
                               (MyIterableDataset(data_directory + 'train/', files, True),**params))
