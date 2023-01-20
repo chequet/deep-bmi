@@ -187,13 +187,14 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("Pearson_R", r, t)
         writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
-        if t % 10 == 0:
-            print("no improvement for %i epochs" % no_improvement)
-        if loss < best_val_loss:
-            no_improvement = 0
-            best_val_loss = loss
-        else:
-            no_improvement += 1
+        if t > 20:
+            if t % 10 == 0:
+                print("no improvement for %i epochs" % no_improvement)
+            if loss < best_val_loss:
+                no_improvement = 0
+                best_val_loss = loss
+            else:
+                no_improvement += 1
         # 30 epoch grace period
         if t > 50 and no_improvement >= tolerance:
             print("best validation loss: %f" % best_val_loss)
