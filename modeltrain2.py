@@ -129,7 +129,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
     # initialise early stopping
-    tolerance = 10
+    tolerance = 30
     no_improvement = 0
     best_val_loss = np.inf
     for t in range(N_EPOCHS):
