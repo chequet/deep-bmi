@@ -120,7 +120,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.4, 'LeakyReLU').to(device)
+    model = FlexibleNet(arch, 0.3, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     #loss_fn = nn.HuberLoss()
     loss_fn = nn.MSELoss(reduction='mean')
