@@ -187,7 +187,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("Pearson_R", r, t)
         writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
-        if t > 20:
+        if t > 30:
             if t % 10 == 0:
                 print("no improvement for %i epochs" % no_improvement)
             if loss < best_val_loss:
@@ -196,10 +196,10 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             else:
                 no_improvement += 1
         # 30 epoch grace period
-        if t > 50 and no_improvement >= tolerance:
-            print("best validation loss: %f" % best_val_loss)
-            print("STOPPING EARLY\n\n")
-            break
+            if no_improvement >= tolerance:
+                print("best validation loss: %f" % best_val_loss)
+                print("STOPPING EARLY\n\n")
+                break
     writer.flush()
     writer.close()
     torch.save(model, PATH)
