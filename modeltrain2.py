@@ -120,7 +120,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.4, 'LeakyReLU').to(device)
+    model = FlexibleNet(arch, 0.5, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
@@ -129,7 +129,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
     # initialise early stopping
-    tolerance = 30
+    tolerance = 10
     no_improvement = 0
     best_val_loss = np.inf
     for t in range(N_EPOCHS):
