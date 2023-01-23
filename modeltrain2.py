@@ -120,7 +120,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.3, 'LeakyReLU').to(device)
+    model = FlexibleNet(arch, 0.4, 'LeakyReLU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
@@ -187,7 +187,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("Pearson_R", r, t)
         writer.add_scalar("R2", r2, t)
         # check conditions for early stopping
-        if t > 30:
+        if t > 20:
             if t % 10 == 0:
                 print("no improvement for %i epochs" % no_improvement)
             if loss < best_val_loss:
@@ -195,7 +195,6 @@ def train_and_validate(arch, data_directory, train_set, val_set):
                 best_val_loss = loss
             else:
                 no_improvement += 1
-        # 30 epoch grace period
             if no_improvement >= tolerance:
                 print("best validation loss: %f" % best_val_loss)
                 print("STOPPING EARLY\n\n")
