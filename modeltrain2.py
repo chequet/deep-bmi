@@ -24,7 +24,7 @@ N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
-PATH = str(N_SNPS) + '_MSE_adam_leakyrelu_dropout04_' + str(ENCODING)
+PATH = str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
 #==============================================
 
 def k_fold_split(train_dir, n=5):
@@ -122,8 +122,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # -------------PARAMS-----------------------------------------------
     model = FlexibleNet(arch, 0.3, 'LeakyReLU').to(device)
     learning_rate = 0.0001
-    #loss_fn = nn.HuberLoss()
-    loss_fn = nn.MSELoss(reduction='mean')
+    loss_fn = nn.HuberLoss()
+    #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
