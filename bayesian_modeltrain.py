@@ -109,8 +109,8 @@ def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier 
         preds.append(y_pred.detach().cpu().numpy())
         gt.append(y.detach().cpu().numpy())
         i += 1
-    preds = np.concatenate(preds)
-    gt = np.concatenate(gt)
+    preds = np.concatenate(preds).ravel()
+    gt = np.concatenate(gt).ravel()
     # calculate loss just for last batch for early stopping purposes
     loss = model.sample_elbo(inputs=X.float(),
                                      labels=y,
