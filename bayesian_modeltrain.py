@@ -51,7 +51,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             optimiser.zero_grad()
             model.train()
             # compute and print loss
-            loss = model.sample_elbo(inputs=X,
+            loss = model.sample_elbo(inputs=X.float(),
                                      labels=Y,
                                      criterion=loss_fn,
                                      sample_nbr=3)
@@ -66,7 +66,8 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
         writer.add_scalar("Loss/train", loss, t)
         # validate on every 10th epoch only
         if t % 10 == 0:
-            loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = evaluate_regression(model, valid_iterator, val_set, loss_fn)
+            loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = \
+                evaluate_regression(model, valid_iterator, val_set, loss_fn)
             print("validation loss: %f" % loss)
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
