@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import optim
 from torch.utils.tensorboard import SummaryWriter
-from modeltrain import *
+#from modeltrain import *
 from BayesianNN import *
 from OneHotIterableDataset import *
 from modeltune import make_architecture
