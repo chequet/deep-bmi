@@ -8,7 +8,6 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
-from modeltune import make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 #import pickle
@@ -26,6 +25,17 @@ BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
 PATH = str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
 #==============================================
+
+def make_architecture(inp, outp, reduction_factors):
+    arch = [inp]
+    current = inp
+    for i in range(len(reduction_factors)):
+        redf = reduction_factors[i]
+        next_layer = math.ceil(current/redf)
+        arch.append(next_layer)
+        current = next_layer
+    arch.append(outp)
+    return arch
 
 def k_fold_split(train_dir, n=5):
     # divide training set into n groups for cross validation
