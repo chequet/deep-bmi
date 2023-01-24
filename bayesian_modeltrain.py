@@ -171,4 +171,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main(modelpath=sys.argv[1], n_epochs=int(sys.argv[2]))
+    main()
