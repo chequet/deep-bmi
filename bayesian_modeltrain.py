@@ -17,7 +17,7 @@ N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
-PATH = 'BNN_' + str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
+PATH = 'BNN_' + str(N_SNPS) + '_huber_adam_leakyrelu_dropout0_' + str(ENCODING)
 #==============================================
 
 use_cuda = torch.cuda.is_available()
@@ -38,7 +38,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # initialise early stopping
     tolerance = 10
     no_improvement = 0
-    best_val_loss = np.inf
+    best_ci_acc = 0
     for t in range(N_EPOCHS):
         print("epoch %i" % t)
         train_iterator = get_dataloader(data_directory, ENCODING, 8, train_set)
@@ -77,17 +77,17 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             writer.add_scalar("ci_acc", ci_acc, t)
             writer.add_scalar("Pearson_R", r, t)
             writer.add_scalar("R2", r2, t)
-            # check conditions for early stopping
+            # check conditions for early stopping - use CI acc as criteria
             if t % 10 == 0:
                 print("no improvement for %i epochs" % no_improvement)
-            if loss < best_val_loss:
+            if ci_acc > best_ci_acc:
                 no_improvement = 0
-                best_val_loss = loss
+                best_ci_acc = ci_acc
             else:
                 no_improvement += 1
             # 30 epoch grace period
             if t > 30 and no_improvement >= tolerance:
-                print("best validation loss: %f" % best_val_loss)
+                print("best c.i. accuracy: %f" % best_ci_acc)
                 print("STOPPING EARLY\n\n")
                 break
     writer.flush()
