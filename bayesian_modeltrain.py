@@ -20,10 +20,11 @@ REDUCTIONS = [2,2,2]
 PATH = 'BNN_' + str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
 #==============================================
 
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda:0" if use_cuda else "cpu")
+print(device)
+
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
-    use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:0" if use_cuda else "cpu")
-    print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
     model = BayesianNN(arch, 0.4, 'LeakyReLU').to(device)
