@@ -8,6 +8,7 @@ from modeltrain2 import k_fold_split, get_train_files, get_dataloader, make_arch
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import csv
+import sys
 
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
