@@ -5,7 +5,6 @@ from torch.utils.tensorboard import SummaryWriter
 #from modeltrain import *
 from BayesianNN import *
 from OneHotIterableDataset import *
-from modeltune import make_architecture
 from modeltrain2 import k_fold_split, get_train_files, get_dataloader
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
@@ -20,6 +19,17 @@ BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
 PATH = 'BNN_' + str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
 #==============================================
+
+def make_architecture(inp, outp, reduction_factors):
+    arch = [inp]
+    current = inp
+    for i in range(len(reduction_factors)):
+        redf = reduction_factors[i]
+        next_layer = math.ceil(current/redf)
+        arch.append(next_layer)
+        current = next_layer
+    arch.append(outp)
+    return arch
 
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     use_cuda = torch.cuda.is_available()
