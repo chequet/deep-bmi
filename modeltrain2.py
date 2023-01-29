@@ -23,7 +23,7 @@ N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
-PATH = str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
+PATH = str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):

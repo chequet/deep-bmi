@@ -17,7 +17,7 @@ N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,2]
-PATH = 'BNN_' + str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING)
+PATH = 'BNN_' + str(N_SNPS) + '_adam_leakyrelu_dropout04_' + str(ENCODING) + ".pt"
 #==============================================
 
 use_cuda = torch.cuda.is_available()
@@ -29,14 +29,14 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # -------------PARAMS-----------------------------------------------
     model = BayesianNN(arch, 0.4, 'LeakyReLU').to(device)
     learning_rate = 0.0001
-    loss_fn = torch.nn.HuberLoss()
+    #loss_fn = torch.nn.HuberLoss()
     optimiser = optim.Adam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
     # initialise early stopping
-    tolerance = 10
+    tolerance = 3
     no_improvement = 0
     best_ci_acc = 0
     for t in range(N_EPOCHS):
