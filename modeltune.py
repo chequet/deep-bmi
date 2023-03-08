@@ -154,10 +154,10 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [100, 2, 2, 2],
-        [100,1,10],
-        [100,2,2,5,5],
-        [100,5,2,5,2]
+        [2, 2, 2],
+        [1,10],
+        [2,2,5,5],
+        [5,2,5,2]
     ]
     architectures = []
     for r in layer_params:
