@@ -108,10 +108,10 @@ def main(n_snps):
     # filter mt for SNPs
     snp_set = hl.literal([hl.parse_locus(item) for item in top_snps])
     full_mt = full_mt.filter_rows(snp_set.contains(full_mt.locus))
-    bm, column_groups = make_block_matrix(full_mt,n_snps)
+    bm, column_groups = make_block_matrix(full_mt, n_snps)
     batch_list = list(column_groups)
     data = MyIterableDataset(bm, phenos, batch_list, n_snps, False)
-    generate_data(data,n_snps)
+    generate_data(data, n_snps)
 
 if __name__ == "__main__":
     main(n_snps=sys.argv[1])

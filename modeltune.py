@@ -81,7 +81,7 @@ def train(config, checkpoint_dir=None):
         model_state, optimizer_state = torch.load(checkpoint)
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
-    data_directory = "/data/" + str(N_SNPS) + "_data/"
+    data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
     train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
@@ -154,10 +154,10 @@ def make_architecture(inp, outp, reduction_factors):
 def main():
     # generate architectures
     layer_params = [
-        [50, 2, 2, 2],
-        [50,1,10],
-        [50,2,2,5,5],
-        [50,5,2,5,2]
+        [100, 2, 2, 2],
+        [100,1,10],
+        [100,2,2,5,5],
+        [100,5,2,5,2]
     ]
     architectures = []
     for r in layer_params:
@@ -171,15 +171,15 @@ def main():
         [N_INPUTS, 128, 128, 128, 128, 1]
     ]
     print("\nARCHITECTURE CHOICES")
-    print(bellot_architectures)
+    print(architectures)
     # define config
     config = {
-        "arch": tune.grid_search(bellot_architectures),
+        "arch": tune.grid_search(architectures),
         "activation": tune.grid_search(["ELU", "ReLU","LeakyReLU"]),#
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["huber"])#,"MSE"
+        "loss": tune.grid_search(["huber","MSE"])
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
