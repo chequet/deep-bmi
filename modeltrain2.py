@@ -22,8 +22,8 @@ N_INPUTS = int(sys.argv[2])
 N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
-REDUCTIONS = [2,2,2]
-PATH = str(N_SNPS) + '_huber_adam_leakyrelu_dropout04_' + str(ENCODING) + ".pt"
+REDUCTIONS = [2,2,5,5]
+PATH = str(N_SNPS) + '_mse_radam_elu_0.1_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -132,11 +132,11 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.5, 'LeakyReLU').to(device)
-    learning_rate = 0.0001
-    loss_fn = nn.HuberLoss()
-    #loss_fn = nn.MSELoss(reduction='mean')
-    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    model = FlexibleNet(arch, 0.1, 'ELU').to(device)
+    learning_rate = 0.001
+    #loss_fn = nn.HuberLoss()
+    loss_fn = nn.MSELoss(reduction='mean')
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
