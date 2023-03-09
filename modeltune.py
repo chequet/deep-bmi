@@ -152,6 +152,9 @@ def make_architecture(inp, outp, reduction_factors):
     return arch
 
 def main():
+    # free up any memory you can
+    torch.cuda.empty_cache()
+
     # generate architectures
     layer_params = [
         [2, 2, 2],
