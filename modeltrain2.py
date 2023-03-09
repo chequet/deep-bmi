@@ -19,8 +19,8 @@ import sys
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
+N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
 PATH = str(N_SNPS) + '_mse_radam_elu_0.1_' + str(ENCODING) + ".pt"
@@ -222,7 +222,7 @@ def main():
     # save results for printing and persisting
     results = {'validation_sets':[], 'validation_loss':[], 'validation_r':[], 'validation_r2':[], 'n_epochs':[]}
     # 5-fold cross validation
-    data_directory = "/data/" + str(N_SNPS) + "_data/"
+    data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
     cross_val_partitions = k_fold_split(data_directory+'train/')
 
     for val_set in cross_val_partitions:
