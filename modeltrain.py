@@ -312,7 +312,7 @@ def train_val_split(train_dir, n_train=88):
     #n_train = int(np.ceil(len(files)*proportion))
     trainfiles = files[:n_train]
     valfiles = files[n_train:]
-    assert(len([i for i in trainfiles if i in valfiles])==0)
+    assert( not [i for i in trainfiles if i in valfiles] )
     return trainfiles, valfiles
 
 def main(modelpath, modeltype, n_epochs, n_inputs):

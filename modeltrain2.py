@@ -50,6 +50,8 @@ def k_fold_split(train_dir, n=5):
         start = stop
         partitions.append(p)
     partitions.append(files[start:])
+    # check no overlap
+    assert( not [file for file in partitions[0] if file in partitions[-1]] )
     return partitions
 
 def get_train_files(train_dir, val_files):
