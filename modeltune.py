@@ -182,7 +182,7 @@ def main():
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["huber"])#,"MSE"
+        "loss": tune.grid_search(["MSE"])#"huber",
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
@@ -209,7 +209,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_mse/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
