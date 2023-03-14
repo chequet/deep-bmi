@@ -132,10 +132,10 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.3, 'ELU').to(device)
-    learning_rate = 0.001
-    #loss_fn = nn.HuberLoss()
-    loss_fn = nn.MSELoss(reduction='mean')
+    model = FlexibleNet(arch, 0.2, 'ELU').to(device)
+    learning_rate = 0.0001
+    loss_fn = nn.HuberLoss()
+    #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
