@@ -126,6 +126,8 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100, 
     preds = torch.stack(preds)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
+    print(means[:10])
+    print(gt[:10])
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
     ci_acc = (ci_lower <= gt) * (ci_upper >= gt)
