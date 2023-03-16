@@ -55,7 +55,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             loss = model.sample_elbo(inputs=X.float(),
                                      labels=Y,
                                      criterion=loss_fn,
-                                     sample_nbr=3)
+                                     sample_nbr=2)
             # complexity_cost_weight=1 / X.shape[0])
             # backward pass
             loss.backward()
@@ -79,7 +79,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             writer.add_scalar("R2", r2, t)
             # check conditions for early stopping - use CI acc as criteria
             if t % 10 == 0:
-                print("no improvement for %i epochs" % no_improvement)
+                print("no improvement for %i epochs" % no_improvement*10)
             if ci_acc > best_ci_acc:
                 no_improvement = 0
                 best_ci_acc = ci_acc
@@ -96,7 +96,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier = 2):
+def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier = 3):
     preds = []
     gt = []
     i = 0
@@ -121,7 +121,7 @@ def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier 
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
     ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
-    ic_acc = ic_acc.mean()
+    ic_acc = ic_acc.float().mean()
     r2 = r2_score(preds, gt)
     r = pearsonr(preds, gt)[0]
     return loss.detach().numpy(), r, r2, ic_acc, (ci_upper >= gt).mean(), (ci_lower <= gt).mean()
