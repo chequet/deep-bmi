@@ -56,7 +56,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             loss = model.sample_elbo(inputs=X.float(),
                                      labels=Y,
                                      criterion=loss_fn,
-                                     sample_nbr=2)
+                                     sample_nbr=3)
             # complexity_cost_weight=1 / X.shape[0])
             # backward pass
             loss.backward()
