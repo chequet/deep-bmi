@@ -138,6 +138,7 @@ def main():
                }
     # 5-fold cross validation
     data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
+    print(data_directory)
     cross_val_partitions = k_fold_split(data_directory + 'train/')
 
     for val_set in cross_val_partitions:
