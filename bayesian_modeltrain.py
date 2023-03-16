@@ -123,7 +123,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
     # get a bunch of predictions to compare!
     print("generating %i predictions..."%n_samples)
     preds = [model(ins.float()) for i in range(n_samples)]
-    preds = torch.stach(preds)
+    preds = torch.stack(preds)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
