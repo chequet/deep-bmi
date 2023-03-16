@@ -23,7 +23,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
-PATH = "NEW_"str(N_SNPS) + '_huber_relu_0_adamax_' + str(ENCODING) + ".pt"
+PATH = "NEW_" + str(N_SNPS) + '_huber_relu_0_adamax_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
