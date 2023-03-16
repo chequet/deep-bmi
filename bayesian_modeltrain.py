@@ -96,7 +96,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  std_multiplier=2):
+def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100,  std_multiplier=2):
     # preds = []
     # get ground truth to compare to
     gt = []
@@ -106,7 +106,6 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
         batch = next(valid_iterator)
         X = batch[0].to(device)
         y = batch[1].to(device)
-        # model.eval()
         # y_pred = model(X.float())
         # preds.append(y_pred.detach().cpu().numpy())
         ins.append(X)
@@ -116,6 +115,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
     gt = torch.cat(gt)
     ins = torch.cat(ins)
     # calculate loss just for last batch for early stopping purposes
+    model.eval()
     loss = model.sample_elbo(inputs=X.float(),
                                      labels=y,
                                      criterion=loss_fn,
@@ -125,8 +125,6 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
     preds = [model(ins.float()) for i in range(n_samples)]
     preds = torch.stack(preds)
     means = preds.mean(axis=0)
-    print(preds.shape)
-    print(means.shape)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
