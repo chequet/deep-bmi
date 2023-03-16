@@ -120,8 +120,10 @@ def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier 
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
-    ic_acc = float((ci_lower <= gt) * (ci_upper >= gt))
+    ic_acc = (ci_lower <= gt) * (ci_upper >= gt)
     ic_acc = ic_acc.mean()
+    print("type: ")
+    print(type(ic_acc))
     r2 = r2_score(preds, gt)
     r = pearsonr(preds, gt)[0]
     return loss.detach().numpy(), r, r2, ic_acc, (ci_upper >= gt).mean(), (ci_lower <= gt).mean()
