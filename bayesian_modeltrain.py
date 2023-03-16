@@ -13,11 +13,11 @@ import sys
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
 N_INPUTS = int(sys.argv[2])
-N_EPOCHS = int(sys.argv[4])
 ENCODING = int(sys.argv[3])
+N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [2,2,2]
-PATH = 'BNN_' + str(N_SNPS) + '_adam_leakyrelu_dropout04_' + str(ENCODING) + ".pt"
+REDUCTIONS = [2,2,5,5]
+PATH = 'BNN_' + str(N_SNPS) + '_huber_adamax_leakyrelu_dropout02_' + str(ENCODING) + ".pt"
 #==============================================
 
 use_cuda = torch.cuda.is_available()
@@ -27,10 +27,10 @@ print(device)
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = BayesianNN(arch, 0.4, 'LeakyReLU').to(device)
-    learning_rate = 0.0001
+    model = BayesianNN(arch, 0.2, 'LeakyReLU').to(device)
+    learning_rate = 0.001
     loss_fn = torch.nn.HuberLoss()
-    optimiser = optim.Adam(model.parameters(), lr=learning_rate)
+    optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
