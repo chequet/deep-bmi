@@ -137,7 +137,7 @@ def main():
         'validation_r': [], 'validation_r2': [], 'n_epochs': []
                }
     # 5-fold cross validation
-    data_directory = "/data/" + str(N_SNPS) + "_data/"
+    data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
     cross_val_partitions = k_fold_split(data_directory + 'train/')
 
     for val_set in cross_val_partitions:
