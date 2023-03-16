@@ -71,7 +71,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             val_loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = \
                 evaluate_regression(model, valid_iterator, val_set, loss_fn)
             print("validation loss: %f" % val_loss)
-            print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
+            print("CI acc: {:.3f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
             print("pearson r: %f" % r)
             writer.add_scalar("Loss/val", val_loss, t)
@@ -131,8 +131,11 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100, 
     print(gt[:10])
     print(stds[:10])
     ci_upper = means + (std_multiplier * stds)
+    print(ci_upper[:10])
     ci_lower = means - (std_multiplier * stds)
+    print(ci_lower[:10])
     ci_acc = (ci_lower <= gt) * (ci_upper >= gt)
+    print(ci_acc[:10])
     ci_acc = ci_acc.float().mean()
     r2 = r2_score(means.detach().numpy(), gt.detach().numpy())
     r = pearsonr(means.detach().numpy().ravel(), gt.detach().numpy().ravel())[0]
