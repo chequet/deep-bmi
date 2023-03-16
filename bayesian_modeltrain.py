@@ -96,7 +96,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  std_multiplier=3):
+def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  std_multiplier=2):
     # preds = []
     # get ground truth to compare to
     gt = []
@@ -125,6 +125,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
     preds = [model(ins.float()) for i in range(n_samples)]
     preds = torch.stack(preds)
     means = preds.mean(axis=0)
+    print(means)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
     ci_lower = means - (std_multiplier * stds)
