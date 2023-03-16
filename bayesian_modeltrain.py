@@ -96,26 +96,34 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, samples, loss_fn, std_multiplier = 3):
-    preds = []
+def evaluate_regression(model, valid_iterator, n_samples=25, loss_fn, std_multiplier = 3):
+    # preds = []
+    # get ground truth to compare to
     gt = []
+    ins = []
     i = 0
-    while i < len(samples):
+    while i < len(valid_iterator):
         batch = next(valid_iterator)
         X = batch[0].to(device)
         y = batch[1].to(device)
-        model.eval()
-        y_pred = model(X.float())
-        preds.append(y_pred.detach().cpu().numpy())
+        # model.eval()
+        # y_pred = model(X.float())
+        # preds.append(y_pred.detach().cpu().numpy())
+        ins.append(X)
         gt.append(y.detach().cpu().numpy())
         i += 1
-    preds = np.concatenate(preds).ravel()
+    # preds = np.concatenate(preds).ravel()
     gt = np.concatenate(gt).ravel()
+    ins = torch.cat(ins)
     # calculate loss just for last batch for early stopping purposes
     loss = model.sample_elbo(inputs=X.float(),
                                      labels=y,
                                      criterion=loss_fn,
                                      sample_nbr=3)
+    # get a bunch of predictions to compare!
+    print("generating %i predictions..."%n_samples)
+    preds = [model(ins) for i in range(n_samples)]
+    preds = torch.stach(preds)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
