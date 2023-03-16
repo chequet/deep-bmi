@@ -125,6 +125,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
     preds = [model(ins.float()) for i in range(n_samples)]
     preds = torch.stack(preds)
     means = preds.mean(axis=0)
+    print(preds.shape)
     print(means.shape)
     stds = preds.std(axis=0)
     ci_upper = means + (std_multiplier * stds)
