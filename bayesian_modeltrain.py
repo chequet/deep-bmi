@@ -67,13 +67,13 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
         writer.add_scalar("Loss/train", loss, t)
         # validate on every 10th epoch only
         if t % 10 == 0:
-            loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = \
+            val_loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = \
                 evaluate_regression(model, valid_iterator, val_set, loss_fn)
-            print("validation loss: %f" % loss)
+            print("validation loss: %f" % val_loss)
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
             print("pearson r: %f" % r)
-            writer.add_scalar("Loss/val", loss, t)
+            writer.add_scalar("Loss/val", val_loss, t)
             writer.add_scalar("ci_acc", ci_acc, t)
             writer.add_scalar("Pearson_R", r, t)
             writer.add_scalar("R2", r2, t)
@@ -93,7 +93,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     writer.flush()
     writer.close()
     torch.save(model, PATH)
-    return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
+    return val_loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
 def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100,  std_multiplier=2):
