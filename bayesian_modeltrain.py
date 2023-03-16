@@ -110,7 +110,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
         # y_pred = model(X.float())
         # preds.append(y_pred.detach().cpu().numpy())
         ins.append(X)
-        gt.append(y.detach().cpu().numpy())
+        gt.append(y)
         i += 1
     # preds = np.concatenate(preds).ravel()
     gt = np.concatenate(gt).ravel()
