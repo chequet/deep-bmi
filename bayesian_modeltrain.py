@@ -31,7 +31,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     learning_rate = 0.001
     loss_fn = torch.nn.HuberLoss()
     #loss_fn = torch.nn.MSELoss(reduction='mean')
-    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
