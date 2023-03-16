@@ -79,7 +79,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
             writer.add_scalar("R2", r2, t)
             # check conditions for early stopping - use CI acc as criteria
             if t % 10 == 0:
-                print("no improvement for %i epochs" % no_improvement*10)
+                print("no improvement for %i epochs" % (no_improvement*10))
             if ci_acc > best_ci_acc:
                 no_improvement = 0
                 best_ci_acc = ci_acc
