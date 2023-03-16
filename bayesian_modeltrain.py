@@ -68,7 +68,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
         # validate on every 10th epoch only
         if t % 10 == 0:
             loss, r, r2, ci_acc, under_ci_upper, over_ci_lower = \
-                evaluate_regression(model, valid_iterator, loss_fn)
+                evaluate_regression(model, valid_iterator, val_set, loss_fn)
             print("validation loss: %f" % loss)
             print("CI acc: {:.2f}, CI upper acc: {:.2f}, CI lower acc: {:.2f}".format(ci_acc, under_ci_upper,
                                                                                       over_ci_lower))
@@ -96,13 +96,13 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, loss_fn, n_samples=25,  std_multiplier=3):
+def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  std_multiplier=3):
     # preds = []
     # get ground truth to compare to
     gt = []
     ins = []
     i = 0
-    while i < len(valid_iterator):
+    while i < len(val_set):
         batch = next(valid_iterator)
         X = batch[0].to(device)
         y = batch[1].to(device)
