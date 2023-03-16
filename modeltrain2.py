@@ -23,7 +23,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [50,2,2,2]
-PATH = "NEW_" + str(N_SNPS) + '_huber_elu_0.5_radam_' + str(ENCODING) + ".pt"
+PATH = "NEW_" + str(N_SNPS) + '_huber_elu_0.2_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -132,11 +132,11 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.5, 'ELU').to(device)
-    learning_rate = 0.01
+    model = FlexibleNet(arch, 0.2, 'ELU').to(device)
+    learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
-    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
