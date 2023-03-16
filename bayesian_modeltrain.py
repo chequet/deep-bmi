@@ -113,7 +113,7 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=25,  
         gt.append(y)
         i += 1
     # preds = np.concatenate(preds).ravel()
-    gt = np.concatenate(gt).ravel()
+    gt = torch.cat(gt)
     ins = torch.cat(ins)
     # calculate loss just for last batch for early stopping purposes
     loss = model.sample_elbo(inputs=X.float(),
