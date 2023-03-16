@@ -27,7 +27,7 @@ print(device)
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = BayesianNN(arch, 0, 'ReLU').to(device)
+    model = BayesianNN(arch, 0.2, 'LeakyReLU').to(device)
     learning_rate = 0.001
     loss_fn = torch.nn.HuberLoss()
     optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
