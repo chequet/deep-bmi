@@ -29,8 +29,9 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # -------------PARAMS-----------------------------------------------
     model = BayesianNN(arch, 0.5, 'ELU').to(device)
     learning_rate = 0.001
-    loss_fn = torch.nn.HuberLoss()
+    #loss_fn = torch.nn.HuberLoss()
     #loss_fn = torch.nn.MSELoss(reduction='mean')
+    loss_fn = torch.nn.L1Loss()
     optimiser = optim.RAdam(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     print(model)
