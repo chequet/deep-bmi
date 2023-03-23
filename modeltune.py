@@ -158,9 +158,9 @@ def main():
     # generate architectures
     layer_params = [
         [1, 2, 1, 2, 1, 2],
-        [1, 10, 1, 10],
-        [1, 2, 1, 2, 1, 5, 1, 5],
-        [1, 5, 1, 2, 1, 5, 1, 2]
+        [1, 10, 1],
+        [1, 2, 1, 2, 1, 5, 1],
+        [1, 5, 1, 2, 1, 5, 1]
     ]
     architectures = []
     for r in layer_params:
