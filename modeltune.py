@@ -157,10 +157,10 @@ def main():
 
     # generate architectures
     layer_params = [
-        [50, 2, 2, 2],
-        [50, 10, 10],
-        [50, 2, 2, 5, 5],
-        [50, 5, 2, 5, 2]
+        [1, 2, 1, 2, 1, 2],
+        [1, 10, 1, 10],
+        [1, 2, 1, 2, 1, 5, 1, 5],
+        [1, 5, 1, 2, 1, 5, 1, 2]
     ]
     architectures = []
     for r in layer_params:
@@ -173,7 +173,7 @@ def main():
         [N_INPUTS, 32, 32, 32, 32, 32, 1],
         [N_INPUTS, 128, 128, 128, 128, 1]
     ]
-    architectures = bellot_architectures
+    #architectures = bellot_architectures
     print("\nARCHITECTURE CHOICES")
     print(architectures)
     # define config
@@ -210,7 +210,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_bellot/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_mse/deep_encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
