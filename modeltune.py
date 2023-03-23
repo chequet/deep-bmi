@@ -183,7 +183,7 @@ def main():
         "dropout": tune.grid_search([0,0.1,0.2,0.3]),#
         "optim": tune.choice(["radam","adam","adamw","adamax",]), #"nadam","spadam","sgd","rmsprop",,
         "lr": tune.loguniform(1e-4, 1e-2),
-        "loss": tune.grid_search(["MSE"])#"huber",
+        "loss": tune.grid_search(["huber"])#,"MSE"
     }
     scheduler = ASHAScheduler(
         max_t=N_EPOCHS,
