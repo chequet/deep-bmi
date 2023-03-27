@@ -16,7 +16,7 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [50, 1, 2, 1, 2, 1, 2, 1, 2]
+REDUCTIONS = [50, 1, 2, 1, 2, 1, 2]
 PATH = 'deeper_BNN_' + str(N_SNPS) + '_huber_radam_elu_dropout0.2_' + str(ENCODING) + ".pt"
 #==============================================
 
