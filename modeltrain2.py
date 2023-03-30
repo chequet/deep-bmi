@@ -167,6 +167,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             model.train()
             # forward pass
             y_pred = model(X.float())
+            print(Y)
+            print(y_pred)
             # compute and print loss
             loss = loss_fn(y_pred, Y)
             # backward pass
