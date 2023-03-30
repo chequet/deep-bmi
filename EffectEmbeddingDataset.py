@@ -4,12 +4,11 @@ import math
 import os
 
 class EffectEmbeddingDataset(torch.utils.data.IterableDataset):
-    """ Implementation of generating data from hail data structures"""
 
-    def __init__(self, filepath, shuffle, method, beta_mask):
+    def __init__(self, filepath, files, shuffle, method, beta_mask):
         self.filepath = filepath
         self.shuffle = shuffle
-        self.files = os.listdir(filepath)
+        self.files = files
         # shuffle file order if shuffle
         if self.shuffle:
             np.random.shuffle(self.files)

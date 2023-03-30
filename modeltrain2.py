@@ -3,6 +3,7 @@ from FlexibleNet import *
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
+from EffectEmbeddingDataset import *
 import os
 import torch
 import torch.optim as optim
@@ -10,7 +11,7 @@ import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
-#import pickle
+import pickle
 import csv
 import sys
 
@@ -22,8 +23,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [50,2,2,2]
-PATH = "NEW_" + str(N_SNPS) + '_huber_elu_0.2_radam_' + str(ENCODING) + ".pt"
+REDUCTIONS = [2,2,5,5]
+PATH = "NEW_" + str(N_SNPS) + '_huber_elu_0_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -60,7 +61,7 @@ def get_train_files(train_dir, val_files):
     train_files = [item for item in files if item not in val_files]
     return train_files
 
-def get_dataloader(data_directory, encoding, workers, files):
+def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
     params = {'batch_size': None,
               'num_workers': workers}
     dataloader = None
@@ -76,6 +77,12 @@ def get_dataloader(data_directory, encoding, workers, files):
     elif encoding == 4:
         dataloader = iter(torch.utils.data.DataLoader
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
+    elif encoding == 5:
+        dataloader = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask)))
+    elif encoding == 6:
+        dataloader = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask)))
     return dataloader
 
 def train(model, train_set, train_iterator, loss_fn, optimiser):
@@ -132,11 +139,12 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.2, 'ELU').to(device)
+    model = FlexibleNet(arch, 0, 'ELU').to(device)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=0.01)
+    beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
@@ -146,8 +154,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     best_val_loss = np.inf
     for t in range(N_EPOCHS):
         print("epoch %i" % t)
-        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_set)
-        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_set)
+        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_set, beta_mask)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_set, beta_mask)
         i = 0
         while i < len(train_set):
             print("batch index %i" % i, end='\r')
