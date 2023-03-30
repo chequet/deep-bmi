@@ -140,10 +140,11 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # new model
     # -------------PARAMS-----------------------------------------------
     model = FlexibleNet(arch, 0, 'ELU').to(device)
+    print(model)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
-    optimiser = optim.RAdam(model.parameters(), lr=0.01)
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
