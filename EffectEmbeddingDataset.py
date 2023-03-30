@@ -17,7 +17,7 @@ class EffectEmbeddingDataset(torch.utils.data.IterableDataset):
         self.counter = 0
         self.method = method
         self.beta_mask = beta_mask
-        print("embedding method %i" %self.method)
+        #print("embedding method %i" %self.method)
         #self.lock = threading.Lock()   #Set self.lock
 
     def __len__(self):
