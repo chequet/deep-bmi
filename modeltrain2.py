@@ -167,8 +167,6 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             model.train()
             # forward pass
             y_pred = model(X.float())
-            print(Y)
-            print(y_pred)
             # compute and print loss
             loss = loss_fn(y_pred, Y)
             # backward pass
@@ -195,7 +193,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
                 # compute loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
-                val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
+                val_r2 += r2_score(y_pred.cpu().numpy().ravel(), Y.cpu().numpy().ravel())
                 val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
                 i += 1
             if not np.isnan(val_r):
