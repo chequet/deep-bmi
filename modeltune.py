@@ -90,7 +90,7 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
-    beta_mask = pickle.load(open("../beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
+    beta_mask = pickle.load(open("/data/beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
     train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
@@ -219,7 +219,7 @@ def main():
     sorted = df.sort_values('r', ascending=False)
     print("\n\n====================================================================\n")
     print(sorted)
-    filename = "grid_search_mse/deep_encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
+    filename = "grid_search_huber/encoding" + str(ENCODING) + "_" + str(N_SNPS) + "_tuneresults.csv"
     sorted.to_csv(filename)
 
 if __name__ == "__main__":
