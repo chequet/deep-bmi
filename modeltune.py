@@ -132,7 +132,7 @@ def train(config, checkpoint_dir=None):
                 # compute and print loss
                 loss = loss_fn(y_pred, Y)
                 val_loss += loss.cpu().numpy()
-                val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
+                val_r2 += r2_score(y_pred.cpu().numpy().ravel(), Y.cpu().numpy().ravel())
                 # suppress constant input warnings
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
