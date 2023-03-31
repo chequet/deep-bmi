@@ -12,12 +12,14 @@ from ray.tune.schedulers import ASHAScheduler
 from MyIterableDataset3 import *
 from OneHotIterableDataset import *
 from BasicEmbeddedDataset import *
+from EffectEmbeddingDataset import *
 import os
 from modeltrain import train_val_split
 from FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import warnings
+import pickle
 
 # PARAMS TO CHANGE ============================
 N_SNPS = int(sys.argv[1])
@@ -27,7 +29,7 @@ ENCODING = int(sys.argv[3])
 BATCH_SIZE = 4096
 #==============================================
 
-def get_dataloader(data_directory, encoding, workers, files):
+def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
     params = {'batch_size': None,
               'num_workers': workers}
     if encoding == 1:
@@ -42,6 +44,12 @@ def get_dataloader(data_directory, encoding, workers, files):
     elif encoding == 4:
         dataloader = iter(torch.utils.data.DataLoader
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
+    elif encoding == 5:
+        dataloader = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask)))
+    elif encoding == 6:
+        dataloader = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask)))
     return dataloader
 
 def train(config, checkpoint_dir=None):
@@ -82,11 +90,12 @@ def train(config, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimiser.load_state_dict(optimizer_state)
     data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
+    beta_mask = pickle.load(open("../beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
     train_files, val_files = train_val_split(data_directory+'train/',n_train=48)
     # train
     for epoch in range(N_EPOCHS):
-        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_files)
-        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_files)
+        train_iterator = get_dataloader(data_directory, ENCODING, 12, train_files, beta_mask)
+        valid_iterator = get_dataloader(data_directory, ENCODING, 6, val_files, beta_mask)
         # TRAIN
         i = 0
         while i < len(train_files):
