@@ -53,7 +53,7 @@ class EffectEmbeddingDataset(torch.utils.data.IterableDataset):
         embed[pos_homalt] = [mag2, 0]
         embed[neg_homref] = [mag2, 0]
         embed[neg_homalt] = [0, mag2]
-        return embed.flatten()
+        return embed.flatten().flatten()
 
     def __getitem__(self, index):
         if index >= self.end:
