@@ -16,8 +16,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [50, 1, 2, 1, 2, 1, 2]
-PATH = 'deeper_BNN_' + str(N_SNPS) + '_huber_radam_elu_dropout0.2_' + str(ENCODING) + ".pt"
+REDUCTIONS = [100,5,2,5,2]
+PATH = 'BNN_' + str(N_SNPS) + '_mse_adamw_elu_dropout0_' + str(ENCODING) + ".pt"
 #==============================================
 
 use_cuda = torch.cuda.is_available()
@@ -27,12 +27,12 @@ print(device)
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = BayesianNN(arch, 0.2, 'ELU').to(device)
+    model = BayesianNN(arch, 0, 'ELU').to(device)
     learning_rate = 0.001
-    loss_fn = torch.nn.HuberLoss()
-    #loss_fn = torch.nn.MSELoss(reduction='mean')
+    #loss_fn = torch.nn.HuberLoss()
+    loss_fn = torch.nn.MSELoss(reduction='mean')
     #loss_fn = torch.nn.L1Loss()
-    optimiser = optim.RAdam(model.parameters(), lr=0.01)
+    optimiser = optim.Adamw(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
@@ -128,15 +128,15 @@ def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100, 
     preds = torch.stack(preds)
     means = preds.mean(axis=0)
     stds = preds.std(axis=0)
-    print(means[:10])
-    print(gt[:10])
-    print(stds[:10])
+    # print(means[:10])
+    # print(gt[:10])
+    # print(stds[:10])
     ci_upper = means + (std_multiplier * stds)
-    print(ci_upper[:10])
+    # print(ci_upper[:10])
     ci_lower = means - (std_multiplier * stds)
-    print(ci_lower[:10])
+    # print(ci_lower[:10])
     ci_acc = (ci_lower <= gt) * (ci_upper >= gt)
-    print(ci_acc[:10])
+    # print(ci_acc[:10])
     ci_acc = ci_acc.float().mean()
     r2 = r2_score(means.detach().numpy(), gt.detach().numpy())
     r = pearsonr(means.detach().numpy().ravel(), gt.detach().numpy().ravel())[0]
