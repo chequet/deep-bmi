@@ -16,7 +16,7 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [1000,5,2,5,2]
+REDUCTIONS = [100,50,2,5,2]
 PATH = 'BNN_' + str(N_SNPS) + '_mse_adamw_elu_dropout0_' + str(ENCODING) + ".pt"
 #==============================================
 
