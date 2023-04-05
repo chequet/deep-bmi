@@ -98,7 +98,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     return val_loss, ci_acc, under_ci_upper, over_ci_lower, r, r2, t
 
 
-def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=100,  std_multiplier=1):
+def evaluate_regression(model, valid_iterator, val_set, loss_fn, n_samples=40,  std_multiplier=1):
     # preds = []
     # get ground truth to compare to
     gt = []
