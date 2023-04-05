@@ -32,7 +32,7 @@ def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     #loss_fn = torch.nn.HuberLoss()
     loss_fn = torch.nn.MSELoss(reduction='mean')
     #loss_fn = torch.nn.L1Loss()
-    optimiser = optim.Adamw(model.parameters(), lr=0.01)
+    optimiser = optim.AdamW(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
