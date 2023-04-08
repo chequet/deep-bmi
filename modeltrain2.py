@@ -24,7 +24,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
-PATH = str(N_SNPS) + '_huber_leakyrelu_0.2_adamax_' + str(ENCODING) + ".pt"
+PATH = str(N_SNPS) + '_huber_relu_0_adamax_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -139,7 +139,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.2, 'LeakyRelu').to(device)
+    model = FlexibleNet(arch, 0, 'ReLU').to(device)
     print(model)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
