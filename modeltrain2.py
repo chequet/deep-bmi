@@ -24,7 +24,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
-PATH = str(N_SNPS) + '_huber_relu_0_adamax_' + str(ENCODING) + ".pt"
+PATH = str(N_SNPS) + '_huber_elu_0_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -85,66 +85,18 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                           (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask)))
     return dataloader
 
-def train(model, train_set, train_iterator, loss_fn, optimiser):
-    i = 0
-    while i < len(train_set):
-        print("batch index %i" % i, end='\r')
-        batch = next(train_iterator)
-        X = batch[0].to(device)
-        Y = batch[1].to(device)
-        optimiser.zero_grad()
-        model.train()
-        # forward pass
-        y_pred = model(X.float())
-        # compute and print loss
-        loss = loss_fn(y_pred, Y)
-        # backward pass
-        loss.backward()
-        # update weights with gradient descent
-        optimiser.step()
-        i += 1
-    return loss.item()
-
-def validate(model, validation_set, validation_iterator, loss_fn, optimiser):
-    with torch.no_grad():
-        val_loss = 0.0
-        val_r2 = 0.0
-        val_r = 0.0
-        i = 0
-        while i < len(validation_set):
-            print("validation batch index %i" % i, end='\r')
-            batch = next(validation_iterator)
-            X = batch[0].to(device)
-            Y = batch[1].to(device)
-            model.eval()
-            # forward pass
-            y_pred = model(X.float())
-            # compute loss
-            loss = loss_fn(y_pred, Y)
-            val_loss += loss.cpu().numpy()
-            val_r2 += r2_score(y_pred.cpu().numpy(), Y.cpu().numpy())
-            val_r += pearsonr(y_pred.ravel().cpu().numpy(), Y.ravel().cpu().numpy())[0]
-            i+=1
-        if not np.isnan(val_r):
-            r = (val_r / i)
-        else:
-            r = 0
-        r2 = (val_r2 / i)
-        loss = (val_loss / i)
-        return loss, r, r2
-
 def train_and_validate(arch, data_directory, train_set, val_set):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0, 'ReLU').to(device)
+    model = FlexibleNet(arch, 0, 'ELU').to(device)
     print(model)
     learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
-    optimiser = optim.Adamax(model.parameters(), lr=learning_rate)
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
@@ -234,7 +186,9 @@ def main():
     data_directory = "/data/" + str(N_SNPS) + "_data_relabelled/"
     cross_val_partitions = k_fold_split(data_directory+'train/')
 
+    v = 1
     for val_set in cross_val_partitions:
+        print("validation set %i"%v)
         results['validation_sets'].append(val_set)
         train_set = get_train_files(data_directory+'train/', val_set)
         print("\nvalidation set:")
@@ -244,6 +198,7 @@ def main():
         results['validation_r'].append(val_r)
         results['validation_r2'].append(val_r2)
         results['n_epochs'].append(t)
+        v += 1
     # save results
     results_path = '../results/' + PATH + '_results.csv'
     with open(results_path, 'w') as f:
