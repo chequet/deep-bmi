@@ -23,7 +23,7 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [100,2,2,5,5]
+REDUCTIONS = [2,2,5,5]
 PATH = str(N_SNPS) + '_huber_leakyrelu_0.2_adamax_' + str(ENCODING) + ".pt"
 #==============================================
 
