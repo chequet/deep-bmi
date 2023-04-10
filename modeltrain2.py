@@ -23,8 +23,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [2,2,5,5]
-PATH = "adaptivelr_" + str(N_SNPS) + '_huber_elu_0_radam_' + str(ENCODING) + ".pt"
+REDUCTIONS = [50,2,2,2]
+PATH = "adaptivelr_" + str(N_SNPS) + '_huber_elu_0.2_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -91,9 +91,9 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0, 'ELU').to(device)
+    model = FlexibleNet(arch, 0.2, 'ELU').to(device)
     print(model)
-    learning_rate = 0.01
+    learning_rate = 0.0001
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
@@ -164,7 +164,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("R2", r2, t)
         # update LR if using scheduler
         if use_scheduler:
-            scheduler1.step()
+            #scheduler1.step()
             scheduler2.step(val_loss)
         # check conditions for early stopping
         if t > 20:
