@@ -164,7 +164,8 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         # update LR if using scheduler
         if use_scheduler:
             scheduler.step()
-            print("learning rate: %f"%scheduler.get_last_lr())
+            print("learning rate: ")
+            scheduler.print_lr()
         # check conditions for early stopping
         if t > 20:
             if t % 10 == 0:
