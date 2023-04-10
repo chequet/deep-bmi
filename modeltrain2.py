@@ -24,7 +24,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
-PATH = str(N_SNPS) + '_huber_elu_0_radam_' + str(ENCODING) + ".pt"
+PATH = "adaptivelr_" + str(N_SNPS) + '_huber_elu_0_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -98,7 +98,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     use_scheduler = True
-    scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9, verbose=True)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimiser, verbose=True)
     beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
