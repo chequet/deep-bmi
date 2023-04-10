@@ -163,7 +163,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("R2", r2, t)
         # update LR if using scheduler
         if use_scheduler:
-            scheduler.step()
+            scheduler.step(val_loss)
         # check conditions for early stopping
         if t > 20:
             if t % 10 == 0:
