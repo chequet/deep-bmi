@@ -93,10 +93,12 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # -------------PARAMS-----------------------------------------------
     model = FlexibleNet(arch, 0, 'ELU').to(device)
     print(model)
-    learning_rate = 0.0001
+    learning_rate = 0.01
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
+    use_scheduler = True
+    scheduler = optim.lr_scheduler.ExponentialLR(optimiser,gamma=0.9)
     beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
@@ -159,6 +161,9 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         writer.add_scalar("Loss/val", loss, t)
         writer.add_scalar("Pearson_R", r, t)
         writer.add_scalar("R2", r2, t)
+        # update LR if using scheduler
+        if use_scheduler:
+            scheduler.step()
         # check conditions for early stopping
         if t > 20:
             if t % 10 == 0:
