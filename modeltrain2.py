@@ -98,7 +98,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     use_scheduler = True
-    scheduler = optim.lr_scheduler.ExponentialLR(optimiser,gamma=0.9)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9, verbose=True)
     beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
@@ -164,8 +164,6 @@ def train_and_validate(arch, data_directory, train_set, val_set):
         # update LR if using scheduler
         if use_scheduler:
             scheduler.step()
-            print("learning rate: ")
-            scheduler.print_lr()
         # check conditions for early stopping
         if t > 20:
             if t % 10 == 0:
