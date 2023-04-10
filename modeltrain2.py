@@ -93,7 +93,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     # -------------PARAMS-----------------------------------------------
     model = FlexibleNet(arch, 0, 'ELU').to(device)
     print(model)
-    learning_rate = 0.001
+    learning_rate = 0.01
     loss_fn = nn.HuberLoss()
     #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
