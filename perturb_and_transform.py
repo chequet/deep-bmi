@@ -50,6 +50,17 @@ def get_low_mse_samples(mse_cutoff, n_samples, bmi_lower, bmi_upper, groundtruth
     np.random.shuffle(locs)
     return locs[:n_samples]
 
+# Define similarity kernel (exponential kernel based on L2 norm)
+def similarity_kernel(
+    original_input: Tensor,
+    perturbed_input: Tensor,
+    perturbed_interpretable_input: Tensor,
+    **kwargs)->Tensor:
+        # kernel_width will be provided to attribute as a kwarg
+        kernel_width = kwargs["kernel_width"]
+        l2_dist = torch.norm(original_input - perturbed_input)
+        return torch.exp(- (l2_dist**2) / (kernel_width**2))
+
 def get_sample(index, generator, batch_size):
     # get batch number
     batch_i = math.floor(index/batch_size)
