@@ -32,6 +32,7 @@ obese_2_mask = [1 if (p >= 1.69 and p < 2.76) else 0 for p in test_phenos]
 obese_3_mask = [1 if (p >= -1.82 and p < -0.44) else 0 for p in test_phenos]
 
 mses = pickle.load(open("10000_test_mses.pkl","rb"))
+print(mses)
 
 # get entire X test dataset
 params = {'batch_size': None,
@@ -60,7 +61,7 @@ lime_attr = LimeBase(forward,
 MASK = overweight_mask
 attr_coef_matrix = []
 for i in range(len(test_samples)):
-    if MASK[i] == 1 and mses[i] < 0.1:
+    if (MASK[i] == 1) and (mses[i] < 0.1):
         print("%i/%i"%(i,len(test_samples)))
         inp = X_data[i]
         # do LIME
