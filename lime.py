@@ -68,6 +68,6 @@ for i in range(len(test_samples)):
                                  n_interp_features=len(gene_keys), gene_index_array=gene_mask_values,
                                  show_progress=False)
         # store results
-        attr_coef_matrix.append(attr_coefs)
+        attr_coef_matrix.append(np.array(attr_coefs))
 attr = np.array(attr_coef_matrix)
 np.save(attr,"lime_results1.np")
