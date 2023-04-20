@@ -59,7 +59,7 @@ lime_attr = LimeBase(forward,
 # do lime for each bmi cat
 MASK = overweight_mask
 attr_coef_matrix = []
-for i in range(len(test_samples)):
+for i in range(len(test_samples[:1000])):
     if (MASK[i] == 1) and (mses[i] < 0.1):
         print("%i/%i"%(i,len(test_samples)))
         inp = X_data[i]
@@ -70,4 +70,4 @@ for i in range(len(test_samples)):
         # store results
         attr_coef_matrix.append(np.array(attr_coefs))
 attr = np.array(attr_coef_matrix)
-np.save(attr,"lime_results1.np")
+np.save("lime_results1.np", attr)
