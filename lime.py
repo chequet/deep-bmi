@@ -59,7 +59,7 @@ lime_attr = LimeBase(forward,
 # do lime for each bmi cat
 attr_coef_matrix = []
 for i in range(len(test_samples)):
-    if (obese_1_mask[i] == 1 or obese_2_mask[i] == 1 or obese_3_mask[i] == 1) \
+    if (underweight_mask[i] == 1 or healthy_mask[i] == 1) \
             and (mses[i] < 0.1):
         print("%i/%i"%(i,len(test_samples)))
         inp = X_data[i]
@@ -70,4 +70,4 @@ for i in range(len(test_samples)):
         # store results
         attr_coef_matrix.append(np.array(attr_coefs)[0])
 attr = np.array(attr_coef_matrix)
-np.save("obese_lime_results1", attr)
+np.save("low_bmi_lime_results1", attr)
