@@ -17,7 +17,7 @@ print(device)
 
 ENC = int(sys.argv[1])
 
-# SGDRegressor gridsearch
+# SGDRegressor gridsearch!
 param_grid = {
     'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
