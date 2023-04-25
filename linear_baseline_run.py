@@ -23,7 +23,7 @@ param_grid = {
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 
-N_SNPS = [50000]
+N_SNPS = [10000]
 for N in N_SNPS:
     DATA_DIR = "../" + str(N) + "_data_relabelled/train/"
     print(DATA_DIR)
