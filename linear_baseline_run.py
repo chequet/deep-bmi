@@ -17,13 +17,13 @@ print(device)
 
 ENC = int(sys.argv[1])
 
-# SGDRegressor gridsearch
+# SGDRegressor gridsearch!
 param_grid = {
     'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 
-N_SNPS = [50000]
+N_SNPS = [10000]
 for N in N_SNPS:
     DATA_DIR = "../" + str(N) + "_data_relabelled/train/"
     print(DATA_DIR)
