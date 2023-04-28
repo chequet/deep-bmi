@@ -17,7 +17,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [2,2,5,5]
-PATH = 'BNN_' + str(N_SNPS) + '_huber_adamax_relu_dropout0_' + str(ENCODING) + ".pt"
+PATH = 'BNN_' + str(N_SNPS) + '_huber_radam_elu_dropout0_' + str(ENCODING) + ".pt"
 #==============================================
 
 use_cuda = torch.cuda.is_available()
@@ -27,12 +27,12 @@ print(device)
 def train_and_validate_BNN(arch, data_directory, train_set, val_set):
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = BayesianNN(arch, 0, 'ReLU').to(device)
+    model = BayesianNN(arch, 0, 'ELU').to(device)
     learning_rate = 0.001
     loss_fn = torch.nn.HuberLoss()
     #loss_fn = torch.nn.MSELoss(reduction='mean')
     #loss_fn = torch.nn.L1Loss()
-    optimiser = optim.Adamax(model.parameters(), lr=0.01)
+    optimiser = optim.RAdam(model.parameters(), lr=0.01)
     # ------------------------------------------------------------------
     print(model)
     # # initialise summary writer for tensorboard
