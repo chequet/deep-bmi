@@ -13,10 +13,9 @@ from collections import OrderedDict
 model = torch.load("10000radam_elu_0.2_huber4.pt")
 
 # get ordered keys and values for gene features with >1 SNP
-gene_feature_masks = pickle.load(open("10000multi-snp_gene_mask_dict.pkl","rb"))
-ordered_feature_masks = OrderedDict(gene_feature_masks)
+ordered_feature_masks = pickle.load(open("../gene_masks/10k_ordered_feature_masks.pkl","rb"))
 gene_keys = list(ordered_feature_masks.keys())
-gene_mask_values = np.array(list(ordered_feature_masks.values()))
+gene_mask_values = np.array([ordered_feature_masks[key] for key in gene_keys])
 
 # aggregate gene stats for each bmi category
 # first make a bmi mask for test set samples
@@ -70,4 +69,4 @@ for i in range(len(test_samples)):
         # store results
         attr_coef_matrix.append(np.array(attr_coefs)[0])
 attr = np.array(attr_coef_matrix)
-np.save("low_bmi_lime_results1", attr)
+np.save("low_bmi_lime_results2", attr)
