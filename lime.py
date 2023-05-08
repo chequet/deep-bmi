@@ -66,7 +66,7 @@ attr_coef_matrix_1 = []
 for i in range(len(X_data_1)):
     if (obese_1_mask[i] == 1 or obese_2_mask[i] == 1) \
             and (mses[i] < 0.1):
-        print("%i/%i"%(i,len(test_samples)))
+        print("%i/%i"%(i,len(X_data_1)))
         inp = X_data_1[i]
         # do LIME
         attr_coefs = lime_attr.attribute(inp, additional_forward_args=[model], kernel_width=1.1,
@@ -82,7 +82,7 @@ attr_coef_matrix_2 = []
 for i in range(len(X_data_2)):
     if (obese_1_mask[i] == 1 or obese_2_mask[i] == 1) \
             and (mses[i] < 0.1):
-        print("%i/%i"%(i,len(test_samples)))
+        print("%i/%i"%(i,len(X_data_2)))
         inp = X_data_2[i]
         # do LIME
         attr_coefs = lime_attr.attribute(inp, additional_forward_args=[model], kernel_width=1.1,
