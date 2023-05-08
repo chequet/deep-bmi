@@ -46,6 +46,10 @@ for i in range(len(os.listdir("../1000_data_relabelled/test/"))):
     X.append(batch[0])
 X_data = torch.cat(X)
 
+split = np.ceil(len(X_data)/2)
+X_data_1 = X_data[:split]
+X_data_2 = X_data[split:]
+
 # set up lime
 lime_attr = LimeBase(forward,
                      SkLearnLinearModel("linear_model.Ridge"),
@@ -55,10 +59,11 @@ lime_attr = LimeBase(forward,
                      from_interp_rep_transform=from_interp_rep_transform,
                      to_interp_rep_transform=None)
 
-# do lime for each bmi cat
-attr_coef_matrix = []
+# do lime for each group
+print("subgroup 1")
+attr_coef_matrix_1 = []
 for i in range(len(test_samples)):
-    if (underweight_mask[i] == 1 or healthy_mask[i] == 1) \
+    if (obese_1_mask[i] == 1 or obese_2_mask[i] == 1) \
             and (mses[i] < 0.1):
         print("%i/%i"%(i,len(test_samples)))
         inp = X_data[i]
@@ -67,6 +72,22 @@ for i in range(len(test_samples)):
                                  n_interp_features=len(gene_keys), gene_index_array=gene_mask_values,
                                  show_progress=False)
         # store results
-        attr_coef_matrix.append(np.array(attr_coefs)[0])
-attr = np.array(attr_coef_matrix)
-np.save("low_bmi_lime_results2", attr)
+        attr_coef_matrix_1.append(np.array(attr_coefs)[0])
+attr = np.array(attr_coef_matrix_1)
+np.save("obese12_bmi_lime_results1", attr)
+
+print("subgroup 2")
+attr_coef_matrix_2 = []
+for i in range(len(test_samples)):
+    if (obese_1_mask[i] == 1 or obese_2_mask[i] == 1) \
+            and (mses[i] < 0.1):
+        print("%i/%i"%(i,len(test_samples)))
+        inp = X_data[i]
+        # do LIME
+        attr_coefs = lime_attr.attribute(inp, additional_forward_args=[model], kernel_width=1.1,
+                                 n_interp_features=len(gene_keys), gene_index_array=gene_mask_values,
+                                 show_progress=False)
+        # store results
+        attr_coef_matrix_2.append(np.array(attr_coefs)[0])
+attr = np.array(attr_coef_matrix_2)
+np.save("obese12_bmi_lime_results2", attr)
