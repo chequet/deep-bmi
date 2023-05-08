@@ -46,7 +46,7 @@ for i in range(len(os.listdir("../1000_data_relabelled/test/"))):
     X.append(batch[0])
 X_data = torch.cat(X)
 
-split = np.ceil(len(X_data)/2)
+split = int(np.ceil(len(X_data)/2))
 print(split)
 X_data_1 = X_data[:split]
 X_data_2 = X_data[split:]
