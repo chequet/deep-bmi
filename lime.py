@@ -8,7 +8,6 @@ from captum.attr import LimeBase
 from captum._utils.models.linear_model import SkLearnLinearModel
 from collections import OrderedDict
 
-
 def get_masks(test_phenos):
     underweight_mask = [1 if p < -1.82 else 0 for p in test_phenos]
     healthy_mask = [1 if (p >= -1.82 and p < -0.44) else 0 for p in test_phenos]
@@ -27,10 +26,10 @@ def get_test_set(test_sample_loader, testfiles):
     X_data = torch.cat(X)
     return X_data
 
-def get_attr_coefs(data, condition, mses, lime_attr):
+def get_attr_coefs(data, mask1, mask2, mses, lime_attr):
     attr_coef_matrix = []
     for i in range(len(data)):
-        if condition and (mses[i] < 0.1):
+        if (mask1[i] == 1 or mask2[i] == 1) and (mses[i] < 0.1):
             print("%i/%i"%(i,len(data)))
             inp = data[i]
             # do LIME
@@ -73,13 +72,12 @@ def main():
                          perturb_interpretable_space=True,
                          from_interp_rep_transform=from_interp_rep_transform,
                          to_interp_rep_transform=None)
-    condition = (obese_1_mask[i] == 1 or obese_2_mask[i] == 1)
     # do lime for each subgroup
     print("subgroup 1")
-    attr1 = get_attr_coefs(X_data_1, condition, mses, lime_attr)
+    attr1 = get_attr_coefs(X_data_1, obese_1_mask, obese_2_mask, mses, lime_attr)
     np.save("obese12_bmi_lime_results1", attr1)
     print("subgroup 2")
-    attr2 = get_attr_coefs(X_data_2, condition, mses, lime_attr)
+    attr2 = get_attr_coefs(X_data_2, obese_1_mask, obese_2_mask, mses, lime_attr)
     np.save("obese12_bmi_lime_results2", attr2)
 
 if __name__ == "__main__":
