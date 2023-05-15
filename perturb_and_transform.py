@@ -18,16 +18,17 @@ def perturb_func(original_input: Tensor, n_interp_features: int, **_):
     return perturbed_sample.reshape(1,n_interp_features)
 
 def from_interp_rep_transform(curr_sample: Tensor, original_input: Tensor, gene_index_array: np.array, **_):
-    perturbed_sample = torch.clone(original_input)
+    perturbed_sample = torch.clone(original_input).reshape(len(original_input)/2,2)
     # get SNP indices for gene at each index
     for i in range(len(gene_index_array)):
         indices = gene_index_array[i]
         if curr_sample[0][i] == 0:
             # set corresponding SNPs to 0 ALT alleles (2 REF)
-            perturbed_sample[indices] = [2,0]
+            perturbed_sample[indices,0] = 2
+            perturbed_sample[indices,1] = 0
         else:
             pass
-    return perturbed_sample
+    return perturbed_sample.flatten()
 
 def forward(inp, model):
     model.eval()
