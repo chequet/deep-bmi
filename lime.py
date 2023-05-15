@@ -26,7 +26,7 @@ def get_test_set(test_sample_loader, testfiles):
     X_data = torch.cat(X)
     return X_data
 
-def get_attr_coefs(data, mask1, mask2, mses, lime_attr):
+def get_attr_coefs(data, model, mask1, mask2, gene_keys, gene_mask_values, mses, lime_attr):
     attr_coef_matrix = []
     for i in range(len(data)):
         if (mask1[i] == 1 or mask2[i] == 1) and (mses[i] < 0.1):
@@ -43,6 +43,10 @@ def get_attr_coefs(data, mask1, mask2, mses, lime_attr):
 
 
 def main():
+    # get ordered keys and values for gene features with >1 SNP
+    ordered_feature_masks = pickle.load(open("../gene_masks/10k_ordered_feature_masks.pkl","rb"))
+    gene_keys = list(ordered_feature_masks.keys())
+    gene_mask_values = np.array([ordered_feature_masks[key] for key in gene_keys])
     # get best 10k nn
     model = torch.load("10000radam_elu_0.2_huber4.pt")
     # first make a bmi mask for test set samples
@@ -74,15 +78,11 @@ def main():
                          to_interp_rep_transform=None)
     # do lime for each subgroup
     print("subgroup 1")
-    attr1 = get_attr_coefs(X_data_1, obese_1_mask, obese_2_mask, mses, lime_attr)
+    attr1 = get_attr_coefs(X_data_1, model, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
     np.save("obese12_bmi_lime_results1", attr1)
     print("subgroup 2")
-    attr2 = get_attr_coefs(X_data_2, obese_1_mask, obese_2_mask, mses, lime_attr)
+    attr2 = get_attr_coefs(X_data_2, model, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
     np.save("obese12_bmi_lime_results2", attr2)
 
 if __name__ == "__main__":
     main()
-    # get ordered keys and values for gene features with >1 SNP
-    ordered_feature_masks = pickle.load(open("../gene_masks/10k_ordered_feature_masks.pkl","rb"))
-    gene_keys = list(ordered_feature_masks.keys())
-    gene_mask_values = np.array([ordered_feature_masks[key] for key in gene_keys])
