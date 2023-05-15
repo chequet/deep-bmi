@@ -18,7 +18,7 @@ def perturb_func(original_input: Tensor, n_interp_features: int, **_):
     return perturbed_sample.reshape(1,n_interp_features)
 
 def from_interp_rep_transform(curr_sample: Tensor, original_input: Tensor, gene_index_array: np.array, **_):
-    perturbed_sample = torch.reshape(torch.clone(original_input),(int(len(original_input)/2),2))
+    perturbed_sample = torch.clone(original_input)
     # get SNP indices for gene at each index
     for i in range(len(gene_index_array)):
         indices = gene_index_array[i]
