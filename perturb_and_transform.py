@@ -23,11 +23,7 @@ def from_interp_rep_transform(curr_sample: Tensor, original_input: Tensor, gene_
     for i in range(len(gene_index_array)):
         indices = gene_index_array[i]
         if curr_sample[0][i] == 0:
-            blocks = np.where(indices==0)[0]
-            # set corresponding SNPs to 0 ALT alleles (2 REF)
-            # set first in each pair to 2 and 2nd to 0
-            perturbed_sample[blocks[::2]] = 2
-            perturbed_sample[blocks[1::2]] = 0
+            perturbed_sample = perturbed_sample*indices
         else:
             pass
     return perturbed_sample
