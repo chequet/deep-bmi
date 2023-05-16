@@ -26,7 +26,7 @@ def from_interp_rep_transform(curr_sample: Tensor, original_input: Tensor, gene_
             perturbed_sample = perturbed_sample*indices
         else:
             pass
-    return perturbed_sample
+    return perturbed_sample.flatten()
 
 def forward(inp, model):
     model.eval()
