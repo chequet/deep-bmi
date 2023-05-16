@@ -21,7 +21,7 @@ def from_interp_rep_transform(curr_sample: Tensor, original_input: Tensor, gene_
     perturbed_sample = torch.clone(original_input)
     # get SNP indices for gene at each index
     for i in range(len(gene_index_array)):
-        indices = gene_index_array[i]
+        indices = torch.tensor(gene_index_array[i])
         if curr_sample[0][i] == 0:
             perturbed_sample = perturbed_sample*indices
         else:
