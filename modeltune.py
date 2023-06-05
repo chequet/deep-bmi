@@ -46,10 +46,10 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
     elif encoding == 5:
         dataloader = iter(torch.utils.data.DataLoader
-                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask)))
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask),**params))
     elif encoding == 6:
         dataloader = iter(torch.utils.data.DataLoader
-                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask)))
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask),**params))
     return dataloader
 
 def train(config, checkpoint_dir=None):
