@@ -23,7 +23,7 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [50,2,2,2]
+REDUCTIONS = [2,2,5,5]
 PATH = "adaptivelr_" + str(N_SNPS) + '_huber_elu_0.2_radam_' + str(ENCODING) + ".pt"
 #==============================================
 
@@ -79,10 +79,10 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
     elif encoding == 5:
         dataloader = iter(torch.utils.data.DataLoader
-                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask)))
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask),**params))
     elif encoding == 6:
         dataloader = iter(torch.utils.data.DataLoader
-                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask)))
+                          (EffectEmbeddingDataset(data_directory + 'train/', files, True, 2, beta_mask),**params))
     return dataloader
 
 def train_and_validate(arch, data_directory, train_set, val_set):
@@ -100,7 +100,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     use_scheduler = True
     scheduler1 = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9, verbose=True)
     scheduler2 = optim.lr_scheduler.ReduceLROnPlateau(optimiser, verbose=True)
-    beta_mask = pickle.load(open("../beta_masks/1000_beta_mask.pkl","rb"))
+    beta_mask = pickle.load(open("../beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
     # ------------------------------------------------------------------
     # # initialise summary writer for tensorboard
     writer = SummaryWriter()
