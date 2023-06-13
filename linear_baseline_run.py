@@ -24,7 +24,7 @@ param_grid = {
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 
-N_SNPS = [100, 500, 1000, 5000, 10000]
+N_SNPS = [500, 1000, 5000, 10000]
 for N in N_SNPS:
     DATA_DIR = "../" + str(N) + "_data_relabelled/train/"
     print(DATA_DIR)
@@ -66,6 +66,7 @@ for N in N_SNPS:
     target = []
     i = 0
     while i < len(trainfiles):
+        print(i)
         batch = next(train_iterator)
         X = batch[0].to(device)
         Y = batch[1].to(device)
@@ -78,6 +79,7 @@ for N in N_SNPS:
     # fit regressor
     sgd = SGDRegressor(early_stopping=True, verbose=3)
     clf = GridSearchCV(sgd, param_grid, scoring='neg_mean_squared_error')
+    print("fitting")
     clf.fit(data, target)
     print(clf.cv_results_['params'][clf.best_index_])
     # test best regressor
