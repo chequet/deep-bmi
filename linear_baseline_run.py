@@ -4,6 +4,7 @@ from sklearn.linear_model import SGDRegressor
 from MyIterableDataset3 import *
 from BasicEmbeddedDataset import *
 from OneHotIterableDataset import *
+from EffectEmbeddingDataset import *
 from sklearn.model_selection import GridSearchCV
 import torch
 from sklearn.metrics import mean_squared_error, r2_score
@@ -23,7 +24,7 @@ param_grid = {
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 
-N_SNPS = [10000]
+N_SNPS = [100, 500, 1000, 5000, 10000]
 for N in N_SNPS:
     DATA_DIR = "../" + str(N) + "_data_relabelled/train/"
     print(DATA_DIR)
@@ -32,6 +33,8 @@ for N in N_SNPS:
     valfiles = FILES[45:]
     params = {'batch_size': None,
               'num_workers': 5}
+    beta_mask = pickle.load(open("../beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
+
 
     if ENC == 1:
         train_iterator = iter(torch.utils.data.DataLoader(MyIterableDataset(DATA_DIR, trainfiles, False), **params))
@@ -47,6 +50,16 @@ for N in N_SNPS:
         train_iterator = iter(
             torch.utils.data.DataLoader(BasicEmbeddedDataset(DATA_DIR, trainfiles, False, 2), **params))
         valid_iterator = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset(DATA_DIR, valfiles, False, 2), **params))
+    elif ENC == 5:
+        train_iterator = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(DATA_DIR, trainfiles, False, 1, beta_mask),**params))
+        valid_iterator = iter(torch.utils.data.DataLoader
+                            (EffectEmbeddingDataset(DATA_DIR, valfiles, False, 1, beta_mask), **params))
+    elif ENC == 6:
+        dtrain_iterator = iter(torch.utils.data.DataLoader
+                          (EffectEmbeddingDataset(DATA_DIR, trainfiles, False, 2, beta_mask),**params))
+        valid_iterator = iter(torch.utils.data.DataLoader
+                            (EffectEmbeddingDataset(DATA_DIR, valfiles, False, 2, beta_mask), **params))
 
     # get data set
     data = []
