@@ -33,7 +33,7 @@ for N in N_SNPS:
     valfiles = FILES[45:]
     params = {'batch_size': None,
               'num_workers': 5}
-    beta_mask = pickle.load(open("../beta_masks/" + str(N_SNPS) + "_beta_mask.pkl","rb"))
+    beta_mask = pickle.load(open("../beta_masks/" + str(N) + "_beta_mask.pkl","rb"))
 
 
     if ENC == 1:
