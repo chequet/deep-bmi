@@ -116,4 +116,4 @@ with open(str(N_SNPS) + '_enc_' + str(ENC) + '_SGDRegressor.txt', 'w') as f:
     f.write("\nvalidation mse: ")
     f.write(str(mse))
 f.close()
-pickle.dump(best_regressor, open(str(N) + '_enc_' + str(ENC) + '_best_SGDRegressor.pkl', 'wb'))
+pickle.dump(best_regressor, open(str(N_SNPs) + '_enc_' + str(ENC) + '_best_SGDRegressor.pkl', 'wb'))
