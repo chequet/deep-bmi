@@ -17,6 +17,7 @@ device = torch.device("cuda:0" if use_cuda else "cpu")
 print(device)
 
 ENC = int(sys.argv[1])
+N_SNPS = int(sys.argv[2])
 
 # SGDRegressor gridsearch!
 param_grid = {
@@ -24,7 +25,6 @@ param_grid = {
     'penalty': ['l2', 'l1', 'elasticnet'],
 }
 
-N_SNPS = [10000]
 for N in N_SNPS:
     DATA_DIR = "../" + str(N) + "_data_relabelled/train/"
     print(DATA_DIR)
@@ -56,7 +56,7 @@ for N in N_SNPS:
         valid_iterator = iter(torch.utils.data.DataLoader
                             (EffectEmbeddingDataset(DATA_DIR, valfiles, False, 1, beta_mask), **params))
     elif ENC == 6:
-        dtrain_iterator = iter(torch.utils.data.DataLoader
+        train_iterator = iter(torch.utils.data.DataLoader
                           (EffectEmbeddingDataset(DATA_DIR, trainfiles, False, 2, beta_mask),**params))
         valid_iterator = iter(torch.utils.data.DataLoader
                             (EffectEmbeddingDataset(DATA_DIR, valfiles, False, 2, beta_mask), **params))
