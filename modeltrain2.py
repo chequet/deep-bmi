@@ -23,8 +23,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [50,5,2,5,2]
-PATH = "adaptivelr_05drpout_" + str(N_SNPS) + '_huber_' + str(ENCODING) + ".pt"
+REDUCTIONS = [1,10]
+PATH = "adaptivelr_" + str(N_SNPS) + '_elu_radam_03_mse_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -91,12 +91,12 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.5, 'ELU').to(device)
+    model = FlexibleNet(arch, 0.3, 'ELU').to(device)
     print(model)
     learning_rate = 0.0001
-    loss_fn = nn.HuberLoss()
-    #loss_fn = nn.MSELoss(reduction='mean')
-    optimiser = optim.AdamW(model.parameters(), lr=learning_rate)
+    #loss_fn = nn.HuberLoss()
+    loss_fn = nn.MSELoss(reduction='mean')
+    optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     use_scheduler = True
     scheduler1 = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9, verbose=True)
     scheduler2 = optim.lr_scheduler.ReduceLROnPlateau(optimiser, verbose=True)
