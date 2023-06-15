@@ -16,8 +16,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [10,10,10]
-PATH = 'BNN_' + str(N_SNPS) + '_huber_radam_elu_dropout0.3_' + str(ENCODING) + ".pt"
+REDUCTIONS = [1,10]
+PATH = 'BNN_' + str(N_SNPS) + '_mse_radam_elu_dropout0.3_' + str(ENCODING) + ".pt"
 #==============================================
 
 use_cuda = torch.cuda.is_available()
