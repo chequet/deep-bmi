@@ -26,14 +26,14 @@ def get_test_set(test_sample_loader, testfiles):
     X_data = torch.cat(X)
     return X_data
 
-def get_attr_coefs(data, model, mask1, mask2, gene_keys, gene_mask_values, mses, lime_attr):
+def get_attr_coefs(data, model, gamma, mask1, mask2, gene_keys, gene_mask_values, mses, lime_attr):
     attr_coef_matrix = []
     for i in range(len(data)):
         if (mask1[i] == 1 or mask2[i] == 1) and (mses[i] < 0.1):
             print("%i/%i"%(i,len(data)))
             inp = data[i]
             # do LIME
-            attr_coefs = lime_attr.attribute(inp, additional_forward_args=[model], kernel_width=1.1,
+            attr_coefs = lime_attr.attribute(inp, additional_forward_args=[model], gamma=gamma,
                                      n_interp_features=len(gene_keys), gene_index_array=gene_mask_values,
                                      show_progress=False)
             # store results
@@ -43,8 +43,9 @@ def get_attr_coefs(data, model, mask1, mask2, gene_keys, gene_mask_values, mses,
 
 
 def main():
-    # get ordered keys and values for gene features with >1 SNP
-    ordered_feature_masks = pickle.load(open("../gene_masks/10k_ordered_feature_masks.pkl","rb"))
+    GAMMA = 20000
+    # get ordered keys and values for all gene features
+    ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl","rb"))
     gene_keys = list(ordered_feature_masks.keys())
     gene_mask_values = np.array([ordered_feature_masks[key] for key in gene_keys])
     # get best 10k nn
@@ -71,18 +72,18 @@ def main():
     # set up lime
     lime_attr = LimeBase(forward,
                          SkLearnLinearModel("linear_model.Ridge"),
-                         similarity_func=similarity_kernel,
+                         similarity_func=basic_sim,
                          perturb_func=perturb_func,
                          perturb_interpretable_space=True,
                          from_interp_rep_transform=from_interp_rep_transform,
                          to_interp_rep_transform=None)
     # do lime for each subgroup
     print("subgroup 1")
-    attr1 = get_attr_coefs(X_data_1, model, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("new_baselines_obese12_bmi_lime_results1", attr1)
+    attr1 = get_attr_coefs(X_data_1, model, GAMMA, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
+    np.save("obese12_bmi_lime_results1", attr1)
     print("subgroup 2")
-    attr2 = get_attr_coefs(X_data_2, model, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("new_baselines_obese12_bmi_lime_results2", attr2)
+    attr2 = get_attr_coefs(X_data_2, model, GAMMA, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
+    np.save("obese12_bmi_lime_results2", attr2)
 
 if __name__ == "__main__":
     main()

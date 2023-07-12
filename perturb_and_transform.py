@@ -68,3 +68,11 @@ def get_sample(index, generator, batch_size):
     array_i = index%batch_size
     array = batch[array_i]
     return array
+
+def basic_sim(
+        og_input: Tensor,
+        new_input: Tensor,
+        interp_rep: Tensor,
+        gamma: float,
+        **kwargs)->Tensor:
+    return 1-(torch.norm(og_input - new_input)/gamma)
