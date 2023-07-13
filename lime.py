@@ -79,11 +79,11 @@ def main():
                          to_interp_rep_transform=None)
     # do lime for each subgroup
     print("subgroup 1")
-    attr1 = get_attr_coefs(X_data_1, model, GAMMA, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("obese12_bmi_lime_results1", attr1)
+    attr1 = get_attr_coefs(X_data_1, model, GAMMA, underweight_mask, healthy_mask, gene_keys, gene_mask_values, mses, lime_attr)
+    np.save("healthy_bmi_lime_results1", attr1)
     print("subgroup 2")
-    attr2 = get_attr_coefs(X_data_2, model, GAMMA, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("obese12_bmi_lime_results2", attr2)
+    attr2 = get_attr_coefs(X_data_2, model, GAMMA, underweight_mask, healthy_mask, gene_keys, gene_mask_values, mses, lime_attr)
+    np.save("healthy_bmi_lime_results2", attr2)
 
 if __name__ == "__main__":
     main()
