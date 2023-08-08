@@ -87,3 +87,6 @@ def main():
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
     diffs_dict = single_gene_ablation(X_data_filtered, model, gene_keys, ordered_feature_masks,
                                       "../diffs_dicts/obese12diffs.pkl")
+
+if __name__ == "__main__":
+    main()
