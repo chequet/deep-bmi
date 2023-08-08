@@ -1,7 +1,9 @@
+from BasicEmbeddedDataset import *
 import pickle
 import torch
 import os
 import numpy as np
+from lime import get_test_set, get_masks
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -59,3 +61,29 @@ def pairwise_ablation(gene_name, data, ordered_feature_masks, comparison_set, di
             c += 1
         pairs_dict[key] = np.mean(np.absolute(diff_diffs))
     return pairs_dict
+
+def main():
+    # initialise
+    ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
+    model = torch.load("10000radam_elu_0.2_huber4.pt")
+    test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
+    pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
+    test_phenos = [pheno_dict[s] for s in test_samples]
+    underweight_mask, healthy_mask, overweight_mask, obese_1_mask, obese_2_mask, obese_3_mask = get_masks(test_phenos)
+    gene_keys = list(ordered_feature_masks.keys())
+    mses = pickle.load(open("10000_test_mses.pkl", "rb"))
+    # get entire X test dataset
+    params = {'batch_size': None,
+              'num_workers': 4}
+    # no shuffle
+    testfiles = os.listdir("../1000_data_relabelled/test/")
+    test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
+                                                                               testfiles,
+                                                                               False, 2), **params))
+    X_data = get_test_set(test_sample_loader, testfiles)
+    # filter for BMI category, MSE
+    mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
+    joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
+    X_data_filtered = X_data[joint_sample_mask.astype(bool)]
+    diffs_dict = single_gene_ablation(X_data_filtered, model, gene_keys, ordered_feature_masks,
+                                      "../diffs_dicts/obese12diffs.pkl")
