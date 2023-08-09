@@ -39,18 +39,17 @@ def get_unsigned_means(diffs_dict, means_dict_path):
 
 def pairwise_ablation(gene_name, data, ordered_feature_masks, comparison_set, diffs_dict, model):
     # perturb given gene with comparison set and store perturbation results
-    # comparison_set should be ordered (gene name, score) tuples
+    # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
     gene_mask = ordered_feature_masks[gene_name]
     pairs_dict = {}
     for gene in comparison_set:
-        key = gene[0]
-        mask = ordered_feature_masks[key]
+        mask = ordered_feature_masks[gene]
         joint_mask = torch.tensor(gene_mask * mask).to(device)
         diff_diffs = []
         c = 0
         for i in range(len(data)):
-            linear_diff = diffs_dict[gene_name][c] + diffs_dict[key][c]
+            linear_diff = diffs_dict[gene_name][c] + diffs_dict[gene][c]
             og_inp = data[i].to(device)
             og_pheno = model(og_inp.float())
             new_inp = og_inp * joint_mask
@@ -84,8 +83,10 @@ def main():
     mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
     joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
-    diffs_dict = single_gene_ablation(X_data_filtered, model, gene_keys, ordered_feature_masks,
-                                      "../diffs_dicts/obese12diffs.pkl")
+    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
+    # start with top 20 pairwise
 
 if __name__ == "__main__":
     main()
