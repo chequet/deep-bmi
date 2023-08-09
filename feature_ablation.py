@@ -48,10 +48,9 @@ def pairwise_ablation(gene_name, data, ordered_feature_masks, comparison_set, di
         mask = ordered_feature_masks[key]
         joint_mask = torch.tensor(gene_mask * mask).to(device)
         diff_diffs = []
-        gene_diff = diffs_dict[gene_name][c]
         c = 0
         for i in range(len(data)):
-            linear_diff = gene_diff + diffs_dict[key][c]
+            linear_diff = diffs_dict[gene_name][c] + diffs_dict[key][c]
             og_inp = data[i].to(device)
             og_pheno = model(og_inp.float())
             new_inp = og_inp * joint_mask
