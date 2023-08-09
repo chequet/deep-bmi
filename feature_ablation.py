@@ -47,7 +47,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
         print(start_gene)
         comparison_subset = [g for g in comparison_set if (g!=start_gene and g not in searched_genes)]
         gene_mask = ordered_feature_masks[start_gene]
-        print(comparison_subset)
+        print(len(comparison_subset))
         for gene in comparison_subset:
             key = start_gene + "_" + gene
             mask = ordered_feature_masks[gene]
@@ -93,7 +93,10 @@ def main():
     diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
     unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
-    # start with top 20 pairwise
+    # exhaustive search!
+    genes = [tup[0] for tup in sorted_unsigned]
+    pairs_dict = pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model)
+    pickle.dump(pairs_dict, open("../diffs_dicts/mean_pairs_dict.pkl","wb"))
 
 if __name__ == "__main__":
     main()
