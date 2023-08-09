@@ -37,27 +37,34 @@ def get_unsigned_means(diffs_dict, means_dict_path):
     pickle.dump(unsigned_means_dict, open(means_dict_path, "wb"))
     return unsigned_means_dict
 
-def pairwise_ablation(gene_name, data, ordered_feature_masks, comparison_set, diffs_dict, model):
+def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, model):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
-    gene_mask = ordered_feature_masks[gene_name]
+    searched_genes = set()
     pairs_dict = {}
-    for gene in comparison_set:
-        mask = ordered_feature_masks[gene]
-        joint_mask = torch.tensor(gene_mask * mask).to(device)
-        diff_diffs = []
-        c = 0
-        for i in range(len(data)):
-            linear_diff = diffs_dict[gene_name][c] + diffs_dict[gene][c]
-            og_inp = data[i].to(device)
-            og_pheno = model(og_inp.float())
-            new_inp = og_inp * joint_mask
-            new_pheno = model(new_inp.float())
-            pair_diff = (og_pheno - new_pheno).detach().cpu().numpy()
-            diff_diffs.append(pair_diff - linear_diff)
-            c += 1
-        pairs_dict[gene] = np.mean(np.absolute(diff_diffs))
+    for start_gene in comparison_set:
+        print(start_gene)
+        comparison_subset = [g for g in comparison_set if (g!=start_gene and g not in searched_genes)]
+        gene_mask = ordered_feature_masks[start_gene]
+        print(comparison_subset)
+        for gene in comparison_subset:
+            key = start_gene + "_" + gene
+            mask = ordered_feature_masks[gene]
+            joint_mask = torch.tensor(gene_mask * mask).to(device)
+            diff_diffs = []
+            c = 0
+            for i in range(len(data)):
+                linear_diff = diffs_dict[start_gene][c] + diffs_dict[gene][c]
+                og_inp = data[i].to(device)
+                og_pheno = model(og_inp.float())
+                new_inp = og_inp * joint_mask
+                new_pheno = model(new_inp.float())
+                pair_diff = (og_pheno - new_pheno).detach().cpu().numpy()
+                diff_diffs.append(pair_diff - linear_diff)
+                c += 1
+            pairs_dict[key] = np.mean(np.absolute(diff_diffs))
+        searched_genes.add(start_gene)
     return pairs_dict
 
 def main():
