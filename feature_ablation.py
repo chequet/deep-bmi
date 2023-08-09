@@ -57,7 +57,7 @@ def pairwise_ablation(gene_name, data, ordered_feature_masks, comparison_set, di
             pair_diff = (og_pheno - new_pheno).detach().cpu().numpy()
             diff_diffs.append(pair_diff - linear_diff)
             c += 1
-        pairs_dict[key] = np.mean(np.absolute(diff_diffs))
+        pairs_dict[gene] = np.mean(np.absolute(diff_diffs))
     return pairs_dict
 
 def main():
