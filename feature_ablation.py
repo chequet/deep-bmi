@@ -37,17 +37,17 @@ def get_unsigned_means(diffs_dict, means_dict_path):
     pickle.dump(unsigned_means_dict, open(means_dict_path, "wb"))
     return unsigned_means_dict
 
-def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, model):
+def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, model, dict_directory):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
     searched_genes = set()
-    pairs_dict = {}
     for start_gene in comparison_set:
         print(start_gene)
+        pairs_dict = {}
+        dict_path = dict_directory + start_gene + "_pairs_dict.pkl"
         comparison_subset = [g for g in comparison_set if (g!=start_gene and g not in searched_genes)]
         gene_mask = ordered_feature_masks[start_gene]
-        print(len(comparison_subset))
         for gene in comparison_subset:
             key = start_gene + "_" + gene
             mask = ordered_feature_masks[gene]
@@ -55,6 +55,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
             diff_diffs = []
             c = 0
             for i in range(len(data)):
+                print("gene %i of %i"%(c,len(comparison_subset)), end='\r')
                 linear_diff = diffs_dict[start_gene][c] + diffs_dict[gene][c]
                 og_inp = data[i].to(device)
                 og_pheno = model(og_inp.float())
@@ -64,8 +65,10 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
                 diff_diffs.append(pair_diff - linear_diff)
                 c += 1
             pairs_dict[key] = np.mean(np.absolute(diff_diffs))
+        print("writing pairs dict for %s to %s..."%(gene,dict_path))
+        pickle.dump(pairs_dict, open(dict_path, "wb"))
         searched_genes.add(start_gene)
-    return pairs_dict
+    return True
 
 def main():
     # initialise
@@ -95,8 +98,7 @@ def main():
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
     genes = [tup[0] for tup in sorted_unsigned[:20]]
-    pairs_dict = pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model)
-    pickle.dump(pairs_dict, open("../diffs_dicts/top20_mean_pairs_dict.pkl","wb"))
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
 
 if __name__ == "__main__":
     main()
