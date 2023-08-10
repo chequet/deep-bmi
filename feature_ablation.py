@@ -96,7 +96,7 @@ def main():
     # exhaustive search!
     genes = [tup[0] for tup in sorted_unsigned[:20]]
     pairs_dict = pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model)
-    pickle.dump(pairs_dict, open("../diffs_dicts/mean_pairs_dict.pkl","wb"))
+    pickle.dump(pairs_dict, open("../diffs_dicts/top20_mean_pairs_dict.pkl","wb"))
 
 if __name__ == "__main__":
     main()
