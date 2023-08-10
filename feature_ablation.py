@@ -48,14 +48,15 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
         dict_path = dict_directory + start_gene + "_pairs_dict.pkl"
         comparison_subset = [g for g in comparison_set if (g!=start_gene and g not in searched_genes)]
         gene_mask = ordered_feature_masks[start_gene]
+        g = 1
         for gene in comparison_subset:
+            print("gene %i of %i" % (g, len(comparison_subset)), end='\r')
             key = start_gene + "_" + gene
             mask = ordered_feature_masks[gene]
             joint_mask = torch.tensor(gene_mask * mask).to(device)
             diff_diffs = []
             c = 0
             for i in range(len(data)):
-                print("gene %i of %i"%(c,len(comparison_subset)), end='\r')
                 linear_diff = diffs_dict[start_gene][c] + diffs_dict[gene][c]
                 og_inp = data[i].to(device)
                 og_pheno = model(og_inp.float())
@@ -65,6 +66,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
                 diff_diffs.append(pair_diff - linear_diff)
                 c += 1
             pairs_dict[key] = np.mean(np.absolute(diff_diffs))
+            g += 1
         print("writing pairs dict for %s to %s..."%(gene,dict_path))
         pickle.dump(pairs_dict, open(dict_path, "wb"))
         searched_genes.add(start_gene)
@@ -97,7 +99,7 @@ def main():
     unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
-    genes = [tup[0] for tup in sorted_unsigned[:20]]
+    genes = [tup[0] for tup in sorted_unsigned]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
 
 if __name__ == "__main__":
