@@ -94,7 +94,7 @@ def main():
     unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
-    genes = [tup[0] for tup in sorted_unsigned]
+    genes = [tup[0] for tup in sorted_unsigned[:20]]
     pairs_dict = pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model)
     pickle.dump(pairs_dict, open("../diffs_dicts/mean_pairs_dict.pkl","wb"))
 
