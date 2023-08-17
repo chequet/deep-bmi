@@ -23,8 +23,8 @@ N_INPUTS = int(sys.argv[2])
 ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
-REDUCTIONS = [1,10]
-PATH = "adaptivelr_" + str(N_SNPS) + '_elu_radam_03_mse_' + str(ENCODING) + ".pt"
+REDUCTIONS = [50,2,2,2]
+PATH = "NULL1_" + str(N_SNPS) + '_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -76,7 +76,7 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 1),**params))
     elif encoding == 4:
         dataloader = iter(torch.utils.data.DataLoader
-                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2),**params))
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2, 'py1'),**params))
     elif encoding == 5:
         dataloader = iter(torch.utils.data.DataLoader
                           (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask),**params))
@@ -91,11 +91,11 @@ def train_and_validate(arch, data_directory, train_set, val_set):
     print(device)
     # new model
     # -------------PARAMS-----------------------------------------------
-    model = FlexibleNet(arch, 0.3, 'ELU').to(device)
+    model = FlexibleNet(arch, 0.2, 'ELU').to(device)
     print(model)
     learning_rate = 0.0001
-    #loss_fn = nn.HuberLoss()
-    loss_fn = nn.MSELoss(reduction='mean')
+    loss_fn = nn.HuberLoss()
+    #loss_fn = nn.MSELoss(reduction='mean')
     optimiser = optim.RAdam(model.parameters(), lr=learning_rate)
     use_scheduler = True
     scheduler1 = optim.lr_scheduler.ExponentialLR(optimiser, gamma=0.9, verbose=True)
