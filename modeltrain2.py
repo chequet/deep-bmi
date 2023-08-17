@@ -24,7 +24,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [50,2,2,2]
-PATH = "NULL1_" + str(N_SNPS) + '_' + str(ENCODING) + ".pt"
+PATH = "NULL2_" + str(N_SNPS) + '_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):
@@ -76,7 +76,7 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 1),**params))
     elif encoding == 4:
         dataloader = iter(torch.utils.data.DataLoader
-                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2, 'py1'),**params))
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2, 'py2'),**params))
     elif encoding == 5:
         dataloader = iter(torch.utils.data.DataLoader
                           (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask),**params))
