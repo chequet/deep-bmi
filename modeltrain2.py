@@ -76,7 +76,7 @@ def get_dataloader(data_directory, encoding, workers, files, beta_mask = None):
                               (BasicEmbeddedDataset(data_directory + 'train/', files, True, 1),**params))
     elif encoding == 4:
         dataloader = iter(torch.utils.data.DataLoader
-                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2, 'py2'),**params))
+                              (BasicEmbeddedDataset(data_directory + 'train/', files, True, 2, 'py1'),**params))
     elif encoding == 5:
         dataloader = iter(torch.utils.data.DataLoader
                           (EffectEmbeddingDataset(data_directory + 'train/', files, True, 1, beta_mask),**params))
