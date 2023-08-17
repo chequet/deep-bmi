@@ -75,7 +75,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
 def main():
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
-    model = torch.load("10000radam_elu_0.2_huber4.pt")
+    model = torch.load("NULL1_10000_4.pt")
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
     test_phenos = [pheno_dict[s] for s in test_samples]
@@ -89,18 +89,21 @@ def main():
     testfiles = os.listdir("../1000_data_relabelled/test/")
     test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
                                                                                testfiles,
-                                                                               False, 2), **params))
+                                                                               False, 2, "py1"), **params))
     X_data = get_test_set(test_sample_loader, testfiles)
     # filter for BMI category, MSE
     mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
     joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
-    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
+    null_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
+                                      ordered_feature_masks, "../diffs_dicts/NULL1_diffs_dict.pkl")
+    null_means = get_unsigned_means(null_diffs, "../diffs_dicts/NULL1_means_dict.pkl")
+    # diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    # unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    # sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
-    genes = [tup[0] for tup in sorted_unsigned]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
+    # genes = [tup[0] for tup in sorted_unsigned]
+    # pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
 
 if __name__ == "__main__":
     main()
