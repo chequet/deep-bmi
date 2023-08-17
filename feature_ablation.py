@@ -67,7 +67,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
                 c += 1
             pairs_dict[key] = np.mean(np.absolute(diff_diffs))
             g += 1
-        print("writing pairs dict for %s to %s..."%(gene,dict_path))
+        print("writing pairs dict for %s to %s..."%(start_gene,dict_path))
         pickle.dump(pairs_dict, open(dict_path, "wb"))
         searched_genes.add(start_gene)
     return True
