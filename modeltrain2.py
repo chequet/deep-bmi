@@ -167,7 +167,7 @@ def train_and_validate(arch, data_directory, train_set, val_set):
             #scheduler1.step()
             scheduler2.step(val_loss)
         # check conditions for early stopping
-        if t > 20:
+        if t > 5:
             if t % 10 == 0:
                 print("no improvement for %i epochs" % no_improvement)
             if loss < best_val_loss:
