@@ -95,13 +95,15 @@ def main():
     mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
     joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
-    # null_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
-    #                                   ordered_feature_masks, "../diffs_dicts/NULL1_diffs_dict.pkl")
-    # null_means = get_unsigned_means(null_diffs, "../diffs_dicts/NULL1_means_dict.pkl")
-    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
+    print("beginning single gene ablation...")
+    null_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
+                                      ordered_feature_masks, "../diffs_dicts/NULL2_diffs_dict.pkl")
+    null_means = get_unsigned_means(null_diffs, "../diffs_dicts/NULL2_means_dict.pkl")
+    # diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    # unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    sorted_unsigned = sorted(null_means.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
+    print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
 
