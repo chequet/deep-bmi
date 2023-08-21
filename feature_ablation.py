@@ -106,7 +106,8 @@ def main():
     sorted_unsigned = sorted(null_means.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
-    genes = [tup[0] for tup in sorted_unsigned]
+    # just do every tenth element - don't need to be exhaustive for null distrib
+    genes = [tup[0] for tup in sorted_unsigned[0::10]]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, null_diffs, model, "../diffs_dicts/")
 
 if __name__ == "__main__":
