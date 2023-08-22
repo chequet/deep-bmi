@@ -45,7 +45,7 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
     for start_gene in comparison_set:
         print(start_gene)
         pairs_dict = {}
-        dict_path = "NULL_" + dict_directory + start_gene + "_pairs_dict.pkl"
+        dict_path = dict_directory + "NULL_" + start_gene + "_pairs_dict.pkl"
         comparison_subset = [g for g in comparison_set if (g!=start_gene and g not in searched_genes)]
         gene_mask = ordered_feature_masks[start_gene]
         g = 1
