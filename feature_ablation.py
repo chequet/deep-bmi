@@ -99,16 +99,17 @@ def main():
     # null_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
     #                                   ordered_feature_masks, "../diffs_dicts/NULL2_diffs_dict.pkl")
     # null_means = get_unsigned_means(null_diffs, "../diffs_dicts/NULL2_means_dict.pkl")
-    null_means = pickle.load(open("../diffs_dicts/NULL2_means_dict.pkl","rb"))
-    null_diffs = pickle.load(open("../diffs_dicts/NULL2_diffs_dict.pkl","rb"))
-    # diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    # unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned = sorted(null_means.items(), key=lambda x: x[1], reverse=True)
+    # null_means = pickle.load(open("../diffs_dicts/NULL2_means_dict.pkl","rb"))
+    # null_diffs = pickle.load(open("../diffs_dicts/NULL2_diffs_dict.pkl","rb"))
+    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
     # just do every tenth element - don't need to be exhaustive for null distrib
-    genes = [tup[0] for tup in sorted_unsigned[0::10]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, null_diffs, model, "../diffs_dicts/")
+    # resume at BANK1
+    genes = [tup[0] for tup in sorted_unsigned[118:]]
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/")
 
 if __name__ == "__main__":
     main()
