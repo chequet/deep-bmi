@@ -20,11 +20,18 @@ def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_fil
         diffs = []
         mask = torch.tensor(ordered_feature_masks[k]).to(device)
         for i in range(len(data)):
-            og_inp = data[i].to(device)
-            og_pheno = model(og_inp.float())
-            new_inp = og_inp * mask
-            new_pheno = model(new_inp.float())
-            diff = (og_pheno - new_pheno).detach().cpu().numpy()
+            if lin_mod:
+                og_inp = data[i]
+                og_pheno = model.predict(og_inp)
+                new_inp = og_inp * mask
+                new_pheno = model.predict(new_inp)
+                diff = (og_pheno - new_pheno)
+            else:
+                og_inp = data[i].to(device)
+                og_pheno = model(og_inp.float())
+                new_inp = og_inp * mask
+                new_pheno = model(new_inp.float())
+                diff = (og_pheno - new_pheno).detach().cpu().numpy()
             diffs.append(diff)
         diffs_dict[k] = np.concatenate(diffs)
     # persist diffs dict
@@ -38,7 +45,7 @@ def get_unsigned_means(diffs_dict, means_dict_path):
     pickle.dump(unsigned_means_dict, open(means_dict_path, "wb"))
     return unsigned_means_dict
 
-def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, model, dict_directory):
+def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, model, dict_directory, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
@@ -59,11 +66,18 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
             c = 0
             for i in range(len(data)):
                 linear_diff = diffs_dict[start_gene][c] + diffs_dict[gene][c]
-                og_inp = data[i].to(device)
-                og_pheno = model(og_inp.float())
-                new_inp = og_inp * joint_mask
-                new_pheno = model(new_inp.float())
-                pair_diff = (og_pheno - new_pheno).detach().cpu().numpy()
+                if lin_mod:
+                    og_inp = data[i]
+                    og_pheno = model.predict(og_inp)
+                    new_inp = og_inp * joint_mask
+                    new_pheno = model.predict(new_inp)
+                    pair_diff = (og_pheno - new_pheno)
+                else:
+                    og_inp = data[i].to(device)
+                    og_pheno = model(og_inp.float())
+                    new_inp = og_inp * joint_mask
+                    new_pheno = model(new_inp.float())
+                    pair_diff = (og_pheno - new_pheno).detach().cpu().numpy()
                 diff_diffs.append(pair_diff - linear_diff)
                 c += 1
             pairs_dict[key] = np.mean(np.absolute(diff_diffs))
@@ -112,7 +126,7 @@ def main():
     # just do every tenth element - don't need to be exhaustive for null distrib
     # resume at RCAN
     genes = [tup[0] for tup in sorted_unsigned[0::10]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_means, model, "../diffs_dicts/")
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_means, model, "../diffs_dicts/", lin_mod=True)
 
 if __name__ == "__main__":
     main()
