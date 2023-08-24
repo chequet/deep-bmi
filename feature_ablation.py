@@ -21,9 +21,9 @@ def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_fil
         mask = torch.tensor(ordered_feature_masks[k]).to(device)
         for i in range(len(data)):
             if lin_mod:
-                og_inp = data[i]
+                og_inp = data[i].reshape(1, -1)
                 og_pheno = model.predict(og_inp)
-                new_inp = og_inp * mask
+                new_inp = (og_inp * mask).reshape(1, -1)
                 new_pheno = model.predict(new_inp)
                 diff = (og_pheno - new_pheno)
             else:
@@ -67,9 +67,9 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
             for i in range(len(data)):
                 linear_diff = diffs_dict[start_gene][c] + diffs_dict[gene][c]
                 if lin_mod:
-                    og_inp = data[i]
+                    og_inp = data[i].reshape(1, -1)
                     og_pheno = model.predict(og_inp)
-                    new_inp = og_inp * joint_mask
+                    new_inp = (og_inp * joint_mask).reshape(1, -1)
                     new_pheno = model.predict(new_inp)
                     pair_diff = (og_pheno - new_pheno)
                 else:
