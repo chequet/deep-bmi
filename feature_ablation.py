@@ -112,8 +112,9 @@ def main():
     joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
     # print("beginning single gene ablation...")
-    lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
-                                       ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
+    # lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
+    #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
+    lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
     lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
     # null_means = pickle.load(open("../diffs_dicts/NULL2_means_dict.pkl","rb"))
     # null_diffs = pickle.load(open("../diffs_dicts/NULL2_diffs_dict.pkl","rb"))
@@ -125,7 +126,7 @@ def main():
     # just do every tenth element - don't need to be exhaustive for null distrib
     # resume at RCAN
     genes = [tup[0] for tup in sorted_unsigned[0::10]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_means, model, "../diffs_dicts/", lin_mod=True)
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
 
 if __name__ == "__main__":
     main()
