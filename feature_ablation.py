@@ -5,15 +5,11 @@ import os
 import numpy as np
 from lime import get_test_set, get_masks
 
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:0" if use_cuda else "cpu")
-
 def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
     use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:0" if use_cuda else "cpu")
+    device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
     # data should be pre-filtered for BMI category and mse
-    if not lin_mod:
-        model.to(device)
+    model.to(device)
     diffs_dict = {}
     for k in gene_keys:
         print(k)
@@ -49,6 +45,8 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
     searched_genes = set()
     for start_gene in comparison_set:
         print(start_gene)
