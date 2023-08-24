@@ -9,7 +9,8 @@ def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_fil
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
     # data should be pre-filtered for BMI category and mse
-    model.to(device)
+    if not lin_mod:
+        model.to(device)
     diffs_dict = {}
     for k in gene_keys:
         print(k)
