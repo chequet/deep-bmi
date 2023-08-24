@@ -8,11 +8,12 @@ from lime import get_test_set, get_masks
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
-def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name):
+def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
     # data should be pre-filtered for BMI category and mse
-    model.to(device)
+    if not lin_mod:
+        model.to(device)
     diffs_dict = {}
     for k in gene_keys:
         print(k)
@@ -99,7 +100,7 @@ def main():
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
     # print("beginning single gene ablation...")
     lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
-                                       ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl")
+                                       ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
     lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
     # null_means = pickle.load(open("../diffs_dicts/NULL2_means_dict.pkl","rb"))
     # null_diffs = pickle.load(open("../diffs_dicts/NULL2_diffs_dict.pkl","rb"))
