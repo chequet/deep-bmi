@@ -89,8 +89,8 @@ def pairwise_ablation(data, ordered_feature_masks, comparison_set, diffs_dict, m
 def main():
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
-    #model = torch.load("NULL2_10000_4.pt")
-    model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
+    model = torch.load("NULL2_10000_4.pt")
+    # model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
@@ -114,19 +114,19 @@ def main():
     # print("beginning single gene ablation...")
     # lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
     #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
-    lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
-    lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
+    # lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
+    # lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
     # null_means = pickle.load(open("../diffs_dicts/NULL2_means_dict.pkl","rb"))
     # null_diffs = pickle.load(open("../diffs_dicts/NULL2_diffs_dict.pkl","rb"))
-    # diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    # unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
+    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x: x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
     # just do every tenth element - don't need to be exhaustive for null distrib
     # resume at RCAN
-    genes = [tup[0] for tup in sorted_unsigned[0::10]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
+    genes = [tup[0] for tup in sorted_unsigned[131:]]
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
     main()
