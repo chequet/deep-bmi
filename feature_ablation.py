@@ -161,17 +161,6 @@ def main(start_index):
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
-    # just do every tenth element - don't need to be exhaustive for null distrib
-    # resume at RCAN
-    genes = [tup[0] for tup in sorted_unsigned_lin[29:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGBL4",
-                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
-    genes = [tup[0] for tup in sorted_unsigned_lin[17:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGAP1",
-                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
-    genes = [tup[0] for tup in sorted_unsigned_lin[6:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "MSRA",
-                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/", lin_mod=False)
 
