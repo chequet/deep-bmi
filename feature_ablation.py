@@ -44,10 +44,20 @@ def get_unsigned_means(diffs_dict, means_dict_path):
     pickle.dump(unsigned_means_dict, open(means_dict_path, "wb"))
     return unsigned_means_dict
 
-def add_other_dict_keys(gene, linmod=False):
+def check_if_done(dict_directory, gene, linmod=False):
+    if not linmod:
+        dict_path = dict_directory + gene + "_pairs_dict.pkl"
+    else:
+        dict_path = dict_directory + "LIN_" + gene + "_pairs_dict.pkl"
+    if os.path.exists(dict_path):
+        return True, pickle.load(open(dict_path, "rb"))
+    else:
+        return False, None
 
-def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
-                      diffs_dict, model, dict_directory, lin_mod=False):
+def add_other_dict_keys(gene, linmod=False):
+    return None
+
+def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set, diffs_dict, model, dict_directory, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
