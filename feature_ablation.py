@@ -166,4 +166,4 @@ def main(start_index):
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
-    main(start_index = sys.argv[1])
+    main(start_index = int(sys.argv[1]))
