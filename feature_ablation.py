@@ -112,8 +112,8 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
 def main(start_index):
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
-    # model = torch.load("NULL2_10000_4.pt")
-    model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
+    model = torch.load("10000radam_elu_0.2_huber4.pt")
+    lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
@@ -149,15 +149,15 @@ def main(start_index):
     # resume at RCAN
     genes = [tup[0] for tup in sorted_unsigned_lin[29:]]
     one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGBL4",
-                      genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
+                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
     genes = [tup[0] for tup in sorted_unsigned_lin[17:]]
     one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGAP1",
-                      genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
+                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
     genes = [tup[0] for tup in sorted_unsigned_lin[6:]]
     one_gene_pairwise(X_data_filtered, ordered_feature_masks, "MSRA",
-                      genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
+                      genes, lin_diffs, lin_model, "../diffs_dicts/", lin_mod=True)
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=False)
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
     main(start_index = sys.argv[1])
