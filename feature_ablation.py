@@ -1,3 +1,4 @@
+import sys
 from BasicEmbeddedDataset import *
 import pickle
 import torch
@@ -43,6 +44,8 @@ def get_unsigned_means(diffs_dict, means_dict_path):
     pickle.dump(unsigned_means_dict, open(means_dict_path, "wb"))
     return unsigned_means_dict
 
+def add_other_dict_keys(gene, linmod=False):
+
 def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
                       diffs_dict, model, dict_directory, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
@@ -87,8 +90,6 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
                       diffs_dict, model, dict_directory, lin_mod=False):
     # exhaustive search of comparison set
-    device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
-    comparison_set = gene_set
     searched_genes = set()
     for start_gene in gene_set:
         print(start_gene)
@@ -98,7 +99,7 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
         searched_genes.add(start_gene)
     return True
 
-def main():
+def main(start_index):
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     # model = torch.load("NULL2_10000_4.pt")
@@ -145,9 +146,8 @@ def main():
     genes = [tup[0] for tup in sorted_unsigned_lin[6:]]
     one_gene_pairwise(X_data_filtered, ordered_feature_masks, "MSRA",
                       genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
-    # restart real exhaustive search at BANK1, index 118
-    genes = [tup[0] for tup in sorted_unsigned[118:]]
+    genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
-    main()
+    main(start_index = sys.argv[1])
