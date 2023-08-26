@@ -50,12 +50,28 @@ def check_if_done(dict_directory, gene, linmod=False):
     else:
         dict_path = dict_directory + "LIN_" + gene + "_pairs_dict.pkl"
     if os.path.exists(dict_path):
-        return True, pickle.load(open(dict_path, "rb"))
+        return True, gene
     else:
         return False, None
 
-def add_other_dict_keys(gene, linmod=False):
-    return None
+def add_other_dict_keys(search_gene, dict_directory, linmod=False):
+    files = os.listdir(dict_directory)
+    if not linmod:
+        files = [item for item in files if item[:3] != "LIN" and item[0].isupper()]
+        og_path = dict_directory + search_gene + "_pairs_dict.pkl"
+    else:
+        og_path = dict_directory + "LIN_" + search_gene + "_pairs_dict.pkl"
+        files = [item for item in files if item[:3] == "LIN"]
+    og_dict = pickle.load(open(og_path, "rb"))
+    for f in files:
+        if not linmod:
+            key = f.split("_")[0] + "_" + search_gene
+        else:
+            key = f.split("_")[1] + "_" + search_gene
+        dict = pickle.load(open(dict_directory + f, "rb"))
+        if key in dict.keys():
+            new_key = search_gene + "_" + key.split("_")[0]
+            og_dict[new_key] = dict[key]
 
 def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set, diffs_dict, model, dict_directory, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
