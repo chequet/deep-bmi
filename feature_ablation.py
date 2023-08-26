@@ -84,14 +84,15 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
     print("writing pairs dict for %s to %s..." % (start_gene, dict_path))
     pickle.dump(pairs_dict, open(dict_path, "wb"))
 
-#### NEED TO FIX THIS #####
-def pairwise_ablation(data, ordered_feature_masks, comparison_set,
+def pairwise_ablation(data, ordered_feature_masks, gene_set,
                       diffs_dict, model, dict_directory, lin_mod=False):
     # exhaustive search of comparison set
     device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
+    comparison_set = gene_set
     searched_genes = set()
-    for start_gene in comparison_set:
+    for start_gene in gene_set:
         print(start_gene)
+        comparison_set = [g for g in gene_set if g not in searched_genes]
         one_gene_pairwise(data, ordered_feature_masks, comparison_set, diffs_dict,
                           model, dict_directory, lin_mod)
         searched_genes.add(start_gene)
@@ -127,24 +128,26 @@ def main():
     #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
     lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
     lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
-    # diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    # unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
+    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
+    sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
     # just do every tenth element - don't need to be exhaustive for null distrib
     # resume at RCAN
-    genes = [tup[0] for tup in sorted_unsigned[2:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "BDNF-AS",
+    genes = [tup[0] for tup in sorted_unsigned_lin[29:]]
+    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGBL4",
                       genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
-    genes = [tup[0] for tup in sorted_unsigned[4:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "NRXN1",
+    genes = [tup[0] for tup in sorted_unsigned_lin[17:]]
+    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "AGAP1",
                       genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
-    genes = [tup[0] for tup in sorted_unsigned[36:]]
-    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "CADM2",
+    genes = [tup[0] for tup in sorted_unsigned_lin[6:]]
+    one_gene_pairwise(X_data_filtered, ordered_feature_masks, "MSRA",
                       genes, lin_diffs, model, "../diffs_dicts/", lin_mod=True)
-
-    # pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=False)
+    # restart real exhaustive search at BANK1, index 118
+    genes = [tup[0] for tup in sorted_unsigned[118:]]
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, lin_diffs, model, "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
     main()
