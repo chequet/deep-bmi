@@ -126,6 +126,7 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
     return True
 
 def main(start_index):
+    print("starting at index %i"%start_index)
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
