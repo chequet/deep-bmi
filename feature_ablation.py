@@ -119,10 +119,10 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
     searched_genes = set()
     for start_gene in gene_set:
         print(start_gene)
+        searched_genes.add(start_gene)
         comparison_set = [g for g in gene_set if g not in searched_genes]
         one_gene_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
                           model, dict_directory, lin_mod)
-        searched_genes.add(start_gene)
     return True
 
 def main(start_index):
