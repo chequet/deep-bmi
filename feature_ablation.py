@@ -125,6 +125,16 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
                           model, dict_directory, lin_mod)
     return True
 
+def check_overlap(gene1, gene2, gene_feature_mask):
+    mask1 = gene_feature_mask[gene1]
+    mask2 = gene_feature_mask[gene2]
+    set1 = set(np.where(mask1==0)[0])
+    set2 = set(np.where(mask2==0)[0])
+    if len(set1.intersection(set2)) > 0:
+        return True
+    else:
+        return False
+
 def main(start_index):
     print("starting at index %i"%start_index)
     # initialise
