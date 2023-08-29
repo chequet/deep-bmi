@@ -164,11 +164,11 @@ def main(start_index):
     # print("beginning single gene ablation...")
     # lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
     #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
-    lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
-    lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
+    # lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
+    # lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
     diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
     unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
-    sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
+    # sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
