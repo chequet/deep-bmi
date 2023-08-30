@@ -139,8 +139,8 @@ def check_overlap(gene1, gene2, gene_feature_mask):
     else:
         return False
 
-def main(start_index):
-    print("starting at index %i"%start_index)
+def main(start_index, stop_index):
+    print("starting at index %i and stopping at index %i"%(start_index, stop_index))
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
@@ -177,7 +177,9 @@ def main(start_index):
     # exhaustive search!
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model, "../diffs_dicts/", lin_mod=False)
+    stop_gene = sorted_unsigned[stop_index][0]
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model,
+                      "../diffs_dicts/", stop_gene, lin_mod=False)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]))
