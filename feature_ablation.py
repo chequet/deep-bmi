@@ -144,7 +144,7 @@ def main(start_index, stop_index):
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
-    lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
+    # lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
@@ -178,8 +178,8 @@ def main(start_index, stop_index):
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, model,
-                      "../diffs_dicts/", stop_gene, lin_mod=False)
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
+                      "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]))
