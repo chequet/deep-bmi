@@ -4,9 +4,9 @@ import numpy as np
 from numpy.random import default_rng
 import math
 
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:0" if use_cuda else "cpu")
-print(device)
+# use_cuda = torch.cuda.is_available()
+# device = torch.device("cuda:0" if use_cuda else "cpu")
+# print(device)
 
 def perturb_func(original_input: Tensor, n_interp_features: int, **_):
     perturbed_sample = torch.ones((n_interp_features,), dtype=torch.int8)
