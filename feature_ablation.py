@@ -6,7 +6,7 @@ import os
 import numpy as np
 from lime import get_test_set, get_masks
 
-CUDA_VISIBLE_DEVICES=0
+# CUDA_VISIBLE_DEVICES=0
 use_cuda = torch.cuda.is_available()
 
 def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
@@ -74,7 +74,8 @@ def add_other_dict_keys(search_gene, dict_directory, linmod=False):
             new_key = search_gene + "_" + key.split("_")[0]
             og_dict[new_key] = dict[key]
 
-def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set, diffs_dict, model, dict_directory, lin_mod=False):
+def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
+                      diffs_dict, model, dict_directory, device, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
@@ -83,7 +84,6 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set, diffs_d
         dict_path = dict_directory + start_gene + "_pairs_dict.pkl"
     else:
         dict_path = dict_directory + "LIN_" + start_gene + "_pairs_dict.pkl"
-    device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
     gene_mask = ordered_feature_masks[start_gene]
     g = 1
     for gene in gene_set:
@@ -139,11 +139,12 @@ def check_overlap(gene1, gene2, gene_feature_mask):
     else:
         return False
 
-def main(start_index, stop_index):
+def main(start_index, stop_index, cuda_device_no):
     print("starting at index %i and stopping at index %i"%(start_index, stop_index))
     # initialise
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
+    device = torch.device("cuda:"+cuda_device_no if (use_cuda and lin_mod == False) else "cpu")
     # lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
@@ -182,4 +183,4 @@ def main(start_index, stop_index):
                       "../diffs_dicts/", lin_mod=False)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), cuda_device_no = sys.argv[3])
