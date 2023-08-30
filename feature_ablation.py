@@ -146,6 +146,7 @@ def main(start_index, stop_index):
     print(device)
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
+    model.to(device)
     # lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
