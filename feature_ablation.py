@@ -11,7 +11,6 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:"+sys.argv[3] if (use_cuda) else "cpu")
 
 def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
-    device = torch.device("cuda:0" if (use_cuda and lin_mod==False) else "cpu")
     # data should be pre-filtered for BMI category and mse
     if not lin_mod:
         model.to(device)
@@ -143,6 +142,8 @@ def check_overlap(gene1, gene2, gene_feature_mask):
 def main(start_index, stop_index):
     print("starting at index %i and stopping at index %i"%(start_index, stop_index))
     # initialise
+    print("DEVICE")
+    print(device)
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
     model = torch.load("10000radam_elu_0.2_huber4.pt")
     # lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
