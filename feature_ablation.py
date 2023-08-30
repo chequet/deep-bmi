@@ -6,6 +6,7 @@ import os
 import numpy as np
 from lime import get_test_set, get_masks
 
+CUDA_VISIBLE_DEVICES=0
 use_cuda = torch.cuda.is_available()
 
 def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
@@ -114,11 +115,14 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set, diffs_d
     pickle.dump(pairs_dict, open(dict_path, "wb"))
 
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
-                      diffs_dict, model, dict_directory, lin_mod=False):
+                      diffs_dict, stop_gene, model, dict_directory, lin_mod=False):
     # exhaustive search of comparison set
     searched_genes = set()
     for start_gene in gene_set:
         print(start_gene)
+        if start_gene == stop_gene:
+            print("reached stop gene: %s"%stop_gene)
+            return True
         searched_genes.add(start_gene)
         comparison_set = [g for g in gene_set if g not in searched_genes]
         one_gene_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
