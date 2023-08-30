@@ -156,7 +156,7 @@ def main(start_index, stop_index):
     params = {'batch_size': None,
               'num_workers': 4}
     # no shuffle
-    testfiles = os.listdir("../1000_data_relabelled/test/")
+    testfiles = os.listdir("../10000_data_relabelled/test/")
     test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
                                                                                testfiles,
                                                                                False, 2, "py2"), **params))
