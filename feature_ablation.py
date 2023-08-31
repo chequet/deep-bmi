@@ -9,7 +9,7 @@ import math
 from multiprocessing import Process
 
 CUDA_VISIBLE_DEVICES=sys.argv[3]
-N_CPUs = 1
+N_CPUs = 8
 use_cuda = torch.cuda.is_available()
 if sys.argv[3] != -1:
     device = torch.device("cpu")
