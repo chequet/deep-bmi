@@ -142,15 +142,21 @@ def check_overlap(gene1, gene2, gene_feature_mask):
     else:
         return False
 
-def main(start_index, stop_index):
+def main(start_index, stop_index, lin):
+    if lin==0:
+        linmod = False
+    elif lin==1:
+        linmod = True
     print("starting at index %i and stopping at index %i"%(start_index, stop_index))
     # initialise
     print("DEVICE")
     print(device)
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
-    model = torch.load("10000radam_elu_0.2_huber4.pt")
-    model.to(device)
-    # lin_model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
+    if linmod:
+        model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
+    else:
+        model = torch.load("10000radam_elu_0.2_huber4.pt")
+        model.to(device)
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
@@ -176,8 +182,12 @@ def main(start_index, stop_index):
     #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
     # lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
     # lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
-    diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-    unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+    if linmod:
+        diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
+        unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/linmod_means_dict.pkl")
+    else:
+        diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
+        unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
     # sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
@@ -185,7 +195,7 @@ def main(start_index, stop_index):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
-                      "../diffs_dicts/", lin_mod=False)
+                      "../diffs_dicts/", lin_mod=linmod)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), linmod=int(sys.argv[4]))
