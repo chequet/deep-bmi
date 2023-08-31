@@ -219,7 +219,7 @@ def main(start_index, stop_index, lin):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
-                      "../diffs_dicts/", lin_mod=linmod, parallel=True)
+                      "../diffs_dicts/", lin_mod=linmod, parallel=False)
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), lin=int(sys.argv[4]))
