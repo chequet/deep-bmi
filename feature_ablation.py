@@ -9,7 +9,7 @@ import math
 from multiprocessing import Process
 
 CUDA_VISIBLE_DEVICES=sys.argv[3]
-N_CPUs = 1
+N_CPUs = 128
 use_cuda = torch.cuda.is_available()
 if sys.argv[3] != -1:
     device = torch.device("cpu")
@@ -124,12 +124,13 @@ def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set
                       diffs_dict, model, dict_directory, n_cpus, lin_mod=False):
     # divide gene set up into n_cpus batches
     miniset_size = int(math.ceil(len(gene_set)/n_cpus))
+    print("miniset size: %i"%miniset_size)
     minisets = []
     for i in range(0,len(gene_set),miniset_size):
         minisets.append(gene_set[i:i+miniset_size])
     procs = []
     for miniset in minisets:
-        proc=Process(target=pairwise_ablation, args=(data, ordered_feature_masks, start_gene, miniset,
+        proc=Process(target=one_gene_pairwise, args=(data, ordered_feature_masks, start_gene, miniset,
                       diffs_dict, model, dict_directory, lin_mod,))
         procs.append(proc)
         proc.start()
