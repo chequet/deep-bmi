@@ -8,7 +8,7 @@ from lime import get_test_set, get_masks
 
 CUDA_VISIBLE_DEVICES=sys.argv[3]
 use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:"+sys.argv[3] if (use_cuda) else "cpu")
+device = torch.device("cuda:"+sys.argv[3] if (sys.argv[3] != -1 and(use_cuda)) else "cpu")
 
 def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
     # data should be pre-filtered for BMI category and mse
