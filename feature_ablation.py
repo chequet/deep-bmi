@@ -198,4 +198,4 @@ def main(start_index, stop_index, lin):
                       "../diffs_dicts/", lin_mod=linmod)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), linmod=int(sys.argv[4]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), lin=int(sys.argv[4]))
