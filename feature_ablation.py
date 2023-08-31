@@ -120,8 +120,8 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
     print("writing pairs dict for %s to %s..." % (start_gene, dict_path))
     pickle.dump(pairs_dict, open(dict_path, "wb"))
 
-def one_gene_parallel_pairwise(data, ordered_feature_masks, gene_set,
-                      diffs_dict, stop_gene, model, dict_directory, n_cpus, lin_mod=False):
+def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set,
+                      diffs_dict, model, dict_directory, n_cpus, lin_mod=False):
     # divide gene set up into n_cpus batches
     miniset_size = int(math.ceil(len(gene_set)/n_cpus))
     minisets = []
@@ -129,13 +129,12 @@ def one_gene_parallel_pairwise(data, ordered_feature_masks, gene_set,
         minisets.append(gene_set[i:i+miniset_size])
     procs = []
     for miniset in minisets:
-        proc=Process(target=pairwise_ablation, args=(data, ordered_feature_masks, miniset,
-                      diffs_dict, stop_gene, model, dict_directory, lin_mod))
+        proc=Process(target=pairwise_ablation, args=(data, ordered_feature_masks, start_gene, miniset,
+                      diffs_dict, model, dict_directory, lin_mod,))
         procs.append(proc)
         proc.start()
     for proc in procs:
         proc.join()
-
 
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
                       diffs_dict, stop_gene, model, dict_directory, lin_mod=False, parallel=False):
@@ -219,7 +218,7 @@ def main(start_index, stop_index, lin):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
-                      "../diffs_dicts/", lin_mod=linmod, parallel=False)
+                      "../diffs_dicts/", lin_mod=linmod, parallel=True)
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), lin=int(sys.argv[4]))
