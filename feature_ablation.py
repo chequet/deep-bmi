@@ -190,12 +190,12 @@ def main(start_index, stop_index, lin):
     mses = pickle.load(open("10000_test_mses.pkl", "rb"))
     # get entire X test dataset
     params = {'batch_size': None,
-              'num_workers': 4}
+              'num_workers': 1}
     # no shuffle
     testfiles = os.listdir("../10000_data_relabelled/test/")
     test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
                                                                                testfiles,
-                                                                               False, 1, "y"), **params))
+                                                                               False, 2, "y"), **params))
     X_data = get_test_set(test_sample_loader, testfiles)
     # filter for BMI category, MSE
     mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
