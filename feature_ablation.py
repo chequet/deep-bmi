@@ -156,15 +156,23 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
                           model, dict_directory, lin_mod)
     return True
 
-def check_overlap(gene1, gene2, gene_feature_mask):
-    mask1 = gene_feature_mask[gene1]
-    mask2 = gene_feature_mask[gene2]
+def check_overlap(gene1, gene2, gene_feature_masks):
+    mask1 = gene_feature_masks[gene1]
+    mask2 = gene_feature_masks[gene2]
     set1 = set(np.where(mask1==0)[0])
     set2 = set(np.where(mask2==0)[0])
     if len(set1.intersection(set2)) > 0:
         return True
     else:
         return False
+
+def check_second_degree_overlap(gene1, gene2, gene_feature_masks, comparison_set):
+    # check if the two input genes have overlapping genes in common
+    for gene3 in comparison_set:
+        if (check_overlap(gene1, gene3, gene_feature_masks) and
+            check_overlap(gene2, gene3, gene_feature_masks)):
+            return True, gene3
+    return False, None
 
 def main(start_index, stop_index, lin):
     if lin==0:
