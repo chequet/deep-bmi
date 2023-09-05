@@ -8,7 +8,6 @@ from lime import get_test_set, get_masks
 import math
 from multiprocessing import Process
 
-CUDA_VISIBLE_DEVICES=sys.argv[3]
 N_CPUs = 8
 use_cuda = torch.cuda.is_available()
 if sys.argv[3] == -1:
@@ -157,6 +156,7 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
     return True
 
 def check_overlap(gene1, gene2, gene_feature_masks):
+    # check if two genes have SNPs in common
     mask1 = gene_feature_masks[gene1]
     mask2 = gene_feature_masks[gene2]
     set1 = set(np.where(mask1==0)[0])
@@ -174,7 +174,12 @@ def check_second_degree_overlap(gene1, gene2, gene_feature_masks, comparison_set
             return True, gene3
     return False, None
 
-def main(start_index, stop_index, lin):
+def main(start_index, stop_index, gpu, lin):
+    use_cuda = torch.cuda.is_available()
+    if gpu == -1:
+        device = torch.device("cpu")
+    else:
+        device = torch.device("cuda:" + gpu if (use_cuda) else "cpu")
     if lin==0:
         linmod = False
     elif lin==1:
@@ -230,4 +235,4 @@ def main(start_index, stop_index, lin):
                       "../diffs_dicts/", lin_mod=linmod, parallel=False)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), lin=int(sys.argv[4]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = int(sys.argv[3]), lin=int(sys.argv[4]))
