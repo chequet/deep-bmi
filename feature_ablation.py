@@ -8,7 +8,9 @@ from lime import get_test_set, get_masks
 import math
 from multiprocessing import Process
 
-def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, lin_mod=False):
+N_CPUs = 8
+
+def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_file_name, device, lin_mod=False):
     # data should be pre-filtered for BMI category and mse
     if not lin_mod:
         model.to(device)
@@ -73,7 +75,7 @@ def add_other_dict_keys(search_gene, dict_directory, linmod=False):
             og_dict[new_key] = dict[key]
 
 def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
-                      diffs_dict, model, dict_directory, lin_mod=False):
+                      diffs_dict, model, dict_directory, device, lin_mod=False):
     # perturb given gene with comparison set and store perturbation results
     # comparison_set should be list of strings
     # data should be pre-filtered for BMI category and mse
@@ -113,7 +115,7 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
     pickle.dump(pairs_dict, open(dict_path, "wb"))
 
 def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set,
-                      diffs_dict, model, dict_directory, n_cpus, lin_mod=False):
+                      diffs_dict, model, dict_directory, n_cpus, device, lin_mod=False):
     # divide gene set up into n_cpus batches
     miniset_size = int(math.ceil(len(gene_set)/n_cpus))
     print("miniset size: %i"%miniset_size)
@@ -123,14 +125,14 @@ def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set
     procs = []
     for miniset in minisets:
         proc=Process(target=one_gene_pairwise, args=(data, ordered_feature_masks, start_gene, miniset,
-                      diffs_dict, model, dict_directory, lin_mod,))
+                      diffs_dict, model, dict_directory, device, lin_mod,))
         procs.append(proc)
         proc.start()
     for proc in procs:
         proc.join()
 
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
-                      diffs_dict, stop_gene, model, dict_directory, lin_mod=False, parallel=False):
+                      diffs_dict, stop_gene, model, dict_directory, device, lin_mod=False, parallel=False):
     # exhaustive search of comparison set
     searched_genes = set()
     for start_gene in gene_set:
@@ -142,10 +144,10 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
         comparison_set = [g for g in gene_set if g not in searched_genes]
         if parallel:
             one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
-                              model, dict_directory, N_CPUs, lin_mod)
+                              model, dict_directory, N_CPUs, device, lin_mod)
         else:
             one_gene_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
-                          model, dict_directory, lin_mod)
+                          model, dict_directory, device, lin_mod)
     return True
 
 def check_overlap(gene1, gene2, gene_feature_masks):
@@ -225,7 +227,7 @@ def main(start_index, stop_index, gpu, lin):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
-                      "../diffs_dicts/", lin_mod=linmod, parallel=False)
+                      "../diffs_dicts/", device, lin_mod=linmod, parallel=False)
 
 if __name__ == "__main__":
-    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = int(sys.argv[3]), lin=int(sys.argv[4]))
+    main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = sys.argv[3], lin=int(sys.argv[4]))
