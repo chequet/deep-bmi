@@ -170,7 +170,7 @@ def check_second_degree_overlap(gene1, gene2, gene_feature_masks, comparison_set
     return False, None
 
 def main(start_index, stop_index, gpu, lin):
-    if gpu == -1:
+    if gpu == "-1":
         device = torch.device("cpu")
     else:
         use_cuda = torch.cuda.is_available()
