@@ -224,8 +224,8 @@ def main(start_index, stop_index, gpu, lin):
     # exhaustive search!
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
-    searched = pickle.load(open("searched_genes.pkl","rb"))
-    unsearched = [gene for gene in genes if gene not in set(searched)]
+    searched = set(pickle.load(open("searched_genes.pkl","rb")))
+    unsearched = [gene for gene in genes if gene not in searched]
     print("searched: ", len(searched))
     print("remaining: ", len(unsearched))
     stop_gene = unsearched[stop_index]
