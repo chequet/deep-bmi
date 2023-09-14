@@ -114,23 +114,6 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
     print("writing pairs dict for %s to %s..." % (start_gene, dict_path))
     pickle.dump(pairs_dict, open(dict_path, "wb"))
 
-def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set,
-                      diffs_dict, model, dict_directory, n_cpus, device, lin_mod=False):
-    # divide gene set up into n_cpus batches
-    miniset_size = int(math.ceil(len(gene_set)/n_cpus))
-    print("miniset size: %i"%miniset_size)
-    minisets = []
-    for i in range(0,len(gene_set),miniset_size):
-        minisets.append(gene_set[i:i+miniset_size])
-    procs = []
-    for miniset in minisets:
-        proc=Process(target=one_gene_pairwise, args=(data, ordered_feature_masks, start_gene, miniset,
-                      diffs_dict, model, dict_directory, device, lin_mod,))
-        procs.append(proc)
-        proc.start()
-    for proc in procs:
-        proc.join()
-
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
                       diffs_dict, stop_gene, searched_genes, model, dict_directory, device, lin_mod=False, parallel=False):
     # exhaustive search of comparison set
@@ -141,11 +124,7 @@ def pairwise_ablation(data, ordered_feature_masks, gene_set,
             return True
         searched_genes.add(start_gene)
         comparison_set = [g for g in gene_set if g not in searched_genes]
-        if parallel:
-            one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
-                              model, dict_directory, N_CPUs, device, lin_mod)
-        else:
-            one_gene_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
+        one_gene_pairwise(data, ordered_feature_masks, start_gene, comparison_set, diffs_dict,
                           model, dict_directory, device, lin_mod)
     return True
 
@@ -208,11 +187,6 @@ def main(start_index, stop_index, gpu, lin):
     mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
     joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
     X_data_filtered = X_data[joint_sample_mask.astype(bool)]
-    # print("beginning single gene ablation...")
-    # lin_diffs = single_gene_ablation(X_data_filtered, model, gene_keys,
-    #                                    ordered_feature_masks, "../diffs_dicts/linmod_diffs_dict.pkl", lin_mod=True)
-    # lin_diffs = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
-    # lin_means = get_unsigned_means(lin_diffs, "../diffs_dicts/linmod_means_dict.pkl")
     if linmod:
         diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
         unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/linmod_means_dict.pkl")
@@ -225,14 +199,14 @@ def main(start_index, stop_index, gpu, lin):
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned]
     searched = set(pickle.load(open("searched_genes.pkl","rb")))
-    unsearched = [gene for gene in genes if gene not in searched]
-    comparison_set = unsearched[start_index:]
+    unsearched = [gene for gene in genes if gene not in searched][:20]
     print("searched: ", len(searched))
     print("remaining: ", len(unsearched))
-    stop_gene = unsearched[stop_index]
-    print("stop gene: " + stop_gene)
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, searched, model,
-                      "../diffs_dicts/", device, lin_mod=linmod, parallel=False)
+    print(unsearched)
+    for gene in unsearched:
+        comparison_set = genes[genes.index(gene):]
+        one_gene_pairwise(X_data_filtered, ordered_feature_masks, gene, comparison_set,
+                          diffs_dict, model, "../diffs_dicts/", device)
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = sys.argv[3], lin=int(sys.argv[4]))
