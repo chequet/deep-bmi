@@ -132,9 +132,8 @@ def one_gene_parallel_pairwise(data, ordered_feature_masks, start_gene, gene_set
         proc.join()
 
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
-                      diffs_dict, stop_gene, model, dict_directory, device, lin_mod=False, parallel=False):
+                      diffs_dict, stop_gene, searched_genes, model, dict_directory, device, lin_mod=False, parallel=False):
     # exhaustive search of comparison set
-    searched_genes = set()
     for start_gene in gene_set:
         print(start_gene)
         if start_gene == stop_gene:
@@ -225,8 +224,10 @@ def main(start_index, stop_index, gpu, lin):
     # exhaustive search!
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
-    stop_gene = sorted_unsigned[stop_index][0]
-    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
+    searched = pickle.load(open("searched_genes.pkl","rb"))
+    unsearched = [gene for gene in genes if gene not in set(searched)]
+    stop_gene = unsearched[stop_index]
+    pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, searched, model,
                       "../diffs_dicts/", device, lin_mod=linmod, parallel=False)
 
 if __name__ == "__main__":
