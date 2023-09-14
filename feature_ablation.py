@@ -226,7 +226,10 @@ def main(start_index, stop_index, gpu, lin):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     searched = pickle.load(open("searched_genes.pkl","rb"))
     unsearched = [gene for gene in genes if gene not in set(searched)]
+    print("searched: ", len(searched))
+    print("remaining: ", len(unsearched))
     stop_gene = unsearched[stop_index]
+    print("stop gene: " + stop_gene)
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, searched, model,
                       "../diffs_dicts/", device, lin_mod=linmod, parallel=False)
 
