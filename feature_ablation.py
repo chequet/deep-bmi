@@ -223,9 +223,10 @@ def main(start_index, stop_index, gpu, lin):
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
     print("beginning pairwise ablation...")
-    genes = [tup[0] for tup in sorted_unsigned[start_index:]]
+    genes = [tup[0] for tup in sorted_unsigned]
     searched = set(pickle.load(open("searched_genes.pkl","rb")))
     unsearched = [gene for gene in genes if gene not in searched]
+    comparison_set = unsearched[start_index:]
     print("searched: ", len(searched))
     print("remaining: ", len(unsearched))
     stop_gene = unsearched[stop_index]
