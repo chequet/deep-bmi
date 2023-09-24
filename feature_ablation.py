@@ -6,7 +6,6 @@ import os
 import numpy as np
 from lime import get_test_set, get_masks
 import math
-from multiprocessing import Process
 
 N_CPUs = 8
 
@@ -73,6 +72,7 @@ def add_other_dict_keys(search_gene, dict_directory, linmod=False):
         if key in dict.keys():
             new_key = search_gene + "_" + key.split("_")[0]
             og_dict[new_key] = dict[key]
+    return og_dict
 
 def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
                       diffs_dict, model, dict_directory, device, lin_mod=False):
@@ -113,6 +113,7 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
         g += 1
     print("writing pairs dict for %s to %s..." % (start_gene, dict_path))
     pickle.dump(pairs_dict, open(dict_path, "wb"))
+
 
 def pairwise_ablation(data, ordered_feature_masks, gene_set,
                       diffs_dict, stop_gene, model, dict_directory, device, lin_mod=False):
