@@ -14,7 +14,7 @@ def get_masks(test_phenos):
     overweight_mask = [1 if (p >= -0.44 and p < 0.63) else 0 for p in test_phenos]
     obese_1_mask = [1 if (p >= 0.63 and p < 1.69) else 0 for p in test_phenos]
     obese_2_mask = [1 if (p >= 1.69 and p < 2.76) else 0 for p in test_phenos]
-    obese_3_mask = [1 if (p >= -1.82 and p < -0.44) else 0 for p in test_phenos]
+    obese_3_mask = [1 if (p >= 2.76) else 0 for p in test_phenos] # this looks wrong
     return underweight_mask, healthy_mask, overweight_mask, obese_1_mask, obese_2_mask, obese_3_mask
 
 def get_test_set(test_sample_loader, testfiles):
@@ -63,7 +63,7 @@ def main():
     testfiles = os.listdir("../1000_data_relabelled/test/")
     test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
                                                                               testfiles,
-                                                                               False, 2), **params))
+                                                                               False, 2, "py1"), **params))
     X_data = get_test_set(test_sample_loader, testfiles)
     split = int(np.ceil(len(X_data) / 2))
     print(split)
@@ -80,10 +80,10 @@ def main():
     # do lime for each subgroup
     print("subgroup 1")
     attr1 = get_attr_coefs(X_data_1, model, GAMMA, underweight_mask, healthy_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("healthy_bmi_lime_results1", attr1)
+    np.save("null_healthy_bmi_lime_results1", attr1)
     print("subgroup 2")
-    attr2 = get_attr_coefs(X_data_2, model, GAMMA, underweight_mask, healthy_mask, gene_keys, gene_mask_values, mses, lime_attr)
-    np.save("healthy_bmi_lime_results2", attr2)
+    attr2 = get_attr_coefs(X_data_2, model, GAMMA, obese_1_mask, obese_2_mask, gene_keys, gene_mask_values, mses, lime_attr)
+    np.save("null_obese_bmi_lime_results2", attr2)
 
 if __name__ == "__main__":
     main()
