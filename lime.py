@@ -43,7 +43,6 @@ def get_attr_coefs(data, model, gamma, mask1, mask2, gene_keys, gene_mask_values
 
 
 def main():
-    device = torch.device("cuda:0")
     GAMMA = 20000
     # get ordered keys and values for all gene features
     ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl","rb"))
