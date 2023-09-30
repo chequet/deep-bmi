@@ -49,7 +49,7 @@ def main():
     gene_keys = list(ordered_feature_masks.keys())
     gene_mask_values = np.array([ordered_feature_masks[key] for key in gene_keys])
     # get best 10k nn
-    model = torch.load("10000radam_elu_0.2_huber4.pt")
+    model = torch.load("NULL1_10000_4.pt")
     # first make a bmi mask for test set samples
     test_samples = pickle.load(open("../sample_sets/testset.pkl","rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl","rb"))
