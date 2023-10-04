@@ -203,6 +203,8 @@ def main(start_index, stop_index, gpu, lin):
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
                       "../diffs_dicts/", device, lin_mod=linmod)
+    # persist model to see if weights have changed
+    torch.save(model, "post_model.pt")
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = sys.argv[3], lin=int(sys.argv[4]))
