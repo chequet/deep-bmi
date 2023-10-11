@@ -149,6 +149,43 @@ def check_second_degree_overlap(gene1, gene2, gene_feature_masks, comparison_set
             return True, gene3
     return False, None
 
+# more general methods for larger numbers of genes
+def get_linear_diff(gene_set, index, diffs_dict):
+    lin_diff = 0
+    for gene in gene_set:
+        lin_diff += diffs_dict[gene][index]
+    return lin_diff
+
+def get_joint_mask(gene_set, feature_masks):
+    masks = []
+    for gene in gene_set:
+        m = feature_masks[gene]
+        masks.append(m)
+    joint_mask = masks[0]
+    for i in range(1, len(masks)):
+        joint_mask = joint_mask*masks[i]
+    return joint_mask
+
+# check top pairs for direction, plots
+def single_pair_analysis(pair, model, data, joint_mask, device, diffs_dict):
+    diff_diffs = []
+    lin_diffs = []
+    model_diffs = []
+    c = 0
+    for i in range(len(data)):
+        print("sample %i of %i" % (i, len(data)), end='\r')
+        linear_diff = get_linear_diff(pair, c, diffs_dict)
+        lin_diffs.append(linear_diff)
+        og_inp = data[i].to(device)
+        og_pheno = model(og_inp.float())
+        new_inp = og_inp * joint_mask
+        new_pheno = model(new_inp.float())
+        model_diff = (og_pheno - new_pheno).detach().cpu().numpy()
+        model_diffs.append(model_diff)
+        diff_diffs.append(model_diff-linear_diff)
+        c += 1
+    return lin_diffs, model_diffs, diff_diffs
+
 def main(start_index, stop_index, gpu, lin):
     if gpu == "-1":
         device = torch.device("cpu")
