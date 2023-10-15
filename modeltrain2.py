@@ -24,7 +24,7 @@ ENCODING = int(sys.argv[3])
 N_EPOCHS = int(sys.argv[4])
 BATCH_SIZE = 4096
 REDUCTIONS = [50,2,2,2]
-PATH = "NULL2_" + str(N_SNPS) + '_' + str(ENCODING) + ".pt"
+PATH = "unscaled_" + str(N_SNPS) + '_' + str(ENCODING) + ".pt"
 #==============================================
 
 def make_architecture(inp, outp, reduction_factors):

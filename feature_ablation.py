@@ -13,6 +13,7 @@ def single_gene_ablation(data, model, gene_keys, ordered_feature_masks, dict_fil
     # data should be pre-filtered for BMI category and mse
     if not lin_mod:
         model.to(device)
+        model.eval()
     diffs_dict = {}
     for k in gene_keys:
         print(k)
@@ -102,6 +103,7 @@ def one_gene_pairwise(data, ordered_feature_masks, start_gene, gene_set,
                 new_pheno = model.predict(new_inp)
                 pair_diff = (og_pheno - new_pheno)
             else:
+                model.eval()
                 og_inp = data[i].to(device)
                 og_pheno = model(og_inp.float())
                 new_inp = og_inp * joint_mask
@@ -172,6 +174,7 @@ def single_pair_analysis(pair, model, data, joint_mask, device, diffs_dict):
     lin_diffs = []
     model_diffs = []
     c = 0
+    model.eval()
     for i in range(len(data)):
         print("sample %i of %i" % (i, len(data)), end='\r')
         linear_diff = get_linear_diff(pair, c, diffs_dict)
@@ -206,6 +209,7 @@ def main(start_index, stop_index, gpu, lin):
     else:
         model = torch.load("10000radam_elu_0.2_huber4.pt")
         model.to(device)
+        model.eval()
     print(model)
     test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
     pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
