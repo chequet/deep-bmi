@@ -221,11 +221,10 @@ def main(start_index, stop_index, gpu, lin):
         unsigned_means_dict = get_unsigned_means(diffs_dict, "../ablation_results/correct_means_dict.pkl")
     # sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
-    sorted_unsigned_filtered = [tup[0] for tup in sorted_unsigned if tup[0] in set(ordered_feature_masks.keys())]
     # exhaustive search!
     print("beginning pairwise ablation...")
-    genes = [tup[0] for tup in sorted_unsigned[start_index:]]
-    stop_gene = sorted_unsigned[stop_index][0]
+    genes = [tup[0] for tup in sorted_unsigned if tup[0] in set(ordered_feature_masks.keys())]
+    stop_gene = genes[stop_index]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
                       "../ablation_results/", device, lin_mod=linmod)
     # persist model to see if weights have changed
