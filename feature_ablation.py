@@ -203,7 +203,7 @@ def main(start_index, stop_index, gpu, lin):
     # initialise
     print("DEVICE")
     print(device)
-    ordered_feature_masks = pickle.load(open("../gene_masks/10k_full_genes_ordered_feature_masks.pkl", "rb"))
+    ordered_feature_masks = pickle.load(open("gene_feature_masks_filtered.pkl","rb"))
     if linmod:
         model = pickle.load(open("10000_enc_4_best_SGDRegressor.pkl","rb"))
     else:
