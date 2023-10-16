@@ -211,31 +211,18 @@ def main(start_index, stop_index, gpu, lin):
         model.to(device)
         model.eval()
     print(model)
-    test_samples = pickle.load(open("../sample_sets/testset.pkl", "rb"))
-    pheno_dict = pickle.load(open("../phenotypes/scaled_phenotype_dict.pkl", "rb"))
-    test_phenos = [pheno_dict[s] for s in test_samples]
-    underweight_mask, healthy_mask, overweight_mask, obese_1_mask, obese_2_mask, obese_3_mask = get_masks(test_phenos)
-    gene_keys = list(ordered_feature_masks.keys())
-    mses = pickle.load(open("10000_test_mses.pkl", "rb"))
+
     # get entire X test dataset
     params = {'batch_size': None,
               'num_workers': 4}
     # no shuffle
-    testfiles = os.listdir("../10000_data_relabelled/test/")
-    test_sample_loader = iter(torch.utils.data.DataLoader(BasicEmbeddedDataset("../10000_data_relabelled/test/",
-                                                                               testfiles,
-                                                                               False, 2, "y"), **params))
-    X_data = get_test_set(test_sample_loader, testfiles)
-    # filter for BMI category, MSE
-    mse_mask = np.array([1 if i < 0.1 else 0 for i in mses])
-    joint_sample_mask = mse_mask * (np.array(obese_1_mask) + np.array(obese_2_mask))
-    X_data_filtered = X_data[joint_sample_mask.astype(bool)]
+    X_data_filtered = torch.tensor(np.load("ablation_test_set.npz")['x'])
     if linmod:
         diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
         unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/linmod_means_dict.pkl")
     else:
-        diffs_dict = pickle.load(open("../diffs_dicts/obese12diffs.pkl","rb"))
-        unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/obese12means.pkl")
+        diffs_dict = pickle.load(open("../ablation_results/correct_diffs_dict.pkl","rb"))
+        unsigned_means_dict = get_unsigned_means(diffs_dict, "../ablation_results/correct_means_dict.pkl")
     # sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
@@ -243,9 +230,9 @@ def main(start_index, stop_index, gpu, lin):
     genes = [tup[0] for tup in sorted_unsigned[start_index:]]
     stop_gene = sorted_unsigned[stop_index][0]
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
-                      "../diffs_dicts/", device, lin_mod=linmod)
+                      "../ablation_results/", device, lin_mod=linmod)
     # persist model to see if weights have changed
-    torch.save(model, "post_model.pt")
+    # torch.save(model, "post_model.pt")
 
 if __name__ == "__main__":
     main(start_index = int(sys.argv[1]), stop_index = int(sys.argv[2]), gpu = sys.argv[3], lin=int(sys.argv[4]))
