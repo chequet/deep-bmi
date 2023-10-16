@@ -211,11 +211,7 @@ def main(start_index, stop_index, gpu, lin):
         model.to(device)
         model.eval()
     print(model)
-
-    # get entire X test dataset
-    params = {'batch_size': None,
-              'num_workers': 4}
-    # no shuffle
+    # load selected samples
     X_data_filtered = torch.tensor(np.load("ablation_test_set.npz")['x'])
     if linmod:
         diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
