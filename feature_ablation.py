@@ -217,8 +217,8 @@ def main(start_index, stop_index, gpu, lin):
         diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
         unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/linmod_means_dict.pkl")
     else:
-        diffs_dict = pickle.load(open("../ablation_results/1_mse_cutoff_diffs.pkl","rb"))
-        unsigned_means_dict = pickle.load(open("../ablation_results/1_mse_means_dict.pkl", "rb"))
+        diffs_dict = pickle.load(open("../ablation_results/mini_x_set_diffs.pkl","rb"))
+        unsigned_means_dict = pickle.load(open("../ablation_results/miniset_means_dict.pkl", "rb"))
     # sorted_unsigned_lin = sorted(lin_means.items(), key=lambda x: x[1], reverse=True)
     sorted_unsigned = sorted(unsigned_means_dict.items(), key=lambda x:x[1], reverse=True)
     # exhaustive search!
