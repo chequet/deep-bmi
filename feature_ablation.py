@@ -212,7 +212,7 @@ def main(start_index, stop_index, gpu, lin):
         model.eval()
     print(model)
     # load selected samples
-    X_data_filtered = torch.tensor(np.load("smaller_ablation_test_set.npz")['x'])
+    X_data_filtered = torch.tensor(np.load("mini_ablation_test_set.npz")['x'])
     if linmod:
         diffs_dict = pickle.load(open("../diffs_dicts/linmod_diffs_dict.pkl","rb"))
         unsigned_means_dict = get_unsigned_means(diffs_dict, "../diffs_dicts/linmod_means_dict.pkl")
