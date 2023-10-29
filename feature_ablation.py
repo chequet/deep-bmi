@@ -225,6 +225,7 @@ def main(start_index, stop_index, gpu, lin):
     print("beginning pairwise ablation...")
     genes = [tup[0] for tup in sorted_unsigned if tup[0] in set(ordered_feature_masks.keys())][start_index:]
     stop_gene = genes[stop_index]
+    print("stop gene: %s" %stop_gene)
     pairwise_ablation(X_data_filtered, ordered_feature_masks, genes, diffs_dict, stop_gene, model,
                       "../ablation_results/", device, lin_mod=linmod)
     # persist model to see if weights have changed
