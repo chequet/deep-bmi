@@ -1,5 +1,5 @@
 import sys
-from BasicEmbeddedDataset import *
+from generators.BasicEmbeddedDataset import *
 import pickle
 import torch
 import os

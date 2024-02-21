@@ -4,12 +4,11 @@
 
 import hail as hl
 import sys
-import pandas as pd
 import pickle
 hl.init(default_reference='GRCh37',spark_conf={'spark.driver.memory': '250G'})  
 
 from gtgwas import importchrs, annotate_gt, filter_variants_gt
-from gwas_full2 import get_PCA, gwas
+from gwas.gwas_full2 import get_PCA, gwas
 
 startchr = sys.argv[1]
 endchr = sys.argv[2]

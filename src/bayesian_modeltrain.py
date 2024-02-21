@@ -1,9 +1,8 @@
-import numpy as np
 import torch
 from torch import optim
 from torch.utils.tensorboard import SummaryWriter
-from BayesianNN import *
-from OneHotIterableDataset import *
+from nets.BayesianNN import *
+from generators.OneHotIterableDataset import *
 from modeltrain2 import k_fold_split, get_train_files, get_dataloader, make_architecture
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr

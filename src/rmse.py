@@ -1,8 +1,7 @@
 import numpy as np
 import torch
 import pickle
-from captum.attr import Lime
-from BasicEmbeddedDataset import *
+from generators.BasicEmbeddedDataset import *
 from sklearn.metrics import mean_squared_error
 import math
 use_cuda = torch.cuda.is_available()

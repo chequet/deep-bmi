@@ -5,7 +5,7 @@ import torch
 import pickle
 from captum.attr import Lime
 import sys
-from BasicEmbeddedDataset import *
+from generators.BasicEmbeddedDataset import *
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")

@@ -1,10 +1,8 @@
-import numpy as np
-import sklearn
 from sklearn.linear_model import SGDRegressor
-from MyIterableDataset3 import *
-from BasicEmbeddedDataset import *
-from OneHotIterableDataset import *
-from EffectEmbeddingDataset import *
+from generators.MyIterableDataset3 import *
+from generators.BasicEmbeddedDataset import *
+from generators.OneHotIterableDataset import *
+from generators.EffectEmbeddingDataset import *
 from sklearn.model_selection import GridSearchCV
 import torch
 from sklearn.metrics import mean_squared_error, r2_score

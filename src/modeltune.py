@@ -4,18 +4,15 @@ import sys
 import torch
 import torch.optim as optim
 import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
-import ray
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
-from MyIterableDataset3 import *
-from OneHotIterableDataset import *
-from BasicEmbeddedDataset import *
-from EffectEmbeddingDataset import *
+from generators.MyIterableDataset3 import *
+from generators.OneHotIterableDataset import *
+from generators.BasicEmbeddedDataset import *
+from generators.EffectEmbeddingDataset import *
 import os
-from modeltrain import train_val_split
-from FlexibleNet import *
+from src.modeltrain import train_val_split
+from nets.FlexibleNet import *
 from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import warnings

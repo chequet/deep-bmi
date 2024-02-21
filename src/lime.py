@@ -1,5 +1,5 @@
 from perturb_and_transform import *
-from BasicEmbeddedDataset import *
+from generators.BasicEmbeddedDataset import *
 import pickle
 import torch
 import os

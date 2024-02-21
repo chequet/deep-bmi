@@ -3,14 +3,12 @@
 
 import os
 import sys
-import numpy as np
 from hail.linalg import BlockMatrix
 from hail.utils import new_local_temp_file, local_path_uri
-from functools import partial
 import hail as hl
 import hailtop
 import pandas as pd
-from MyIterableDataset import *
+from generators.MyIterableDataset import *
 
 
 hl.init(default_reference='GRCh37', spark_conf={'spark.driver.memory': '400G'})

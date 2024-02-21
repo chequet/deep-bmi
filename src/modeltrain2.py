@@ -1,9 +1,9 @@
 ### TIDIER SCRIPT FOR TRAINING MODELS
-from FlexibleNet import *
-from MyIterableDataset3 import *
-from OneHotIterableDataset import *
-from BasicEmbeddedDataset import *
-from EffectEmbeddingDataset import *
+from nets.FlexibleNet import *
+from generators.MyIterableDataset3 import *
+from generators.OneHotIterableDataset import *
+from generators.BasicEmbeddedDataset import *
+from generators.EffectEmbeddingDataset import *
 import os
 import torch
 import torch.optim as optim

@@ -1,15 +1,12 @@
 # import matplotlib.pyplot as plt
-import numpy as np
 import torch
-import os, re, sys
+import sys
 from torch import optim
 from time import time
-import torch.nn as nn
-from scipy import stats
-from MyIterableDataset3 import *
-from OneHotIterableDataset import *
-from BasicEmbeddedDataset import *
-from EffectEmbeddingDataset import *
+from generators.MyIterableDataset3 import *
+from generators.OneHotIterableDataset import *
+from generators.BasicEmbeddedDataset import *
+from generators.EffectEmbeddingDataset import *
 # from Net4 import *
 from torch.utils.tensorboard import SummaryWriter
 
