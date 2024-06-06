@@ -1,10 +1,3 @@
-import torch
-from torch import nn
-from generators.EffectEmbeddingDataset import *
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device} device")
-
 class EmbedNetwork(nn.Module):
     def __init__(self, n_inputs, reduction_factor, dropout):
         super(EmbedNetwork, self).__init__()
