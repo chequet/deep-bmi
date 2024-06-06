@@ -1,8 +1,3 @@
-import numpy as np
-import torch
-import math
-import os
-
 class EffectEmbeddingDataset(torch.utils.data.IterableDataset):
 
     def __init__(self, filepath, files, shuffle, method, beta_mask):
