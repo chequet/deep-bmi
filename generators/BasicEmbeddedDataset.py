@@ -1,9 +1,3 @@
-import numpy as np
-import torch
-import math
-import os
-from filelock import FileLock
-
 class BasicEmbeddedDataset(torch.utils.data.IterableDataset):
     """ Implementation of generating projection encoded data on the fly from numpy arrays"""
 
