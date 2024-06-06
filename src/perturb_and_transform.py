@@ -53,7 +53,6 @@ def get_low_mse_samples(mse_cutoff, n_samples, bmi_lower, bmi_upper, groundtruth
 def similarity_kernel(
     original_input: Tensor,
     perturbed_input: Tensor,
-    perturbed_interpretable_input: Tensor,
     **kwargs)->Tensor:
         # kernel_width will be provided to attribute as a kwarg
         kernel_width = kwargs["kernel_width"]
