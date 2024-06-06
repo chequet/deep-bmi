@@ -1,7 +1,3 @@
-import numpy as np
-import torch
-import math
-
 class MyIterableDataset(torch.utils.data.IterableDataset):
     """ Implementation of generating data from hail data structures"""
 

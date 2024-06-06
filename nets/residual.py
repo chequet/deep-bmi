@@ -1,5 +1,3 @@
-import torch.nn as nn
-
 class block1(nn.Module):
     def __init__(self, n_inputs):
         super(block1, self).__init__()

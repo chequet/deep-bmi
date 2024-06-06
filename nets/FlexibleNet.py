@@ -1,7 +1,3 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 class FlexibleNet(nn.Module):
     def __init__(self, layer_list, dropout, activation):
         super(FlexibleNet, self).__init__()

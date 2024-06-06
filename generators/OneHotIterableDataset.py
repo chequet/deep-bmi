@@ -1,10 +1,5 @@
-import numpy as np
-import torch
-import math
-import os
-
 class OneHotIterableDataset(torch.utils.data.IterableDataset):
-    """ Implementation of generating data from hail data structures"""
+    """ Implementation of generating one-hot data from hail data structures"""
 
     def __init__(self, filepath, files, shuffle):
         self.filepath = filepath
