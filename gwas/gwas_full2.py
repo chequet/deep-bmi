@@ -1,5 +1,4 @@
-# a version of the full gwas designed to be called as individual functions within ipython so that I don't lose everything if I get an error before the end. 
-
+# a version of the full gwas designed to be called as individual functions within ipython 
 import hail as hl
 import pandas as pd
 import datetime as d
@@ -98,8 +97,6 @@ def annotate(fullchr, numbers):
 
 
 ######   SAMPLE QC   ######
-
-#TODO remove withdrawn participants
 
 def filter_samples(fullchr):
 	""" exclude recommended samples from analysis"""
