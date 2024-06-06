@@ -1,8 +1,3 @@
-import numpy as np
-import torch
-import math
-import os
-
 class MyIterableDataset(torch.utils.data.IterableDataset):
     """ Implementation of generating data for models from persisted batches - standard variable encoding"""
 
